@@ -2,45 +2,47 @@
   <div style="display: flex">
     <div class="main">
       <div class="main-header">
-        <div class="top-first">
-          <button
-            v-for="item in topFirstMenus"
-            :key="item"
-            class="top-first-menus"
-          >
-            {{ item }}
-          </button>
-        </div>
-
-        <div class="top-second">
+        <div class="top-menu">
           <div style="display: flex; flex-direction: row; width: 100%">
             <img
-              class="top-second-image"
+              class="top-first-image"
               src="https://www.mypuzzle.co.kr/resources/images/logo/header_logo.svg"
               @click="logoClick"
             />
-            <div style="flex: 1"></div>
             <div style="display: flex; flex-direction: column">
               <div style="display: flex; flex-direction: row" ref="div_menus">
                 <div
-                  v-for="(item, index) in topSecondMenus"
+                  v-for="(item, index) in topMenus"
                   :key="item"
                   style="display: flex"
+                  @click="firstMenuClick(index, item.routerName)"
                   @mouseleave="divDragLeave()"
                 >
                   <a
                     ref="item"
-                    class="top-second-menus"
-                    @click="oneClick(item)"
+                    class="top-first-menus"
                     @mouseover="divDragOver($event, index)"
                   >
-                    {{ item }}
+                    {{ item.text }}
                   </a>
                 </div>
               </div>
-
               <div class="slider" ref="slider" :style="ingSlider">
                 <div class="indicator"></div>
+              </div>
+            </div>
+            <div style="flex: 1"></div>
+            <div class="top-second-menus">
+              <div class="kakao-consulting">톡상담</div>
+              <div style="display: flex; flex-direction: row; margin-left: 8px">
+                <div
+                  class="login-saved"
+                  @click="$router.push({ name: 'Login' })"
+                >
+                  로그인
+                </div>
+                <div style="margin-left: 4px; margin-right: 4px">·</div>
+                <div class="login-saved">장바구니</div>
               </div>
             </div>
           </div>
@@ -56,15 +58,14 @@ export default {
   name: 'Footer',
   data() {
     return {
-      topFirstMenus: ['소식', '고객센터', '회원가입', '로그인', '장바구니'],
-      topSecondMenus: [
-        '브랜드스토리',
-        '건강설문',
-        '제품',
-        '고객후기',
-        '매거진 퍼즐',
-        '이벤트',
-        '섭취기록',
+      topMenus: [
+        { text: '브랜드스토리', routerName: 'brandStory' },
+        { text: '매거진', routerName: 'magazine' },
+        { text: '건강설문', routerName: 'healthConsulting' },
+        { text: '고객후기', routerName: 'review' },
+        { text: '스토어', routerName: 'store' },
+        { text: '이벤트', routerName: 'event' },
+        { text: '공지사항', routerName: 'notification' },
       ],
       indicatorX: 0,
       indicatorWidth: 0,
@@ -73,8 +74,14 @@ export default {
     }
   },
   methods: {
-    oneClick() {
-      console.log(this.$refs.item.getBoundingClientRect().left)
+    firstMenuClick(i, routerName) {
+      this.indicatorX = this.$refs.item[i].getBoundingClientRect().left
+      this.indicatorWidth = this.$refs.item[i].getBoundingClientRect().width
+      this.indicatorTop =
+        this.$refs.item[i].getBoundingClientRect().y +
+        this.$refs.item[i].getBoundingClientRect().height
+      console.log('click', routerName)
+      this.$router.push({ name: routerName })
     },
     divDragOver(e, i) {
       console.log(this.$refs.item[i].getBoundingClientRect())
@@ -89,7 +96,7 @@ export default {
       this.indicatorWidth = 0
     },
     logoClick() {
-      this.$router.push({ name: 'firstPage' })
+      this.$router.push({ name: 'index' })
     },
   },
   mounted() {
@@ -114,35 +121,35 @@ export default {
 <style lang="scss" scoped>
 .main {
   .main-header {
-    .top-first {
-      padding-top: 10px;
-      display: flex;
-      justify-content: flex-end;
-    }
-    .top-second {
+    .top-menu {
       align-items: flex-end;
       display: flex;
       flex: 1;
       padding-bottom: 10px;
     }
-    .top-first-menus {
-      margin-left: 20px;
-      font-size: 13px;
-      color: #000000;
-    }
-    .top-second-image {
+    .top-first-image {
       width: 195px;
       cursor: pointer;
     }
-    .top-second-menus {
+    .top-first-menus {
       margin-left: 25px;
       font-size: 18px;
       color: #000000;
       font-weight: bold;
       cursor: pointer;
+      text-decoration-line: none;
     }
-    .top-second-menus:hover {
+    .top-first-menus:hover {
       color: #5b1a7c;
+    }
+    .top-second-menus {
+      display: flex;
+      flex-direction: row;
+    }
+    .login-saved {
+      font-size: 12px;
+      color: #505050;
+      cursor: pointer;
     }
     .slider {
       position: absolute;
@@ -174,7 +181,7 @@ export default {
   }
   width: 100%;
   margin: auto;
-  height: 120px;
+  height: 60px;
   display: flex;
   flex-direction: column;
   position: fixed;
