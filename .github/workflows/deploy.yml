@@ -1,0 +1,20 @@
+name: playbench deploy
+
+on: 
+  push:
+    branches: -main
+  pull_request:
+    branches: -main
+jobs: 
+  check-bats-version: 
+    runs-on: ubuntu-20.04
+
+    steps: 
+      - name: Checkout source code. # 깃허브 레포지토리 체크.
+        uses: actions/checkout@v2
+      - name: Check Node v # 노드 버전 확인.
+        run: node -v
+      - name: Install Dependencies # 설치된 의존성 파일 설치.
+        run: npm install
+      - name: restart project #배포를 위한 프로젝트 재시작 
+        run: pm2 restart 0
