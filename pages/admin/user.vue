@@ -3,9 +3,13 @@
     Index
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     <div>TTTTTTT</div>
 =======
   <div>Index
+=======
+  <div>안녕 민우우우
+>>>>>>> e6c67f7c5130f7ad08c7a0f0fc192a856e548ff1
 
  <div>Index</div>
  <div>Index</div> <div>Index</div> <div>Index</div> <div>Index</div> <div>Index</div> <div>Index</div> <div>Index</div>
