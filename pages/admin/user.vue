@@ -1,11 +1,9 @@
 <template>
+  <div>
+    Index
 
-  <div>Index
-
- <div>Index</div>
-
+    <div>TTTTTTT</div>
   </div>
-
 </template>
 <script>
 export default {
