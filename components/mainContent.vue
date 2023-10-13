@@ -11,8 +11,7 @@ export default {
 <style lang="scss" scoped>
 .main-warper {
   width: 100%;
-  max-width: 1080px;
-  min-width: 960px;
+  max-width: 1140px;
   margin: auto;
   height: 100vh;
   background-color: aqua;

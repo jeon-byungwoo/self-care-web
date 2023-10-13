@@ -12,10 +12,14 @@
     "lintfix": "prettier --write --list-different ."
   },
   "dependencies": {
+    "@nuxtjs/axios": "^5.13.6",
+    "@nuxtjs/proxy": "^2.1.0",
+    "chart.js": "^3.9.1",
     "core-js": "^3.25.3",
+    "hooper": "^0.3.4",
     "nuxt": "^2.15.8",
     "vue": "^2.7.10",
-    "vue-future-slider": "^1.0.5",
+    "vue-chartjs": "^4.1.2",
     "vue-server-renderer": "^2.7.10",
     "vue-slick": "^1.2.0",
     "vue-template-compiler": "^2.7.10",

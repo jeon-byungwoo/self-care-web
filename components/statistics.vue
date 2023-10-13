@@ -1,0 +1,407 @@
+<template>
+  <div class="main-warper">
+    <div class="main-warper-group">
+      <div class="statics-group">
+        <div class="statics-header-group">
+          <div class="statics-header-title-text">기준 건강 설문 통계</div>
+          <div class="statics-header-select-box-group">
+            <div class="statics-header-select-box-text">나이</div>
+            <img
+              class="statics-header-select-box-img"
+              src="@/assets/image/ic_down_arrow.png"
+              draggable="false"
+            />
+          </div>
+          <div class="statics-header-select-box-group">
+            <div class="statics-header-select-box-text">성별</div>
+            <img
+              class="statics-header-select-box-img"
+              src="@/assets/image/ic_down_arrow.png"
+              draggable="false"
+            />
+          </div>
+        </div>
+        <div>
+          <Bar
+            id="my-chart-id"
+            :chartOption="chartOptions"
+            :chartData="chartData"
+            style="width: 100%; height: 100%"
+          />
+        </div>
+      </div>
+      <div class="big-data-group">
+        <div class="big-data-group2">
+          <div class="big-data-text-header">빅데이터 설문</div>
+          <div class="big-data-text-middle">
+            우리는 다양한 서비스를 제공하지만<br />결과물은 단, 하나 당신의
+            행복과<br />건강입니다.
+          </div>
+          <div class="big-data-text-footer">
+            설문으로 알게 된 빅데이터를 기반으로 식품을 추천합니다.
+          </div>
+          <div class="big-data-ai-btn">
+            <img
+              class="big-data-ai-btn-check"
+              src="@/assets/image/ic_ai_check.png"
+              draggable="false"
+            />
+            <div class="big-data-ai-btn-text">AI 건강설문 하기</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+// import LineChart from './LineChart'
+import { Bar } from 'vue-chartjs'
+import {
+  Chart as ChartJS,
+  Title,
+  Tooltip,
+  Legend,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+} from 'chart.js'
+
+ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
+ChartJS.defaults.font.size = 12
+ChartJS.defaults.font.family = 'score2'
+ChartJS.defaults.color = '#000000'
+
+export default {
+  name: 'pagerView',
+  components: {
+    Bar,
+  },
+  data() {
+    return {
+      chartData: {
+        labels: [
+          '면역',
+          '순환',
+          '소화',
+          '장관',
+          '뇌신경',
+          '호르몬',
+          '호흡',
+          '비뇨',
+          '골격',
+          '피부/모발',
+        ],
+
+        datasets: [
+          {
+            labels: [
+              '면역',
+              '순환',
+              '소화',
+              '장관',
+              '뇌신경',
+              '호르몬',
+              '호흡',
+              '비뇨',
+              '골격',
+              '피부/모발',
+            ],
+            data: [40, 20, 12, 40, 20, 12, 40, 20, 12, 30],
+            backgroundColor: [
+              'rgba(255, 99, 132, 0.2)',
+              'rgba(54, 162, 235, 0.2)',
+              'rgba(255, 206, 86, 0.2)',
+              'rgba(75, 192, 192, 0.2)',
+              'rgba(153, 102, 255, 0.2)',
+              'rgba(255, 159, 64, 0.2)',
+              'rgba(255, 99, 132, 0.2)',
+              'rgba(54, 162, 235, 0.2)',
+              'rgba(255, 206, 86, 0.2)',
+              'rgba(75, 192, 192, 0.2)',
+              'rgba(153, 102, 255, 0.2)',
+            ],
+            borderRadius: 40,
+            maxBarThickness: 10,
+          },
+        ],
+      },
+      chartOptions: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutoutPercentage: 80,
+        legend: {
+          display: false,
+        },
+        tooltips: {
+          enabled: false,
+        },
+        hover: {
+          mode: false,
+        },
+
+        scales: {
+          yAxes: [
+            {
+              // display: false, // y축 기준 표시 여부
+              ticks: {
+                // y축 기준 데이터 변경
+                // beginAtZero:true,
+                min: 0, // y축 최소값
+                // max: 13, // y축 최대값
+                stepSize: 10, // y축 간격
+                fontSize: 12, // 글자크기
+              },
+              gridLines: {
+                display: false, // 차트 안에 가로선 표시 여부
+                drawBorder: false,
+              },
+            },
+          ],
+
+          xAxes: [
+            {
+              display: false,
+              gridLines: {
+                display: false,
+                brawBorder: false,
+              },
+            },
+          ],
+        }, // scales 끝
+      },
+    }
+  },
+  methods: {
+    preClick() {},
+  },
+}
+</script>
+
+<style lang="scss" scoped>
+.main-warper {
+  width: 100%;
+  max-width: 1200px;
+  margin: auto;
+  padding-top: 100px;
+  padding-bottom: 100px;
+  background: white;
+  .main-warper-group {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .statics-group {
+    width: 500px;
+    .statics-header-group {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .statics-header-title-text {
+      font-size: 18px;
+      font-family: 'score6';
+      color: #333333;
+      margin-right: 19px;
+    }
+    .statics-header-select-box-group {
+      margin-left: 10px;
+      border-width: 1px;
+      border-color: #dddddd;
+      border-style: solid;
+      border-radius: 20px;
+      width: 90px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .statics-header-select-box-text {
+      font-size: 15px;
+      font-family: 'score5';
+      color: #333333;
+    }
+    .statics-header-select-box-img {
+      width: 13.52px;
+      height: 8.28px;
+      margin-left: 17px;
+    }
+  }
+  .big-data-group {
+    width: 500px;
+    display: flex;
+    margin-left: 40px;
+    justify-content: flex-end;
+    flex-direction: row;
+    .big-data-group2 {
+      width: max-content;
+    }
+    .big-data-text-header {
+      font-size: 18px;
+      font-family: 'score2';
+      color: #666666;
+    }
+    .big-data-text-middle {
+      font-size: 32px;
+      font-family: 'score6';
+      color: #333333;
+      margin-top: 10px;
+      line-height: 45px;
+    }
+    .big-data-text-footer {
+      font-size: 16px;
+      font-family: 'score2';
+      color: #666666;
+      margin-top: 10px;
+    }
+    .big-data-ai-btn {
+      width: 207px;
+      height: 55px;
+      border-radius: 50px;
+      margin-top: 30px;
+      background: #333333;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .big-data-ai-btn-check {
+      width: 22px;
+      height: 20px;
+    }
+    .big-data-ai-btn-text {
+      margin-left: 7px;
+      color: white;
+      font-family: 'score5';
+      font-size: 16px;
+    }
+  }
+  .buttons {
+    cursor: pointer;
+    border-radius: 8px;
+    padding: 12px 40px;
+    background: #707070;
+    text-align: center;
+  }
+  .content {
+    font-size: 30px;
+    margin-left: 20px;
+  }
+}
+@media (max-width: 720px) {
+  .main-warper {
+    width: 100%;
+    margin: auto;
+    padding: 40px 20px;
+    background: white;
+    .main-warper-group {
+      display: block;
+      margin: auto;
+    }
+    .statics-group {
+      display: block;
+      width: 100%;
+      .statics-header-group {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+      }
+      .statics-header-title-text {
+        font-size: 14px;
+        font-family: 'score6';
+        color: #333333;
+        margin-right: 5px;
+      }
+      .statics-header-select-box-group {
+        margin-left: 5px;
+        border-width: 1px;
+        border-color: #dddddd;
+        border-style: solid;
+        border-radius: 20px;
+        width: 70px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+      }
+      .statics-header-select-box-text {
+        font-size: 12px;
+        font-family: 'score5';
+        color: #333333;
+      }
+      .statics-header-select-box-img {
+        width: 8.52px;
+        height: 6.28px;
+        margin-left: 5px;
+      }
+    }
+    .big-data-group {
+      display: flex;
+      justify-content: flex-end;
+      flex-direction: row;
+      margin-top: 20px;
+      width: 100%;
+      margin-left: 0px;
+      .big-data-group2 {
+        width: 100%;
+      }
+      .big-data-text-header {
+        font-size: 12px;
+        font-family: 'score2';
+        color: #666666;
+      }
+      .big-data-text-middle {
+        font-size: 18px;
+        font-family: 'score6';
+        color: #333333;
+        margin-top: 10px;
+        line-height: 1.4;
+      }
+      .big-data-text-footer {
+        font-size: 12px;
+        font-family: 'score2';
+        color: #666666;
+        margin-top: 10px;
+      }
+      .big-data-ai-btn {
+        width: 207px;
+        height: 55px;
+        border-radius: 50px;
+
+        background: #333333;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: auto;
+        margin-top: 30px;
+        cursor: pointer;
+      }
+      .big-data-ai-btn-check {
+        width: 22px;
+        height: 20px;
+      }
+      .big-data-ai-btn-text {
+        margin-left: 7px;
+        color: white;
+        font-family: 'score5';
+        font-size: 16px;
+      }
+    }
+    .buttons {
+      cursor: pointer;
+      border-radius: 8px;
+      padding: 12px 40px;
+      background: #707070;
+      text-align: center;
+    }
+    .content {
+      font-size: 30px;
+      margin-left: 20px;
+    }
+  }
+}
+</style>

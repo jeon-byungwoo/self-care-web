@@ -18,6 +18,14 @@ export default {
       { name: 'format-detection', content: 'telephone=no' },
     ],
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
+
+    script: [
+      {
+        src: 'https://developers.kakao.com/sdk/js/kakao.js',
+      },
+      { src: 'https://static.nid.naver.com/js/naverLogin_implicit-1.0.3.js' },
+      { src: 'http://code.jquery.com/jquery-1.11.3.min.js' },
+    ]
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
@@ -33,11 +41,47 @@ export default {
   buildModules: [
     // https://go.nuxtjs.dev/vuetify
     '@nuxtjs/vuetify',
+    // 'axios'
   ],
 
-  // Modules: https://go.nuxtjs.dev/config-modules
-  modules: [],
+  // server: {
+  //   port: 3000,
+  //   proxy: {
+  //     "/oauth2.0": {
+  //       target: 'https://nid.naver.com/',
+  //       changeOrigin: true,
+  //       logLevel: 'debug',
+  //       pathRewrite: {
+  //         "^/oauth2.0": "",
+  //       },
+  //     },
+  //     "/v1": {
+  //       target: 'https://openapi.naver.com/',
+  //       changeOrigin: true,
+  //       logLevel: 'debug'
+  //     },
+  //   },
+  // },
+  server: {
+    port: 3000,
+    host: '192.168.0.14'
+  },
+  proxy: {
+    '/oauth2.0': 'https://nid.naver.com/',
+    '/v1': 'https://openapi.naver.com/'
+  },
 
+  // Modules: https://go.nuxtjs.dev/config-modules
+  modules: [
+    // https://go.nuxtjs.dev/axios
+    '@nuxtjs/axios',
+    '@nuxtjs/proxy',
+  ],
+  // Axios module configuration: https://go.nuxtjs.dev/config-axios
+  // axios: {
+  //   // Workaround to avoid enforcing hard-coded localhost:3000: https://github.com/nuxt-community/axios-module/issues/308
+  //   baseURL: '/',
+  // },
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
   vuetify: {
     customVariables: ['~/assets/variables.scss'],
@@ -59,4 +103,8 @@ export default {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {},
+  //generate by directory
+  generate: {
+    dir: './public'
+  },
 }

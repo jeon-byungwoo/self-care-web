@@ -1,96 +1,120 @@
 <template>
-  <div style="display: flex">
-    <div class="main">
-      <div class="main-header">
-        <div class="top-menu">
-          <div style="display: flex; flex-direction: row; width: 100%">
+  <div class="main-wrapper">
+    <div class="main-header">
+      <div class="menu-1step">
+        <div class="div-logo" @click="logoClick">
+          <img
+            class="img-logo"
+            src="../assets/image/ic_home_logo.png"
+            draggable="false"
+          />
+        </div>
+
+        <img
+          class="img-talk"
+          src="../assets/image/ic_home_talk.png"
+          draggable="false"
+        />
+        <img
+          class="img-hamberger"
+          :src="
+            shadowNav == false
+              ? require('../assets/image/ic_home_menu.png')
+              : require('@/assets/image/ic_menu_close.png')
+          "
+          draggable="false"
+          @click="update"
+        />
+      </div>
+      <div class="menu-2step">
+        <div
+          :class="
+            shadowNav == true
+              ? 'menu-2step-area'
+              : 'menu-2step-area-display-none'
+          "
+          ref="menus"
+        >
+          <div
+            v-for="(item, index) in topMenus"
+            :key="index"
+            @click="firstMenuClick(index, item.routerName)"
+          >
+            <a
+              ref="item"
+              :class="
+                item.text == selectedTopMenus
+                  ? 'selected-top-first-menus'
+                  : 'top-first-menus'
+              "
+            >
+              {{ item.text }}
+            </a>
+            <!-- :style="index == 0 ? 'margin-left:0px' : 'margin-left:61px'" -->
+          </div>
+          <div class="flex-1"></div>
+          <div class="top-second-menus">
             <img
-              class="top-first-image"
-              src="https://www.mypuzzle.co.kr/resources/images/logo/header_logo.svg"
-              @click="logoClick"
+              @click="myClick"
+              class="img-my"
+              src="../assets/image/ic_home_my.png"
+              draggable="false"
             />
-            <div style="display: flex; flex-direction: column">
-              <div style="display: flex; flex-direction: row" ref="div_menus">
-                <div
-                  v-for="(item, index) in topMenus"
-                  :key="item"
-                  style="display: flex"
-                  @click="firstMenuClick(index, item.routerName)"
-                  @mouseleave="divDragLeave()"
-                >
-                  <a
-                    ref="item"
-                    class="top-first-menus"
-                    @mouseover="divDragOver($event, index)"
-                  >
-                    {{ item.text }}
-                  </a>
-                </div>
-              </div>
-              <div class="slider" ref="slider" :style="ingSlider">
-                <div class="indicator"></div>
-              </div>
-            </div>
-            <div style="flex: 1"></div>
-            <div class="top-second-menus">
-              <div class="kakao-consulting">톡상담</div>
-              <div style="display: flex; flex-direction: row; margin-left: 8px">
-                <div
-                  class="login-saved"
-                  @click="$router.push({ name: 'Login' })"
-                >
-                  로그인
-                </div>
-                <div style="margin-left: 4px; margin-right: 4px">·</div>
-                <div class="login-saved">장바구니</div>
-              </div>
-            </div>
+            <img
+              @click="cartClick"
+              class="img-cart"
+              src="../assets/image/ic_home_cart.png"
+              draggable="false"
+            />
           </div>
         </div>
       </div>
-      <div class="bottom-div"></div>
     </div>
+    <div :class="shadowNav == true ? 'line-display-none' : 'line'"></div>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'Footer',
+  name: 'pagerView',
   data() {
     return {
       topMenus: [
-        { text: '브랜드스토리', routerName: 'brandStory' },
-        { text: '매거진', routerName: 'magazine' },
         { text: '건강설문', routerName: 'healthConsulting' },
-        { text: '고객후기', routerName: 'review' },
+        { text: '자가진단', routerName: 'healthConsulting' },
         { text: '스토어', routerName: 'store' },
-        { text: '이벤트', routerName: 'event' },
-        { text: '공지사항', routerName: 'notification' },
+        { text: '펫 전용관', routerName: 'petPrivate' },
+        { text: '후기', routerName: 'review' },
+        { text: '매거진', routerName: 'magazine' },
+        { text: '소식', routerName: 'notification' },
       ],
+      selectedTopMenus: 0, // 1-건강설문, 2-자가진단, 3-스토어, 4-펫전용관, 5-후기, 6-매거진, 7-소식
       indicatorX: 0,
       indicatorWidth: 0,
       indicatorHeight: 0,
       indicatorTop: 0,
+      shadowNav: false,
     }
   },
   methods: {
     firstMenuClick(i, routerName) {
-      this.indicatorX = this.$refs.item[i].getBoundingClientRect().left
-      this.indicatorWidth = this.$refs.item[i].getBoundingClientRect().width
-      this.indicatorTop =
-        this.$refs.item[i].getBoundingClientRect().y +
-        this.$refs.item[i].getBoundingClientRect().height
+      // this.indicatorX = this.$refs.item[i].getBoundingClientRect().left
+      // this.indicatorWidth = this.$refs.item[i].getBoundingClientRect().width
+      // this.indicatorTop =
+      //   this.$refs.item[i].getBoundingClientRect().y +
+      //   this.$refs.item[i].getBoundingClientRect().height
       console.log('click', routerName)
+      this.selectedTopMenus = this.topMenus[i].text
       this.$router.push({ name: routerName })
     },
     divDragOver(e, i) {
-      console.log(this.$refs.item[i].getBoundingClientRect())
-      this.indicatorX = this.$refs.item[i].getBoundingClientRect().left
-      this.indicatorWidth = this.$refs.item[i].getBoundingClientRect().width
-      this.indicatorTop =
-        this.$refs.item[i].getBoundingClientRect().y +
-        this.$refs.item[i].getBoundingClientRect().height
-      console.log(this.indicatorX)
+      // console.log(this.$refs.item[i].getBoundingClientRect())
+      // this.indicatorX = this.$refs.item[i].getBoundingClientRect().left
+      // this.indicatorWidth = this.$refs.item[i].getBoundingClientRect().width
+      // this.indicatorTop =
+      //   this.$refs.item[i].getBoundingClientRect().y +
+      //   this.$refs.item[i].getBoundingClientRect().height
+      // console.log(this.indicatorX)
     },
     divDragLeave() {
       this.indicatorWidth = 0
@@ -98,14 +122,43 @@ export default {
     logoClick() {
       this.$router.push({ name: 'index' })
     },
+    myClick() {
+      this.$router.push({ name: 'myInfo' })
+    },
+    cartClick() {
+      this.$router.push({ name: 'cart' })
+    },
+    update() {
+      this.shadowNav = this.shadowNav == false ? true : false
+      // if (this.shadowNav) {
+      //   this.$refs.menus.style.display = 'block'
+      // } else {
+      //   this.$refs.menus.style.display = 'none'
+      // }
+      this.$emit('update', this.shadowNav)
+    },
+    handleResize() {
+      const vm = this
+      //resize 실행마다 width, height 가져오기
+      let width = window.innerWidth
+      let height = window.innerHeight
+
+      //브라우저 넓이에 따라서 보여질 카드 개수 표시
+      if (width > 720) {
+        this.shadowNav = false
+        this.$emit('update', this.shadowNav)
+      }
+    },
   },
   mounted() {
-    console.log(this.$refs.item[0].getBoundingClientRect().left)
-    this.indicatorX = this.$refs.item[0].getBoundingClientRect().left
-    this.indicatorTop =
-      this.$refs.item[0].getBoundingClientRect().y +
-      this.$refs.item[0].getBoundingClientRect().height
+    window.addEventListener('resize', this.handleResize)
+    //최초 한번 실행
+    this.handleResize()
   },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.handleResize)
+  },
+  fetchData() {},
   computed: {
     ingSlider() {
       return `
@@ -119,33 +172,124 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.main {
+.main-wrapper {
+  display: flex;
+  flex-direction: column;
+  z-index: 999;
+  width: 100%;
+  background: white;
+  top: 0px;
+  left: 0px;
+  position: sticky;
+  .line {
+    height: 1px;
+    width: 100%;
+    background: #dddddd;
+    margin-top: 30px;
+  }
+  .line-display-none {
+    height: 1px;
+    width: 100%;
+    background: #dddddd;
+    margin-top: 30px;
+  }
   .main-header {
-    .top-menu {
-      align-items: flex-end;
+    margin: auto;
+    flex-direction: column;
+    display: flex;
+    max-width: 1200px;
+    margin-top: 48px;
+    width: 100%;
+    .menu-1step {
+      display: flex;
+      align-items: center;
+      .img-menu {
+        display: none;
+        width: 20px;
+        height: 20px;
+        margin-right: 28px;
+        cursor: pointer;
+      }
+      .div-logo {
+        flex-grow: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .img-logo {
+        width: 94px;
+        height: 38px;
+        cursor: pointer;
+      }
+      .img-talk {
+        width: 88px;
+        height: 35px;
+        cursor: pointer;
+      }
+      .img-hamberger {
+        display: none;
+        width: 88px;
+        height: 35px;
+        cursor: pointer;
+      }
+    }
+    .menu-2step {
+      align-items: center;
       display: flex;
       flex: 1;
-      padding-bottom: 10px;
+      margin-top: 58px;
+      .menu-2step-area {
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+        gap: 61px;
+        .flex-1 {
+          flex: 1;
+        }
+      }
+      .menu-2step-area-display-none {
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+        gap: 61px;
+        .flex-1 {
+          flex: 1;
+        }
+      }
+      .top-first-menus {
+        font-size: 17px;
+        color: #333333;
+        font-family: 'score5';
+        cursor: pointer;
+        text-decoration-line: none;
+      }
+      .selected-top-first-menus {
+        font-size: 17px;
+        color: #9ad144;
+        font-family: 'score5';
+        cursor: pointer;
+        text-decoration-line: none;
+      }
+      .top-first-menus:hover {
+        color: #9ad144;
+      }
+      .top-second-menus {
+        display: flex;
+        flex-direction: row;
+      }
+      .img-my {
+        width: 22px;
+        height: 22px;
+        cursor: pointer;
+      }
+      .img-cart {
+        width: 22px;
+        height: 22px;
+        margin-left: 25px;
+        cursor: pointer;
+      }
     }
-    .top-first-image {
-      width: 195px;
-      cursor: pointer;
-    }
-    .top-first-menus {
-      margin-left: 25px;
-      font-size: 18px;
-      color: #000000;
-      font-weight: bold;
-      cursor: pointer;
-      text-decoration-line: none;
-    }
-    .top-first-menus:hover {
-      color: #5b1a7c;
-    }
-    .top-second-menus {
-      display: flex;
-      flex-direction: row;
-    }
+
     .login-saved {
       font-size: 12px;
       color: #505050;
@@ -166,26 +310,160 @@ export default {
       background: #5b1a7c;
       border-radius: 1px;
     }
-    width: 75%;
-    height: 98%;
-    margin: auto;
-    flex-direction: column;
+  }
+}
+@media (max-width: 720px) {
+  // html {
+  //   overflow-x: hidden;
+  //   width: 100%;
+  // }
+  // body {
+  //   overflow-x: hidden;
+  //   width: 100%;
+  // }
+  .main-wrapper {
     display: flex;
-    max-width: 1080px;
-    min-width: 980px;
-  }
-  .bottom-div {
+    flex-direction: column;
     width: 100%;
-    height: 1%;
-    background-color: #d0d0d0;
+    height: 76px;
+    background: white;
+    top: 0px;
+    left: 0px;
+    position: sticky;
+    z-index: 999;
+    .line {
+      height: 1px;
+      width: 100%;
+      background: #dddddd;
+      margin-top: 10px;
+    }
+    .line-display-none {
+      display: none;
+    }
+    .main-header {
+      margin: auto;
+      flex-direction: column;
+      display: flex;
+      margin-top: 20px;
+      width: 100%;
+      padding: 0px 0px;
+      .menu-1step {
+        display: flex;
+        align-items: center;
+        padding: 0px 20px;
+        .img-menu {
+          display: block;
+          width: 20px;
+          height: 20px;
+          margin-right: 28px;
+          cursor: pointer;
+        }
+        .div-logo {
+          display: flex;
+          justify-content: flex-start;
+          .img-logo {
+            width: 21.25%;
+            height: auto;
+          }
+        }
+        .img-talk {
+          width: 20.42%;
+          height: auto;
+        }
+        .img-hamberger {
+          display: block;
+          width: 6.81%;
+          height: auto;
+          cursor: pointer;
+          margin-left: 4.17%;
+        }
+      }
+      .menu-2step {
+        align-items: center;
+        display: block;
+        margin-top: 0px;
+        justify-content: center;
+        background-color: #fff;
+        width: 100%;
+        height: auto;
+        .menu-2step-area {
+          display: flex;
+          flex-direction: column;
+          width: 100%;
+          align-items: center;
+          justify-content: center;
+          margin-top: 50px;
+          .flex-1 {
+            display: none;
+          }
+        }
+        .menu-2step-area-display-none {
+          display: none;
+          flex-direction: column;
+          width: 100%;
+          align-items: center;
+          justify-content: center;
+          margin-top: 0px;
+          .flex-1 {
+            flex: 1;
+          }
+        }
+        .top-first-menus {
+          font-size: 17px;
+          color: #333333;
+          font-family: 'score5';
+          cursor: pointer;
+          text-decoration-line: none;
+        }
+        .selected-top-first-menus {
+          font-size: 17px;
+          color: #9ad144;
+          font-family: 'score5';
+          cursor: pointer;
+          text-decoration-line: none;
+        }
+        .top-first-menus:hover {
+          color: #9ad144;
+        }
+        .top-second-menus {
+          display: flex;
+          flex-direction: column;
+          gap: 61px;
+        }
+        .img-my {
+          width: 22px;
+          height: 22px;
+          cursor: pointer;
+        }
+        .img-cart {
+          width: 22px;
+          height: 22px;
+          margin-left: 0px;
+          cursor: pointer;
+        }
+      }
+
+      .login-saved {
+        font-size: 12px;
+        color: #505050;
+        cursor: pointer;
+      }
+      .slider {
+        position: absolute;
+        background-color: aqua;
+        z-index: 1;
+        transition: all 0.33s cubic-bezier(0.38, 0.8, 0.32, 1.07);
+      }
+      .indicator {
+        position: relative;
+        width: 100px;
+        max-width: 100%;
+        margin: 0 auto;
+        height: 4px;
+        background: #5b1a7c;
+        border-radius: 1px;
+      }
+    }
   }
-  width: 100%;
-  margin: auto;
-  height: 60px;
-  display: flex;
-  flex-direction: column;
-  position: fixed;
-  background-color: white;
-  z-index: 2;
 }
 </style>
