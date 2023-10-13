@@ -12,7 +12,7 @@
     <survey v-if="!navigationStatus" />
     <div class="hot-item-group" v-if="!navigationStatus">
       <div class="title-group">
-        <div class="title">셀프케어 선정 인기 제품1234</div>
+        <div class="title">셀프케어 선정 인기 제품123456</div>
         <div class="product-detail-group">
           <div class="product-detail">제품 전체보기 ></div>
         </div>
