@@ -1,6 +1,6 @@
 <template>
 
-  <div>Index
+  <div>안녕 민우우우
 
  <div>Index</div>
  <div>Index</div> <div>Index</div> <div>Index</div> <div>Index</div> <div>Index</div> <div>Index</div> <div>Index</div>
