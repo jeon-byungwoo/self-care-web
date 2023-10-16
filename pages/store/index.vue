@@ -337,7 +337,7 @@ export default {
   .banner-group {
     width: 100%;
     height: 400px;
-    margin-top: -400px;
+    top: 197px;
     position: fixed;
     background-image: url('@/assets/image/img_store_rep.png');
     background-size: 100% 400px;
@@ -362,7 +362,7 @@ export default {
     position: relative;
     width: 100%;
     background-color: #fff;
-    margin-top: 593px;
+    margin-top: 400px;
     padding-bottom: 100px;
     .scroll-header-group {
       max-width: 1200px;
@@ -574,8 +574,7 @@ export default {
       height: 250px;
       top: 76px;
       left: 0px;
-      position: sticky;
-      z-index: 1;
+      position: fixed;
       background-image: url('@/assets/image/img_store_rep.png');
       background-size: 100% 250px;
       display: flex;
@@ -599,7 +598,7 @@ export default {
       position: relative;
       width: 100%;
       background-color: #fff;
-      margin-top: 420px;
+      margin-top: 250px;
       padding-bottom: 0px;
       .scroll-header-group {
         margin: auto;
@@ -607,9 +606,10 @@ export default {
         position: sticky;
         top: 76px;
         z-index: 10;
-        padding: 0px 0px;
+        padding: 20px 0px;
         background-color: #fff;
-        margin-top: 20px;
+        margin-top: 0px;
+
         .tab-group::-webkit-scrollbar {
           display: none;
           -ms-overflow-style: none; /* IE and Edge */
@@ -625,7 +625,7 @@ export default {
           -ms-overflow-style: none; /* IE and Edge */
           scrollbar-width: none;
           padding: 0px 20px;
-          margin-top: 30px;
+          margin-top: 0px;
           .selected-tab-btn-area {
             height: 50px;
             display: flex;
@@ -668,18 +668,18 @@ export default {
           -ms-overflow-style: none; /* IE and Edge */
           scrollbar-width: none;
           padding: 0px 20px;
-          margin-top: 30px;
+          margin-top: 10px;
 
           .category-area {
             display: flex;
             flex-direction: column;
-            width: 20vw;
+            width: 15vw;
             align-items: center;
             cursor: pointer;
             margin-bottom: 40px;
             .category-img {
-              width: 20vw;
-              height: 20vw;
+              width: 15vw;
+              height: 15vw;
             }
             .category-text {
               margin-top: 15px;
@@ -692,31 +692,35 @@ export default {
       }
       .item-group {
         margin: auto;
-        margin-top: 20px;
+        margin-top: 0px;
         display: flex;
         flex-wrap: wrap;
         background-color: #fff;
-        gap: 40px;
+        gap: 10px;
+        padding: 0px 20px 20px 20px;
         .item-body {
-          width: 270px;
-          height: 446px;
+          width: 48%;
+          height: auto;
           cursor: pointer;
         }
 
         .item-img-group {
           background-color: #f6f6f6;
           width: 100%;
-          height: 270px;
+          height: auto;
           display: flex;
           justify-content: center;
           align-items: center;
           border-radius: 10px;
+          padding: 20px;
         }
         .item-img {
-          height: 166px;
+          width: 60%;
+          height: auto;
         }
         .item-tag-group {
           display: flex;
+          flex-wrap: wrap;
           flex-direction: row;
           width: 100%;
           .item-tag {
@@ -726,11 +730,11 @@ export default {
             border-color: #e5e5e5;
             border-radius: 20px;
             text-align: center;
-            margin-right: 12px;
+            margin-right: 6px;
             margin-top: 10px;
           }
           .item-tag-text {
-            font-size: 12px;
+            font-size: 10px;
             font-family: 'score2';
             color: #666666;
           }
@@ -747,48 +751,48 @@ export default {
           border-radius: 20px;
           padding: 9px 12px 7px 12px;
           text-align: center;
-          font-size: 12px;
+          font-size: 10px;
           font-family: 'score5';
           color: #ff6600;
           border-color: #ff6600;
         }
 
         .item-title {
-          margin-top: 30px;
-          font-size: 16px;
+          margin-top: 20px;
+          font-size: 14px;
           font-family: 'score5';
           color: #333333;
         }
         .item-basic-group {
-          margin-top: 10px;
+          margin-top: 8px;
           display: flex;
           align-items: flex-end;
           .item-basic-price {
-            font-size: 16px;
+            font-size: 14px;
             font-family: 'score6';
             color: #999999;
           }
           .item-basic-price-won {
-            font-size: 12px;
+            font-size: 10px;
             font-family: 'score2';
             color: #999999;
           }
         }
         .item-total-group {
-          margin-top: 10px;
+          margin-top: 8px;
           display: flex;
           align-items: center;
           .item-sale-group {
             display: flex;
             align-items: flex-end;
-            margin-right: 7px;
+            margin-right: 5px;
             .item-sale {
-              font-size: 16px;
+              font-size: 14px;
               font-family: 'score6';
               color: #ef2a23;
             }
             .item-sale-percent {
-              font-size: 14px;
+              font-size: 12px;
               font-family: 'score2';
               color: #ef2a23;
             }
@@ -798,27 +802,27 @@ export default {
             display: flex;
             align-items: flex-end;
             .item-total-price {
-              font-size: 18px;
+              font-size: 16px;
               font-family: 'score6';
               color: #333333;
             }
             .item-total-price-won {
-              font-size: 14px;
+              font-size: 12px;
               font-family: 'score2';
               color: #333333;
             }
           }
         }
         .item-rating-review-group {
-          margin-top: 10px;
+          margin-top: 8px;
           display: flex;
           .item-rating-img {
-            width: 16px;
-            height: 16px;
+            width: 14px;
+            height: 14px;
             margin-right: 3px;
           }
           .item-rating-review {
-            font-size: 14px;
+            font-size: 12px;
             font-family: 'score2';
             color: #333333;
           }

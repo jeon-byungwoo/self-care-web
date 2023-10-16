@@ -510,7 +510,17 @@ export default {
       ],
     }
   },
+  mounted() {
+    let test = document.getElementsByClassName('hooper-indicator')
+    console.log(test)
+    test[0].style.width = '12px'
+
+    let test1 = document.getElementsByClassName('hooper-indicator.is-active')
+    console.log(test1)
+    // test1[0].style.width = '20px'
+  },
   methods: {
+    //
     onChildUpdate(newValue) {
       console.log('index', newValue)
       this.navigationStatus = newValue

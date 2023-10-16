@@ -564,4 +564,349 @@ export default {
     }
   }
 }
+@media (max-width: 720px) {
+  .main {
+    padding: 20px;
+    margin-top: 0px;
+    .body {
+      width: 100%;
+      margin: auto;
+      padding: 0px 0px;
+      .black-line {
+        width: 100%;
+        height: 2px;
+        background-color: #000;
+      }
+      .product-img-buy-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 40px;
+        .product-img-group {
+          flex: 1;
+          min-width: 300px;
+          .product-img-swipe-area {
+            width: 100%;
+            border: 1px solid #e6e6e6;
+            background-color: #fff;
+            height: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            .product-img-swipe-left-arrow {
+              width: 17.81px;
+              height: 32.66px;
+              cursor: pointer;
+              margin-left: 0px;
+            }
+            .product-img-swipe-right-arrow {
+              width: 17.81px;
+              height: 32.66px;
+              cursor: pointer;
+              margin-right: 0px;
+            }
+            .product-img-swipe-main-img-area {
+              flex: 1;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              .product-img-swipe-main-img {
+                width: 60%;
+                height: auto;
+              }
+            }
+          }
+          .product-img-list-group {
+            margin-top: 20px;
+            width: 100%;
+            height: 65px;
+            display: flex;
+            gap: 10px;
+            .product-img-list-item {
+              width: 65px;
+              height: 100%;
+              border: 1px solid #e6e6e6;
+              background-color: #fff;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              cursor: pointer;
+              .product-img-list-img {
+                width: 35px;
+                height: auto;
+              }
+            }
+          }
+        }
+        .product-buy-group {
+          flex: 1;
+          min-width: 300px;
+          .product-name {
+            font-size: 24x;
+            font-family: 'score6';
+            color: #333;
+            margin-bottom: 10px;
+          }
+          .product-price-sale-area {
+            margin-top: 30px;
+            gap: 10px;
+            display: flex;
+            .product-price-sale-basic-price {
+              font-size: 16px;
+              font-family: 'score4';
+              color: #999;
+              display: flex;
+            }
+            .product-price-sale-basic-price-won {
+              font-size: 16px;
+              font-family: 'score2';
+              color: #999;
+            }
+            .product-price-sale-sale-price {
+              font-size: 16px;
+              font-family: 'score5';
+              color: #333;
+              display: flex;
+            }
+            .product-price-sale-percent {
+              font-size: 16px;
+              font-family: 'score5';
+              color: #dc4c45;
+            }
+          }
+          .product-subcribe-price {
+            display: flex;
+            align-items: center;
+            margin-top: 15px;
+            .product-subcribe-price-text {
+              font-size: 14px;
+              font-family: 'score2';
+              color: #999;
+            }
+            .product-subcribe-price-price {
+              margin-left: 12px;
+              font-size: 24px;
+              font-family: 'score5';
+              color: #dc4c45;
+              display: flex;
+              align-items: baseline;
+            }
+            .product-subcribe-price-won {
+              font-size: 16px;
+              font-family: 'score2';
+              color: #666;
+            }
+          }
+          .product-rating-review-area {
+            margin-top: 15px;
+            display: flex;
+            .product-rating-review-icon {
+              width: 17.39px;
+              height: 17.39px;
+              margin-right: 4.6px;
+            }
+            .product-rating-review-regular-text {
+              font-size: 14px;
+              font-family: 'score2';
+              color: #333;
+              display: flex;
+            }
+            .product-rating-review-bold-text {
+              font-size: 14px;
+              font-family: 'score6';
+              color: #333;
+            }
+          }
+          .product-info-delivery-area {
+            display: flex;
+            flex-direction: column;
+            margin-top: 15px;
+            gap: 15px;
+
+            .product-info-delivery-info-area {
+              display: flex;
+              .product-info-delivery-info-title {
+                flex: 0.3;
+                font-size: 14px;
+                font-family: 'score2';
+                color: #999;
+              }
+              .product-info-delivery-info-contents {
+                flex: 0.7;
+                font-size: 14px;
+                font-family: 'score2';
+                color: #333;
+                line-height: 1.4;
+              }
+              .product-info-delivery-price-area {
+                flex: 0.7;
+                .product-info-delivery-price {
+                  display: flex;
+                  font-size: 14px;
+                  font-family: 'score5';
+                  color: #333;
+                  .product-info-delivery-price-won {
+                    display: flex;
+                    font-size: 14px;
+                    font-family: 'score2';
+                    color: #333;
+                  }
+                }
+                .product-info-delivery-price-additional {
+                  margin-top: 10px;
+                  font-size: 14px;
+                  font-family: 'score2';
+                  color: #333;
+                }
+              }
+            }
+          }
+          .product-unit-area {
+            margin-top: 15px;
+            background-color: #fafafa;
+            padding: 20px;
+            display: flex;
+            width: 100%;
+            .product-unit-plus-minus-area {
+              width: 90px;
+              height: 30px;
+              display: flex;
+              border: 1px solid #e6e6e6;
+              background-color: #fff;
+              .product-unit-plus-minus {
+                width: 30px;
+                height: 30px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                .product-unit-minus-img {
+                  width: 13px;
+                  height: 1px;
+                }
+                .product-unit-plus-img {
+                  width: 15px;
+                  height: 15px;
+                }
+              }
+              .product-unit-plus-minus-text {
+                width: 30px;
+                height: 30px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 16px;
+                font-family: 'score4';
+                color: #000;
+              }
+              .row-line {
+                width: 1px;
+                height: 30px;
+                background-color: #e6e6e6;
+              }
+            }
+            .product-unit-price {
+              font-size: 24px;
+              font-family: 'score5';
+              color: #333;
+              display: flex;
+              align-items: baseline;
+              .product-unit-price-won {
+                font-size: 16px;
+                font-family: 'score2';
+                color: #666;
+              }
+            }
+          }
+          .product-buy-btn {
+            margin-top: 30px;
+            width: 100%;
+            height: 60px;
+            background-color: #9ad144;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-family: 'score5';
+            color: #fff;
+            cursor: pointer;
+          }
+        }
+      }
+
+      .review-group {
+        margin-top: 30px;
+        .review-title-text {
+          font-size: 22px;
+          font-family: 'score6';
+          color: #333;
+          margin-bottom: 11px;
+        }
+        .review-list-area {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 10px;
+          margin-top: 20px;
+          .review-list-item {
+            border: 1px solid #ddd;
+            background-color: #fff;
+            padding: 20px 10px;
+            max-width: 300px;
+            width: 48%;
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            .review-list-item-name-rating-area {
+              display: flex;
+              width: 100%;
+              .review-list-item-name {
+                font-size: 14px;
+                font-family: 'score2';
+                color: #999;
+              }
+              .review-list-item-rating-area {
+                flex: 1;
+                display: flex;
+                gap: 2px;
+                .review-list-item-rating-img {
+                  width: 12.62px;
+                  height: 12.62px;
+                }
+              }
+            }
+            .review-list-item-rep-img {
+              margin-top: 20px;
+              width: 70%;
+              height: auto;
+            }
+            .review-list-item-contents {
+              margin-top: 30px;
+              font-size: 14px;
+              font-family: 'score2';
+              color: #333;
+              line-height: 1.4;
+            }
+          }
+        }
+      }
+
+      .product-detail-rep-image-group {
+        margin-top: 40px;
+        .product-detail-rep-image-title {
+          font-size: 22px;
+          font-family: 'score6';
+          color: #333;
+          margin-bottom: 11px;
+        }
+        .product-detail-rep-image-area {
+          margin-top: 20px;
+          border: 1px solid #ddd;
+          .product-detail-rep-image {
+            width: 100%;
+          }
+        }
+      }
+    }
+  }
+}
 </style>

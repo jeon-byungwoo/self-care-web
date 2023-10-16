@@ -191,24 +191,24 @@ export default {
     },
   },
   mounted() {
-    var conditions = [
-      { op: 'and', f: 'user_info.user_no', q: '=', v: '1' },
-      { op: 'and', f: 'user_info.alive_flag', q: '=', v: '1' },
-    ]
-    let listObject = []
-    var conditions1 = [
-      { op: 'and', f: 'first_checkup.user_no', q: '=', v: 'user_info.user_no' },
-      { op: 'and', f: 'first_checkup.alive_flag', q: '!=', v: 1 },
-    ]
-    listObject.push(this.select1('first_checkup', conditions1))
-    listObject.push(this.select1('second_checkup', conditions1))
-    // listObject.push(this.join('country', conditions))
-    // var q = this.select(this.select1('city', conditions), conditions)
-    var q = this.select('user_info', conditions, listObject)
-    console.log(q)
+    // var conditions = [
+    //   { op: 'and', f: 'user_info.user_no', q: '=', v: '1' },
+    //   { op: 'and', f: 'user_info.alive_flag', q: '=', v: '1' },
+    // ]
+    // let listObject = []
+    // var conditions1 = [
+    //   { op: 'and', f: 'first_checkup.user_no', q: '=', v: 'user_info.user_no' },
+    //   { op: 'and', f: 'first_checkup.alive_flag', q: '!=', v: 1 },
+    // ]
+    // listObject.push(this.select1('first_checkup', conditions1))
+    // listObject.push(this.select1('second_checkup', conditions1))
+    // // listObject.push(this.join('country', conditions))
+    // // var q = this.select(this.select1('city', conditions), conditions)
+    // var q = this.select('user', conditions, listObject)
+    // console.log(q)
     // try {
     //   this.$axios
-    //     .post('http://192.168.0.26:8080/lab/select-test', q)
+    //     .post('/api/select', q)
     //     .then((res) => {
     //       console.log('인서트 결과값:: ', JSON.stringify(res.data))
     //       if (res.data.result == true) {

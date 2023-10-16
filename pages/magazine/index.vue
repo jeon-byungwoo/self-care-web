@@ -133,7 +133,7 @@ export default {
   .banner-group {
     width: 100%;
     height: 400px;
-    margin-top: -400px;
+    top: 197px;
     position: fixed;
     background-image: url('@/assets/image/img_magazine_rep.png');
     background-size: 100% 400px;
@@ -158,7 +158,7 @@ export default {
     position: relative;
     width: 100%;
     background-color: #fff;
-    margin-top: 593px;
+    margin-top: 400px;
     .scroll-header-group {
       max-width: 1200px;
       margin: auto;

@@ -17,6 +17,14 @@
               <input class="input-area" />
             </div>
           </div>
+          <div class="mobile-text-inpit-group">
+            <div class="text-area">주문자 이름</div>
+            <input class="input-area" />
+            <div class="text-area">주문자 연락처</div>
+            <input class="input-area" />
+            <div class="text-area">주문자 이메일</div>
+            <input class="input-area" />
+          </div>
           <div class="recipient-title-text-checkbox-area">
             <div class="recipient-title-text">받는사람 정보</div>
             <div class="recipient-checkbox-area">
@@ -25,6 +33,14 @@
               <div class="recipient-checkbox-label">주문자와 동일합니다.</div>
             </div>
           </div>
+          <!-- <div class="mobile-recipient-title-text-checkbox-area">
+            <div class="recipient-title-text">받는사람 정보</div>
+            <div class="recipient-checkbox-area">
+              <input type="checkbox" id="mobile-same" value="" />
+              <label for="mobile-same"></label>
+              <div class="recipient-checkbox-label">주문자와 동일합니다.</div>
+            </div>
+          </div> -->
           <div class="text-input-group">
             <div class="text-group">
               <div class="text-area">이름</div>
@@ -44,6 +60,21 @@
               <input class="input-area" />
             </div>
           </div>
+          <div class="mobile-text-inpit-group">
+            <div class="text-area">이름</div>
+            <input class="input-area" />
+            <div class="text-area">연락처</div>
+            <input class="input-area" />
+            <div class="text-area">우편번호</div>
+            <div class="input-address-area">
+              <input class="input-area-address" />
+              <div class="address-search-btn">주소찾기</div>
+            </div>
+            <div class="text-area">나머지 주소</div>
+            <input class="input-area" />
+            <div class="text-area">배송 요청사항</div>
+            <input class="input-area" />
+          </div>
           <div class="payment-info-title-text">결제 정보</div>
           <div class="final-price-group">
             <div class="final-price-product-price-area">
@@ -53,10 +84,13 @@
                 <div class="final-price-product-price-won">원</div>
               </div>
             </div>
-            <img
-              class="price-plus-total-img"
-              src="@/assets/image/ic_cart_final_price_plus.png"
-            />
+            <div class="price-plus-total-img-area">
+              <img
+                class="price-plus-total-img"
+                src="@/assets/image/ic_cart_final_price_plus.png"
+              />
+            </div>
+
             <div class="final-price-delivery-price-area">
               <div class="final-price-delivery-price-text">총 배송비</div>
               <div class="final-price-delivery-price-price">
@@ -64,10 +98,13 @@
                 <div class="final-price-delivery-price-won">원</div>
               </div>
             </div>
-            <img
-              class="price-plus-total-img"
-              src="@/assets/image/ic_cart_final_price_result.png"
-            />
+            <div class="price-plus-total-img-area">
+              <img
+                class="price-plus-total-img"
+                src="@/assets/image/ic_cart_final_price_result.png"
+              />
+            </div>
+
             <div class="final-price-total-price-area">
               <div class="final-price-total-price-text">총 주문금액</div>
               <div class="final-price-total-price-price">
@@ -140,19 +177,22 @@ export default {
         color: #333;
         margin-bottom: 15px;
       }
+      .mobile-recipient-title-text-checkbox-area {
+        display: none;
+      }
       .recipient-title-text-checkbox-area {
         display: flex;
         margin-bottom: 15px;
         margin-top: 70px;
         align-items: center;
         .recipient-title-text {
-          flex: 0.15;
+          flex: 0.15 0 15%;
           font-size: 20px;
           font-family: 'score6';
           color: #333;
         }
         .recipient-checkbox-area {
-          flex: 0.85;
+          flex: 0.85 1 85%;
           display: flex;
           align-items: center;
           input[type='checkbox'] + label {
@@ -161,7 +201,6 @@ export default {
             width: 24px;
             height: 23.79px;
             border: 1px solid #ddd;
-            background: none;
           }
 
           input[type='checkbox']:checked + label {
@@ -181,6 +220,9 @@ export default {
             color: #666;
           }
         }
+      }
+      .mobile-text-inpit-group {
+        display: none;
       }
       .text-input-group {
         display: flex;
@@ -333,11 +375,16 @@ export default {
             }
           }
         }
-        .price-plus-total-img {
-          width: 28;
-          height: 27.76px;
-          margin-left: 87px;
-          margin-right: 87px;
+        .price-plus-total-img-area {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-left: 5%;
+          margin-right: 5%;
+          .price-plus-total-img {
+            width: 28;
+            height: 27.76px;
+          }
         }
       }
       .buy-move-area {
@@ -356,6 +403,354 @@ export default {
           font-family: 'score5';
           color: #fff;
           background-color: #9ad144;
+        }
+      }
+    }
+  }
+}
+@media (max-width: 720px) {
+  .main {
+    margin-top: 0px;
+    padding: 20px;
+    .body {
+      width: 100%;
+      max-width: 1200px;
+      margin: auto;
+      padding: 0px;
+      .box {
+        border: 1px solid #ddd;
+        background-color: #fff;
+        padding: 20px;
+        .buyer-title-text {
+          font-size: 18px;
+          font-family: 'score6';
+          color: #333;
+          margin-bottom: 15px;
+        }
+        .mobile-recipient-title-text-checkbox-area {
+          width: 100%;
+          display: flex;
+          margin-bottom: 15px;
+          margin-top: 40px;
+          align-items: center;
+          .recipient-title-text {
+            font-size: 18px;
+            font-family: 'score6';
+            color: #333;
+          }
+          .recipient-checkbox-area {
+            margin-left: 10px;
+            display: flex;
+            align-items: center;
+
+            input[type='checkbox'] + label {
+              display: block;
+              cursor: pointer;
+              width: 24px;
+              height: 23.79px;
+              border: 1px solid #ddd;
+              background: none;
+            }
+
+            input[type='checkbox']:checked + label {
+              background: url('@/assets/image/ic_cart_check.png') no-repeat 0
+                0px / contain;
+              background-size: 13.22px 9.64px;
+              background-position: center;
+            }
+
+            input[type='checkbox'] {
+              display: none;
+            }
+            .recipient-checkbox-label {
+              margin-left: 7px;
+              font-size: 14px;
+              font-family: 'score2';
+              color: #666;
+            }
+          }
+        }
+
+        .recipient-title-text-checkbox-area {
+          width: 100%;
+          display: flex;
+          margin-bottom: 15px;
+          margin-top: 40px;
+          align-items: center;
+          .recipient-title-text {
+            flex: 0.15 0 auto;
+            font-size: 18px;
+            font-family: 'score6';
+            color: #333;
+          }
+          .recipient-checkbox-area {
+            flex: 1 1 auto;
+            display: flex;
+            margin-left: 10px;
+            align-items: center;
+            input[type='checkbox'] + label {
+              display: block;
+              cursor: pointer;
+              width: 24px;
+              height: 23.79px;
+              border: 1px solid #ddd;
+              background: none;
+            }
+
+            input[type='checkbox']:checked + label {
+              background: url('@/assets/image/ic_cart_check.png') no-repeat 0
+                0px / contain;
+              background-size: 13.22px 9.64px;
+              background-position: center;
+            }
+
+            input[type='checkbox'] {
+              display: none;
+            }
+            .recipient-checkbox-label {
+              margin-left: 7px;
+              font-size: 14px;
+              font-family: 'score2';
+              color: #666;
+            }
+          }
+        }
+        .mobile-text-inpit-group {
+          display: flex;
+          flex-direction: column;
+          .text-area {
+            height: 45px;
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+            color: #666;
+            font-size: 14px;
+            font-family: 'score2';
+          }
+          .input-area {
+            width: 100%;
+            border: 1px solid #dddddd;
+            background-color: #fff;
+            color: #333;
+            font-size: 14px;
+            font-family: 'score5';
+            vertical-align: baseline;
+            padding: 0px 10px;
+            height: 45px;
+            margin-top: 5px;
+            outline: none;
+          }
+          .input-address-area {
+            display: flex;
+            align-items: center;
+            .input-area-address {
+              width: 80%;
+              border: 1px solid #dddddd;
+              background-color: #fff;
+              color: #333;
+              font-size: 14px;
+              font-family: 'score5';
+              vertical-align: baseline;
+              padding: 0px 10px;
+              height: 45px;
+              margin-top: 5px;
+              outline: none;
+            }
+            .address-search-btn {
+              width: 20%;
+              height: 45px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              background-color: #333;
+              color: #fff;
+              font-size: 11px;
+              font-family: 'score5';
+              margin-top: 5px;
+              margin-left: 10px;
+              cursor: pointer;
+            }
+          }
+        }
+        .text-input-group {
+          display: none;
+          .text-group {
+            flex: 0.15;
+
+            .text-area {
+              height: 45px;
+              display: flex;
+              align-items: center;
+              margin-top: 15px;
+              color: #666;
+              font-size: 16px;
+              font-family: 'score2';
+            }
+          }
+          .input-group {
+            flex: 0.85;
+            .input-area {
+              width: 100%;
+              border: 1px solid #dddddd;
+              background-color: #fff;
+              color: #333;
+              font-size: 16px;
+              font-family: 'score5';
+              vertical-align: baseline;
+              padding: 0px 20px;
+              height: 45px;
+              margin-top: 15px;
+              outline: none;
+            }
+            .input-address-area {
+              display: flex;
+              align-items: center;
+              .input-area-address {
+                flex: 1;
+                border: 1px solid #dddddd;
+                background-color: #fff;
+                color: #333;
+                font-size: 16px;
+                font-family: 'score5';
+                vertical-align: baseline;
+                padding: 0px 20px;
+                height: 45px;
+                margin-top: 15px;
+                outline: none;
+              }
+              .address-search-btn {
+                width: 125px;
+                height: 45px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background-color: #333;
+                color: #fff;
+                font-size: 15px;
+                font-family: 'score5';
+                margin-top: 15px;
+                margin-left: 10px;
+                cursor: pointer;
+              }
+            }
+          }
+        }
+        .payment-info-title-text {
+          font-size: 20px;
+          font-family: 'score6';
+          color: #333;
+          margin-top: 70px;
+        }
+        .final-price-group {
+          margin-top: 20px;
+          border: 1px solid #ddd;
+          background-color: #f8f8f8;
+          padding: 49px 10px;
+          width: 100%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          .final-price-product-price-area {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            .final-price-product-price-text {
+              font-size: 11px;
+              font-family: 'score2';
+              color: #666;
+            }
+            .final-price-product-price-price {
+              margin-top: 10px;
+              display: flex;
+              font-size: 17px;
+              font-family: 'score6';
+              color: #333;
+              align-items: baseline;
+              .final-price-product-price-won {
+                font-size: 11px;
+                font-family: 'score2';
+                color: #666;
+              }
+            }
+          }
+          .final-price-delivery-price-area {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            .final-price-delivery-price-text {
+              font-size: 11px;
+              font-family: 'score2';
+              color: #666;
+            }
+            .final-price-delivery-price-price {
+              margin-top: 10px;
+              display: flex;
+              font-size: 17px;
+              font-family: 'score6';
+              color: #333;
+              align-items: baseline;
+              .final-price-delivery-price-won {
+                font-size: 11px;
+                font-family: 'score2';
+                color: #666;
+              }
+            }
+          }
+          .final-price-total-price-area {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            .final-price-total-price-text {
+              font-size: 11px;
+              font-family: 'score2';
+              color: #dc4c45;
+            }
+            .final-price-total-price-price {
+              margin-top: 10px;
+              display: flex;
+              font-size: 17px;
+              font-family: 'score6';
+              color: #dc4c45;
+              align-items: baseline;
+              .final-price-total-price-won {
+                font-size: 11px;
+                font-family: 'score2';
+                color: #dc4c45;
+              }
+            }
+          }
+          .price-plus-total-img-area {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 2%;
+            margin-right: 2%;
+            .price-plus-total-img {
+              width: 25;
+              height: 24.76px;
+            }
+          }
+        }
+        .buy-move-area {
+          margin-top: 40px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          .buy-move-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 60px;
+            cursor: pointer;
+            font-size: 16px;
+            font-family: 'score5';
+            color: #fff;
+            background-color: #9ad144;
+          }
         }
       }
     }
