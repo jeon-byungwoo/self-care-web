@@ -63,8 +63,8 @@ export default {
   //   },
   // },
   server: {
-    port: 3000,
-    host: '192.168.0.14'
+    port: 8080,
+    // host: '192.168.0.14'
   },
   proxy: {
     '/oauth2.0': 'https://nid.naver.com/',
