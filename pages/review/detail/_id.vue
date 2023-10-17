@@ -113,7 +113,7 @@ export default {
 
 <style lang="scss" scoped>
 .main {
-  margin-top: 197px;
+  margin-top: 40px;
   .body {
     width: 100%;
     max-width: 1200px;

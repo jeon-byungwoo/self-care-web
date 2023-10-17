@@ -536,15 +536,16 @@ export default {
       this.$refs.test.slideNext()
     },
     yesClick(index) {
-      if (this.stepNum == 1) {
-        console.log('yesClick', index)
-        this.stepList[0].stepList[index].selected = 1
-      }
+      // if (this.stepNum == 1) {
+      //   console.log('yesClick', index)
+      // }
+      this.stepList[this.stepNum - 1].stepList[index].selected = 1
     },
     noClick(index) {
-      if (this.stepNum == 1) {
-        this.stepList[0].stepList[index].selected = 2
-      }
+      // if (this.stepNum == 1) {
+      //   this.stepList[0].stepList[index].selected = 2
+      // }
+      this.stepList[this.stepNum - 1].stepList[index].selected = 2
     },
     doneClick() {
       if (this.stepNum == 0) {
@@ -594,7 +595,7 @@ export default {
 
 <style lang="scss" scoped>
 .header-display {
-  display: none;
+  display: none !important;
 }
 #snackbar {
   visibility: hidden;

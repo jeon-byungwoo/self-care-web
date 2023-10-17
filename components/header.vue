@@ -131,8 +131,8 @@ export default {
       this.$router.push({ name: 'index' })
     },
     myClick() {
-      this.$router.push({ name: 'myInfo' })
-      // this.$router.push({ name: 'login' })
+      // this.$router.push({ name: 'myInfo' })
+      this.$router.push({ name: 'login' })
     },
     cartClick() {
       this.$router.push({ name: 'cart' })
