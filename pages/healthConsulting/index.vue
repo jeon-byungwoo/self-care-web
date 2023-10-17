@@ -946,6 +946,7 @@ export default {
         }
       }
       .radio-dicease-no {
+        margin-top: 50px;
       }
       .radio-area {
         margin-top: 50px;
