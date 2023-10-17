@@ -9,12 +9,13 @@
             draggable="false"
           />
         </div>
-
         <img
           class="img-talk"
           src="../assets/image/ic_home_talk.png"
           draggable="false"
+          @click="hrefKakao()"
         />
+
         <img
           class="img-hamberger"
           :src="
@@ -66,6 +67,10 @@
               src="../assets/image/ic_home_cart.png"
               draggable="false"
             />
+            <div class="mobile-top-first-menus" @click="myClick">내 정보</div>
+            <div class="mobile-top-first-menus" @click="cartClick">
+              장바구니
+            </div>
           </div>
         </div>
       </div>
@@ -97,6 +102,9 @@ export default {
     }
   },
   methods: {
+    hrefKakao() {
+      window.open('http://pf.kakao.com/_xfnvuG/chat')
+    },
     firstMenuClick(i, routerName) {
       // this.indicatorX = this.$refs.item[i].getBoundingClientRect().left
       // this.indicatorWidth = this.$refs.item[i].getBoundingClientRect().width
@@ -124,17 +132,13 @@ export default {
     },
     myClick() {
       this.$router.push({ name: 'myInfo' })
+      // this.$router.push({ name: 'login' })
     },
     cartClick() {
       this.$router.push({ name: 'cart' })
     },
     update() {
       this.shadowNav = this.shadowNav == false ? true : false
-      // if (this.shadowNav) {
-      //   this.$refs.menus.style.display = 'block'
-      // } else {
-      //   this.$refs.menus.style.display = 'none'
-      // }
       this.$emit('update', this.shadowNav)
     },
     handleResize() {
@@ -226,6 +230,7 @@ export default {
         height: 35px;
         cursor: pointer;
       }
+
       .img-hamberger {
         display: none;
         width: 88px;
@@ -255,6 +260,9 @@ export default {
         .flex-1 {
           flex: 1;
         }
+      }
+      .mobile-top-first-menus {
+        display: none;
       }
       .top-first-menus {
         font-size: 17px;
@@ -367,9 +375,10 @@ export default {
           }
         }
         .img-talk {
-          width: 20.42%;
+          width: 22%;
           height: auto;
         }
+
         .img-hamberger {
           display: block;
           width: 6.81%;
@@ -385,14 +394,15 @@ export default {
         justify-content: center;
         background-color: #fff;
         width: 100%;
-        height: auto;
+        margin-top: 0px;
         .menu-2step-area {
           display: flex;
           flex-direction: column;
           width: 100%;
+          height: 100%;
           align-items: center;
           justify-content: center;
-          margin-top: 50px;
+          margin-top: 20px;
           .flex-1 {
             display: none;
           }
@@ -407,6 +417,17 @@ export default {
           .flex-1 {
             flex: 1;
           }
+        }
+        .mobile-top-first-menus {
+          display: block;
+          font-size: 17px;
+          color: #333333;
+          font-family: 'score5';
+          cursor: pointer;
+          text-decoration-line: none;
+        }
+        .mobile-top-first-menus:hover {
+          color: #9ad144;
         }
         .top-first-menus {
           font-size: 17px;
@@ -427,19 +448,29 @@ export default {
         }
         .top-second-menus {
           display: flex;
+          align-items: center;
           flex-direction: column;
           gap: 61px;
         }
         .img-my {
+          display: none;
           width: 22px;
           height: 22px;
           cursor: pointer;
         }
         .img-cart {
+          display: none;
           width: 22px;
           height: 22px;
           margin-left: 0px;
           cursor: pointer;
+        }
+        .top-first-menus {
+          font-size: 17px;
+          color: #333333;
+          font-family: 'score5';
+          cursor: pointer;
+          text-decoration-line: none;
         }
       }
 

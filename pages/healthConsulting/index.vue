@@ -725,7 +725,7 @@ export default {
     }
     .rolling-ai-btn-group {
       position: relative;
-      margin-top: 0px;
+      margin-top: 40px;
       width: 100%;
       display: flex;
       justify-content: center;

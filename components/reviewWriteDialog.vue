@@ -84,7 +84,7 @@
             <form
               method="post"
               enctype="multipart/form-data"
-              style="width: 100px; height: 100px"
+              class="form-style"
             >
               <label for="chooseFile">
                 <div class="image-upload" :style="'cursor: pointer'">
@@ -229,7 +229,7 @@ export default {
 
   /* 임시 지정 */
   width: 700px;
-  height: 825px;
+  height: auto;
   border-radius: 30px;
   .title-close-area {
     display: flex;
@@ -255,7 +255,7 @@ export default {
     visibility: hidden;
   }
   .remains-area {
-    height: 725px;
+    height: auto;
     padding: 40px 40px 50px 40px;
     background-color: #f6f6f6;
     border-bottom-left-radius: 30px;
@@ -316,8 +316,13 @@ export default {
       margin-top: 20px;
       display: flex;
       flex-wrap: wrap;
+      gap: 20px;
       * + * {
-        margin-left: 20px;
+        margin-left: 0px;
+      }
+      .form-style {
+        width: 100px;
+        height: 100px;
       }
       .image-upload {
         width: 100px;
@@ -382,6 +387,194 @@ export default {
         color: #fff;
         font-size: 18px;
         font-family: 'score5';
+      }
+    }
+  }
+}
+@media (max-width: 720px) {
+  .background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 1000;
+  }
+  .window {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+  .popup {
+    position: absolute;
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #ffffff;
+    box-shadow: 0 2px 7px rgba(0, 0, 0, 0.3);
+
+    /* 임시 지정 */
+    width: 90%;
+    height: auto;
+    border-radius: 30px;
+    .title-close-area {
+      display: flex;
+      align-items: center;
+      padding: 0px 20px;
+      height: 50px;
+      background-color: #fff;
+      border-top-right-radius: 30px;
+      border-top-left-radius: 30px;
+      .title-text {
+        flex: 1;
+        font-size: 22px;
+        font-family: 'score8';
+        color: #333;
+      }
+      .close-btn {
+        width: 30px;
+        height: 30px;
+        cursor: pointer;
+      }
+    }
+    #chooseFile {
+      visibility: hidden;
+    }
+    .remains-area {
+      height: auto;
+      padding: 20px;
+      background-color: #f6f6f6;
+      border-bottom-left-radius: 30px;
+      border-bottom-right-radius: 30px;
+
+      .rating-text {
+        color: #333;
+        font-size: 16px;
+        font-family: 'score5';
+      }
+      .rating-group {
+        display: flex;
+        margin-top: 16px;
+        * + * {
+          margin-left: 8px;
+        }
+        .rating-img {
+          width: 24px;
+          height: 24px;
+          cursor: pointer;
+        }
+      }
+      .review-contents-text {
+        color: #333;
+        font-size: 16px;
+        font-family: 'score5';
+        margin-top: 28px;
+      }
+      .pw-area {
+        margin-top: 18px;
+        width: 100%;
+        height: auto;
+        display: flex;
+      }
+      .pw {
+        width: 100%;
+        height: 20vh;
+        vertical-align: top;
+        text-align: start;
+        border: 1px solid #dddddd;
+        background-color: #fff;
+        color: #333;
+        letter-spacing: -0.6px;
+        border-radius: 1px;
+        font-size: 14px;
+        font-family: 'score2';
+        padding: 12px;
+        word-wrap: break-word;
+        word-break: break-word;
+      }
+      .image-upload-text {
+        color: #333;
+        font-size: 16px;
+        font-family: 'score5';
+        margin-top: 20px;
+      }
+      .image-upload-area {
+        margin-top: 18px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        * + * {
+          margin-left: 0px;
+        }
+        .form-style {
+          width: 50px;
+          height: 50px;
+        }
+        .image-upload {
+          width: 50px;
+          height: 50px;
+          background-color: #fff;
+          border: 1px solid #ddd;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          position: relative;
+          .image-area {
+            width: 50px;
+            height: 50px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+          .image-upload-img {
+            width: 50px;
+            height: 50px;
+          }
+          .select-image {
+            width: 40px;
+            height: 40px;
+          }
+          .image-delete-img {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 4px;
+            right: 4px;
+          }
+        }
+      }
+      .btn-area {
+        display: flex;
+        margin-top: 30px;
+        .cancel-btn {
+          flex: 1;
+          border: 1px solid #ddd;
+          background-color: #fff;
+          height: 50px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          color: #333;
+          font-size: 18px;
+          font-family: 'score5';
+        }
+        .done-btn {
+          flex: 1;
+          background-color: #9ad144;
+          height: 50px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-left: 20px;
+          cursor: pointer;
+          color: #fff;
+          font-size: 18px;
+          font-family: 'score5';
+        }
       }
     }
   }

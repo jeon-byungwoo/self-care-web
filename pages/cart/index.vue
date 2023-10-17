@@ -1,7 +1,7 @@
 <template>
   <div>
-    <Header></Header>
-    <div class="main">
+    <Header @update="onChildUpdate"> </Header>
+    <div class="main" v-if="!navigationStatus">
       <div class="body">
         <div class="product-list-group">
           <div class="product-list-title-text">장바구니</div>
@@ -128,6 +128,7 @@ export default {
   },
   data() {
     return {
+      navigationStatus: false,
       imgList: [
         { url: require('@/assets/image/img_medicine_test.png') },
         { url: require('@/assets/image/img_medicine_test.png') },
@@ -153,6 +154,10 @@ export default {
   methods: {
     paymentInfoClick() {
       this.$router.push({ name: 'paymentInfo' })
+    },
+    onChildUpdate(newValue) {
+      console.log('index', newValue)
+      this.navigationStatus = newValue
     },
   },
 }

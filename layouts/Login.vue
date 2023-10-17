@@ -289,4 +289,163 @@ export default {
     }
   }
 }
+@media (max-width: 720px) {
+  .login-group {
+    width: 100%;
+    .login-child-group {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      .logo-area {
+        width: 80%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .logo {
+        width: 120px;
+        height: 48px;
+      }
+      .child-area {
+        width: 80%;
+        display: flex;
+        flex-direction: column;
+        margin-top: 70px;
+        .id-area {
+          width: 100%;
+          height: 60px;
+          display: flex;
+          align-items: center;
+          border-width: 1px;
+          border-radius: 1px;
+          margin-top: 4px;
+        }
+
+        .id {
+          width: 100%;
+          height: 60px;
+          vertical-align: middle;
+          border: 1px solid #dddddd;
+          color: #999999;
+          letter-spacing: -0.6px;
+          border-radius: 1px;
+          font-size: 16px;
+          font-family: 'score2';
+          padding: 12px;
+          background-size: 20px;
+        }
+        .pw-area {
+          width: 100%;
+          height: 60px;
+          display: flex;
+          align-items: center;
+          margin-top: 20px;
+        }
+        .pw {
+          width: 100%;
+          height: 60px;
+          vertical-align: middle;
+          border: 1px solid #dddddd;
+          color: #999999;
+          letter-spacing: -0.6px;
+          border-radius: 1px;
+          font-size: 16px;
+          font-family: 'score2';
+          padding: 12px;
+        }
+        .login-btn {
+          display: flex;
+          width: 100%;
+          height: 60px;
+          margin-top: 20px;
+          border-radius: 5px;
+          background-color: #9ad144;
+          font-size: 16px;
+          font-family: 'score6';
+          color: white;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+        }
+
+        .login-sns {
+          margin-top: 46px;
+          display: flex;
+          justify-content: center;
+          flex-direction: column;
+          .sns-kakao {
+            width: 100%;
+            height: 60px;
+            border-radius: 5px;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            background: #fee500;
+            padding: 0px 30px;
+            cursor: pointer;
+            .sns-kakao-text {
+              flex: 1;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              margin-right: 22px;
+              font-size: 16px;
+              font-family: 'score6';
+              color: #3a1c1e;
+            }
+          }
+          .sns-naver {
+            width: 100%;
+            height: 60px;
+            margin-top: 15px;
+            border-radius: 5px;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            background: #02c759;
+            padding: 0px 30px;
+            cursor: pointer;
+            .sns-naver-text {
+              flex: 1;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              margin-right: 22px;
+              font-size: 16px;
+              font-family: 'score6';
+              color: #ffffff;
+            }
+          }
+        }
+
+        .img-sns {
+          width: 22px;
+          height: 21px;
+          cursor: pointer;
+        }
+        .utill_div {
+          display: flex;
+          margin-top: 20px;
+          justify-content: center;
+        }
+        .utill_text {
+          color: #999999;
+          font-size: 15px;
+          font-family: 'score5';
+          cursor: pointer;
+        }
+        .utill_line {
+          color: #d0d0d0;
+          width: 2px;
+          height: 10px;
+          margin-left: 15px;
+          margin-right: 15px;
+        }
+      }
+    }
+  }
+}
 </style>

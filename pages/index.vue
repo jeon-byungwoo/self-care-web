@@ -12,7 +12,7 @@
     <survey v-if="!navigationStatus" />
     <div class="hot-item-group" v-if="!navigationStatus">
       <div class="title-group">
-        <div class="title">셀프케어 선정 인기 제품1234567890</div>
+        <div class="title">셀프케어 선정 인기 제품</div>
         <div class="product-detail-group">
           <div class="product-detail">제품 전체보기 ></div>
         </div>
@@ -120,7 +120,7 @@
         </div>
       </div>
     </div>
-    <Footer v-if="!navigationStatus"></Footer>
+    <Footer v-if="!navigationStatus" @sendData="footerSendData"></Footer>
   </div>
 </template>
 
@@ -156,6 +156,17 @@ export default {
       console.log('nowPw: ' + nowPw)
       console.log(newPw)
       console.log(confirmPw)
+    },
+    footerSendData(status) {
+      console.log(status)
+      //status 1 - 브랜드 스토리, 2 - 제휴/입점 문의, 3 - 이용약관, 4 - 개인정보, 5 - 고객센터
+      if (status == 1) {
+      } else if (status == 2) {
+        this.coalitionDialogStatus = true
+      } else if (status == 3) {
+      } else if (status == 4) {
+      } else if (status == 5) {
+      }
     },
     select(tableName, conditions, listObject) {
       let obj = {}

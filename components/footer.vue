@@ -10,17 +10,21 @@
               draggable="false"
             />
             <div class="brand-story">
-              <div class="brand-story-text">브랜드 스토리</div>
+              <div class="brand-story-text" @click="sendData(1)">
+                브랜드 스토리
+              </div>
             </div>
           </div>
 
           <div style="flex: 1"></div>
           <div class="service-group">
-            <div class="service-text">이용약관</div>
+            <div class="service-text" @click="sendData(3)">이용약관</div>
             <div style="margin-left: 4px; margin-right: 4px">·</div>
-            <div class="service-text">개인정보처리방침</div>
+            <div class="service-text" @click="sendData(4)">
+              개인정보처리방침
+            </div>
             <div style="margin-left: 4px; margin-right: 4px">·</div>
-            <div class="service-text">고객센터</div>
+            <div class="service-text" @click="sendData(5)">고객센터</div>
           </div>
 
           <div class="mobile-coalition-group">
@@ -31,7 +35,7 @@
               </div>
               <div class="second-line">평일 오전9시-오후6시</div>
             </div>
-            <div class="right-btn">제휴/입점 문의</div>
+            <div class="right-btn" @click="sendData(2)">제휴/입점 문의</div>
           </div>
         </div>
 
@@ -116,7 +120,9 @@
             <div class="right-middle-text">031.123.4567</div>
             <div class="right-bottom-text">평일 오전9시-오후6시</div>
             <div class="right-button-group">
-              <div class="right-button-text">제휴/입점 문의</div>
+              <div class="right-button-text" @click="sendData(2)">
+                제휴/입점 문의
+              </div>
             </div>
           </div>
         </div>
@@ -128,6 +134,16 @@
 <script>
 export default {
   name: 'Footer',
+  data() {
+    return {
+      footerClickStatus: 0,
+    }
+  },
+  methods: {
+    sendData(status) {
+      this.$emit('sendData', status)
+    },
+  },
 }
 </script>
 

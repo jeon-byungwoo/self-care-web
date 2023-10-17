@@ -5,8 +5,8 @@
       @closeAction="pwChangeDialogClose"
       @sendData="pwChangeDialogSendData"
     ></PwChangeDialog>
-    <Header></Header>
-    <div class="main">
+    <Header @update="onChildUpdate"> </Header>
+    <div :class="navigationStatus == false ? 'main' : 'mobile-main'">
       <div class="body">
         <div class="title">내 정보 관리</div>
         <div class="tab-group">
@@ -205,22 +205,24 @@
                     "
                   />
                 </div>
-                <div class="title-contents-area">
-                  <div class="title">{{ item.title }}</div>
-                  <div class="contents">{{ item.date }}</div>
-                </div>
-                <div style="flex: 1"></div>
-                <div class="rating-area">
-                  <img
-                    v-for="(item1, i1) in 5"
-                    :key="i1"
-                    class="rating"
-                    :src="
-                      item.rate > i1
-                        ? require('@/assets/image/ic_star.png')
-                        : require('@/assets/image/ic_gray_star.png')
-                    "
-                  />
+                <div class="mobile-area">
+                  <div class="title-contents-area">
+                    <div class="title">{{ item.title }}</div>
+                    <div class="contents">{{ item.date }}</div>
+                  </div>
+                  <div style="flex: 1"></div>
+                  <div class="rating-area">
+                    <img
+                      v-for="(item1, i1) in 5"
+                      :key="i1"
+                      class="rating"
+                      :src="
+                        item.rate > i1
+                          ? require('@/assets/image/ic_star.png')
+                          : require('@/assets/image/ic_gray_star.png')
+                      "
+                    />
+                  </div>
                 </div>
               </div>
             </div>
@@ -291,6 +293,7 @@ export default {
   },
   data() {
     return {
+      navigationStatus: false,
       tabStatus: 1, //1 기본정보, 2 나의 AI 건강설문 결과, 3 구매내역, 4 나의 리뷰
       pwChangedialogStatus: false,
       consultingCurrentPageNum: 1,
@@ -300,7 +303,143 @@ export default {
       consultingBlockNum: 0,
       tabsSelect: 0,
       consultingList: [
-        { title: 'probiotics1', date: '23-09-21' },
+        {
+          title:
+            'probiotics1probiotics1probiotics1probiotics1probiotics1probiotics1probiotics1probiotics1probiotics1probiotics1probiotics1',
+          date: '23-09-21',
+        },
+        { title: 'probiotics2', date: '23-09-21' },
+        { title: 'probiotics3', date: '23-09-21' },
+        { title: 'probiotics4', date: '23-09-21' },
+        { title: 'probiotics5', date: '23-09-21' },
+        { title: 'probiotics6', date: '23-09-21' },
+        { title: 'probiotics7', date: '23-09-21' },
+        { title: 'probiotics8', date: '23-09-21' },
+        { title: 'probiotics9', date: '23-09-21' },
+        { title: 'probiotics10', date: '23-09-21' },
+        { title: 'probiotics11', date: '23-09-21' },
+        { title: 'probiotics12', date: '23-09-21' },
+        { title: 'probiotics13', date: '23-09-21' },
+        { title: 'probiotics2', date: '23-09-21' },
+        { title: 'probiotics3', date: '23-09-21' },
+        { title: 'probiotics4', date: '23-09-21' },
+        { title: 'probiotics5', date: '23-09-21' },
+        { title: 'probiotics6', date: '23-09-21' },
+        { title: 'probiotics7', date: '23-09-21' },
+        { title: 'probiotics8', date: '23-09-21' },
+        { title: 'probiotics9', date: '23-09-21' },
+        { title: 'probiotics10', date: '23-09-21' },
+        { title: 'probiotics11', date: '23-09-21' },
+        { title: 'probiotics12', date: '23-09-21' },
+        { title: 'probiotics13', date: '23-09-21' },
+        { title: 'probiotics2', date: '23-09-21' },
+        { title: 'probiotics3', date: '23-09-21' },
+        { title: 'probiotics4', date: '23-09-21' },
+        { title: 'probiotics5', date: '23-09-21' },
+        { title: 'probiotics6', date: '23-09-21' },
+        { title: 'probiotics7', date: '23-09-21' },
+        { title: 'probiotics8', date: '23-09-21' },
+        { title: 'probiotics9', date: '23-09-21' },
+        { title: 'probiotics10', date: '23-09-21' },
+        { title: 'probiotics11', date: '23-09-21' },
+        { title: 'probiotics12', date: '23-09-21' },
+        { title: 'probiotics13', date: '23-09-21' },
+        { title: 'probiotics2', date: '23-09-21' },
+        { title: 'probiotics3', date: '23-09-21' },
+        { title: 'probiotics4', date: '23-09-21' },
+        { title: 'probiotics5', date: '23-09-21' },
+        { title: 'probiotics6', date: '23-09-21' },
+        { title: 'probiotics7', date: '23-09-21' },
+        { title: 'probiotics8', date: '23-09-21' },
+        { title: 'probiotics9', date: '23-09-21' },
+        { title: 'probiotics10', date: '23-09-21' },
+        { title: 'probiotics11', date: '23-09-21' },
+        { title: 'probiotics12', date: '23-09-21' },
+        { title: 'probiotics13', date: '23-09-21' },
+        { title: 'probiotics2', date: '23-09-21' },
+        { title: 'probiotics3', date: '23-09-21' },
+        { title: 'probiotics4', date: '23-09-21' },
+        { title: 'probiotics5', date: '23-09-21' },
+        { title: 'probiotics6', date: '23-09-21' },
+        { title: 'probiotics7', date: '23-09-21' },
+        { title: 'probiotics8', date: '23-09-21' },
+        { title: 'probiotics9', date: '23-09-21' },
+        { title: 'probiotics10', date: '23-09-21' },
+        { title: 'probiotics11', date: '23-09-21' },
+        { title: 'probiotics12', date: '23-09-21' },
+        { title: 'probiotics13', date: '23-09-21' },
+        { title: 'probiotics2', date: '23-09-21' },
+        { title: 'probiotics3', date: '23-09-21' },
+        { title: 'probiotics4', date: '23-09-21' },
+        { title: 'probiotics5', date: '23-09-21' },
+        { title: 'probiotics6', date: '23-09-21' },
+        { title: 'probiotics7', date: '23-09-21' },
+        { title: 'probiotics8', date: '23-09-21' },
+        { title: 'probiotics9', date: '23-09-21' },
+        { title: 'probiotics10', date: '23-09-21' },
+        { title: 'probiotics11', date: '23-09-21' },
+        { title: 'probiotics12', date: '23-09-21' },
+        { title: 'probiotics13', date: '23-09-21' },
+        { title: 'probiotics2', date: '23-09-21' },
+        { title: 'probiotics3', date: '23-09-21' },
+        { title: 'probiotics4', date: '23-09-21' },
+        { title: 'probiotics5', date: '23-09-21' },
+        { title: 'probiotics6', date: '23-09-21' },
+        { title: 'probiotics7', date: '23-09-21' },
+        { title: 'probiotics8', date: '23-09-21' },
+        { title: 'probiotics9', date: '23-09-21' },
+        { title: 'probiotics10', date: '23-09-21' },
+        { title: 'probiotics11', date: '23-09-21' },
+        { title: 'probiotics12', date: '23-09-21' },
+        { title: 'probiotics13', date: '23-09-21' },
+        { title: 'probiotics2', date: '23-09-21' },
+        { title: 'probiotics3', date: '23-09-21' },
+        { title: 'probiotics4', date: '23-09-21' },
+        { title: 'probiotics5', date: '23-09-21' },
+        { title: 'probiotics6', date: '23-09-21' },
+        { title: 'probiotics7', date: '23-09-21' },
+        { title: 'probiotics8', date: '23-09-21' },
+        { title: 'probiotics9', date: '23-09-21' },
+        { title: 'probiotics10', date: '23-09-21' },
+        { title: 'probiotics11', date: '23-09-21' },
+        { title: 'probiotics12', date: '23-09-21' },
+        { title: 'probiotics13', date: '23-09-21' },
+        { title: 'probiotics2', date: '23-09-21' },
+        { title: 'probiotics3', date: '23-09-21' },
+        { title: 'probiotics4', date: '23-09-21' },
+        { title: 'probiotics5', date: '23-09-21' },
+        { title: 'probiotics6', date: '23-09-21' },
+        { title: 'probiotics7', date: '23-09-21' },
+        { title: 'probiotics8', date: '23-09-21' },
+        { title: 'probiotics9', date: '23-09-21' },
+        { title: 'probiotics10', date: '23-09-21' },
+        { title: 'probiotics11', date: '23-09-21' },
+        { title: 'probiotics12', date: '23-09-21' },
+        { title: 'probiotics13', date: '23-09-21' },
+        { title: 'probiotics2', date: '23-09-21' },
+        { title: 'probiotics3', date: '23-09-21' },
+        { title: 'probiotics4', date: '23-09-21' },
+        { title: 'probiotics5', date: '23-09-21' },
+        { title: 'probiotics6', date: '23-09-21' },
+        { title: 'probiotics7', date: '23-09-21' },
+        { title: 'probiotics8', date: '23-09-21' },
+        { title: 'probiotics9', date: '23-09-21' },
+        { title: 'probiotics10', date: '23-09-21' },
+        { title: 'probiotics11', date: '23-09-21' },
+        { title: 'probiotics12', date: '23-09-21' },
+        { title: 'probiotics13', date: '23-09-21' },
+        { title: 'probiotics2', date: '23-09-21' },
+        { title: 'probiotics3', date: '23-09-21' },
+        { title: 'probiotics4', date: '23-09-21' },
+        { title: 'probiotics5', date: '23-09-21' },
+        { title: 'probiotics6', date: '23-09-21' },
+        { title: 'probiotics7', date: '23-09-21' },
+        { title: 'probiotics8', date: '23-09-21' },
+        { title: 'probiotics9', date: '23-09-21' },
+        { title: 'probiotics10', date: '23-09-21' },
+        { title: 'probiotics11', date: '23-09-21' },
+        { title: 'probiotics12', date: '23-09-21' },
+        { title: 'probiotics13', date: '23-09-21' },
         { title: 'probiotics2', date: '23-09-21' },
         { title: 'probiotics3', date: '23-09-21' },
         { title: 'probiotics4', date: '23-09-21' },
@@ -321,7 +460,11 @@ export default {
       paymentTotalPage: 0,
       paymentBlockNum: 0,
       paymentList: [
-        { title: 'probiotics1', date: '23-09-21' },
+        {
+          title:
+            'probiotics1probiotics1probiotics1probiotics1probiotics1probiotics1probiotics1probiotics1probiotics1probiotics1probiotics1probiotics1probiotics1probiotics1',
+          date: '23-09-21',
+        },
         { title: 'probiotics2', date: '23-09-21' },
         { title: 'probiotics3', date: '23-09-21' },
         { title: 'probiotics4', date: '23-09-21' },
@@ -491,6 +634,10 @@ export default {
     }
   },
   methods: {
+    onChildUpdate(newValue) {
+      console.log('index', newValue)
+      this.navigationStatus = newValue
+    },
     pwChangeDialogClose() {
       console.log('action')
       this.pwChangedialogStatus = false
@@ -528,7 +675,7 @@ export default {
     consultingPagingNumClick(num) {
       //페이징 번호 클릭 시 처리
       if (this.consultingCurrentPageNum < num) {
-        if (this.consultingTotalPage - num > 10) {
+        if (this.consultingTotalPage - num >= 10) {
           if (num + 9 > this.consultingTotalPage) {
             this.consultingBlockNum = this.consultingTotalPage - 9
           } else {
@@ -567,7 +714,7 @@ export default {
     },
     paymentPagingNumClick(num) {
       if (this.paymentCurrentPageNum < num) {
-        if (this.paymentTotalPage - num > 10) {
+        if (this.paymentTotalPage - num >= 10) {
           if (num + 9 > this.paymentTotalPage) {
             this.paymentBlockNum = this.paymentTotalPage - 9
           } else {
@@ -607,7 +754,7 @@ export default {
 
     reviewPagingNumClick(num) {
       if (this.reviewCurrentPageNum < num) {
-        if (this.reviewTotalPage - num > 10) {
+        if (this.reviewTotalPage - num >= 10) {
           if (num + 9 > this.reviewTotalPage) {
             this.reviewBlockNum = this.reviewTotalPage - 9
           } else {
@@ -766,12 +913,12 @@ export default {
 
 <style lang="scss" scoped>
 .main {
-  margin-top: 197px;
+  margin-top: 0px;
   .body {
     width: 100%;
     max-width: 1200px;
     margin: auto;
-    padding: 100px 0px;
+    padding: 40px 0px;
     .title {
       display: flex;
       align-items: center;
@@ -923,15 +1070,21 @@ export default {
             padding: 20px 2px;
           }
           .consulting-title {
-            flex: 1;
+            flex: 0.7;
             color: #333;
             font-size: 16px;
             font-family: 'score2';
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
           }
           .consulting-date {
+            flex: 0.3;
             color: #333;
             font-size: 16px;
             font-family: 'score2';
+            display: flex;
+            justify-content: flex-end;
           }
         }
       }
@@ -963,6 +1116,10 @@ export default {
               width: 120px;
               height: 100px;
             }
+          }
+          .mobile-area {
+            width: 100%;
+            display: flex;
           }
           .title-contents-area {
             margin-left: 30px;
@@ -1069,6 +1226,341 @@ export default {
         }
         .paging-num:hover {
           color: #9ad144;
+        }
+      }
+    }
+  }
+}
+@media (max-width: 720px) {
+  .mobile-main {
+    height: 100%;
+  }
+  .main {
+    margin-top: 0px;
+    .body {
+      width: 100%;
+      max-width: 1200px;
+      margin: auto;
+      padding: 50px 20px;
+      .title {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #333;
+        font-size: 30px;
+        font-family: 'score7';
+      }
+      .tab-group {
+        width: 100%;
+        margin-top: 30px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        * + * {
+          margin-left: 0px;
+        }
+        .selected-tab {
+          width: 48%;
+          flex: 0 0 auto;
+          height: 50px;
+          border-radius: 30px;
+          background-color: #9ad144;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #fff;
+          font-size: 14px;
+          font-family: 'score6';
+          cursor: pointer;
+        }
+        .unselected-tab {
+          flex: 0 0 auto;
+          width: 48%;
+          height: 50px;
+          border-radius: 30px;
+          border: 1px solid #ddd;
+          background-color: #fff;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #999;
+          font-size: 14px;
+          font-family: 'score2';
+          cursor: pointer;
+        }
+      }
+      .basic-info-group {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        .info-area {
+          width: 100%;
+          margin-top: 30px;
+          justify-content: flex-start;
+          .title {
+            color: #333;
+            font-size: 14px;
+            font-family: 'score5';
+            display: flex;
+            justify-content: flex-start;
+          }
+          .input-btn-area {
+            width: 100%;
+            display: flex;
+            height: 50px;
+            align-items: center;
+            border-bottom: 1px solid #dddddd;
+            .input-area {
+              flex: 1 0 70%;
+              color: #333;
+              font-size: 14px;
+              font-family: 'score5';
+              vertical-align: baseline;
+              padding: 0px 0px;
+              margin-top: 15px;
+              outline: none;
+            }
+            .btn {
+              width: 120px;
+              height: 45px;
+              background-color: #333;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              color: #fff;
+              font-size: 13px;
+              font-family: 'score6';
+              cursor: pointer;
+            }
+          }
+        }
+        .withless-area {
+          width: 100%;
+          margin-top: 40px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          .withless-btn {
+            cursor: pointer;
+            color: #666;
+            font-size: 14px;
+            font-family: 'score2';
+          }
+        }
+        .staff-info-group {
+          margin-top: 40px;
+          padding: 20px;
+          display: flex;
+          align-items: center;
+          border: 1px solid #ddd;
+          background-color: #f8f8f8;
+          .left-group {
+            .staff-info-text {
+              margin-bottom: 5px;
+              color: #333;
+              font-size: 14px;
+              font-family: 'score5';
+            }
+            .remains-info-text {
+              margin-top: 10px;
+              color: #666;
+              font-size: 12px;
+              font-family: 'score2';
+            }
+          }
+          .call-btn {
+            width: 120px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 13px;
+            font-family: 'score6';
+            background-color: #9ad144;
+            cursor: pointer;
+          }
+        }
+      }
+
+      .consulting-list-group {
+        margin-top: 51px;
+        .consulting-list {
+          border-top: 2px solid #333;
+
+          .consulting-list-item {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            div {
+              border-bottom: 1px solid #ddd;
+              padding: 20px 2px;
+            }
+            .consulting-title {
+              flex: 0.7;
+              display: block;
+              color: #333;
+              font-size: 14px;
+              font-family: 'score2';
+              text-overflow: ellipsis;
+              overflow: hidden;
+              white-space: nowrap;
+            }
+            .consulting-date {
+              flex: 0.3;
+              display: flex;
+              justify-content: flex-end;
+              color: #333;
+              font-size: 14px;
+              font-family: 'score2';
+            }
+          }
+        }
+      }
+      .review-group {
+        margin-top: 50px;
+        .review-list-item-area {
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+          .review-list-item {
+            border: 1px solid #ddd;
+            background-color: #fff;
+            padding: 20px;
+            display: flex;
+            .rep-img-area {
+              border: 1px solid #ddd;
+              background-color: #fff;
+              width: 30%;
+              height: auto;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              .rep-no-img {
+                width: 30%;
+                height: auto;
+              }
+              .rep-img {
+                width: 90%;
+                height: auto;
+              }
+            }
+            .mobile-area {
+              width: 100%;
+              display: flex;
+              flex-direction: column;
+            }
+            .title-contents-area {
+              margin-left: 20px;
+              display: flex;
+              flex-direction: column;
+              align-items: flex-start;
+              .title {
+                color: #333;
+                font-size: 18px;
+                font-family: 'score6';
+              }
+              .contents {
+                color: #666;
+                font-size: 16px;
+                font-family: 'score2';
+                margin-top: 10px;
+                line-height: 1.4;
+              }
+            }
+            .rating-area {
+              display: flex;
+              margin-left: 20px;
+              margin-top: 20px;
+              align-items: center;
+              .rating {
+                width: 14px;
+                height: 14px;
+              }
+            }
+          }
+        }
+      }
+      .paging-group {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 42px;
+        margin-top: 50px;
+        * + * {
+          margin-left: 6px;
+        }
+        .rectangle-area {
+          width: 25px;
+          height: 25px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border: 1px solid #ddd;
+          background-color: #fff;
+          cursor: pointer;
+          .one-arrow {
+            width: 6.36px;
+            height: 9.54px;
+          }
+
+          .two-arrow {
+            width: 12px;
+            height: 9.54px;
+          }
+          .rotate-one-arrow {
+            -webkit-transform: rotate(180deg);
+            -moz-transform: rotate(180deg);
+            -ms-transform: rotate(180deg);
+            -o-transform: rotate(180deg);
+            transform: rotate(180deg);
+            width: 6.36px;
+            height: 9.54px;
+          }
+          .rotate-two-arrow {
+            -webkit-transform: rotate(180deg);
+            -moz-transform: rotate(180deg);
+            -ms-transform: rotate(180deg);
+            -o-transform: rotate(180deg);
+            transform: rotate(180deg);
+            width: 12px;
+            height: 9.54px;
+          }
+        }
+        .rectangle-area:hover {
+          border: 1px solid rgba(154, 209, 68, 1);
+          //   filter: saturate(1%) brightness(150%) sepia(1%);
+        }
+        .paging-num-area {
+          display: flex;
+          align-items: center;
+          .paging-num {
+            width: 5vw;
+            height: 10vw;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #666;
+            font-size: 14px;
+            font-family: 'score2';
+          }
+          .select-paging-num {
+            width: 5vw;
+            height: 10vw;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #9ad144;
+            font-size: 14px;
+            font-family: 'score2';
+            text-decoration: underline;
+          }
+          .paging-num:hover {
+            color: none;
+          }
         }
       }
     }

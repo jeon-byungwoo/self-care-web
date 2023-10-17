@@ -1,7 +1,7 @@
 <template>
   <div>
-    <Header></Header>
-    <div class="main">
+    <Header @update="onChildUpdate"> </Header>
+    <div class="main" v-if="!navigationStatus">
       <div class="body">
         <div class="notification-title">소식</div>
         <div class="tab-group">
@@ -101,6 +101,7 @@ export default {
   },
   data() {
     return {
+      navigationStatus: false,
       tabStatus: 1,
       currentPageNum: 1,
       pagingNum: 0,
@@ -147,6 +148,10 @@ export default {
     }
   },
   methods: {
+    onChildUpdate(newValue) {
+      console.log('index', newValue)
+      this.navigationStatus = newValue
+    },
     listSlice() {
       //showLimit 만큼 보여주기
       let result = this.listData.filter(
@@ -159,7 +164,7 @@ export default {
     pagingNumClick(num) {
       //페이징 번호 클릭 시 처리
       if (this.currentPageNum < num) {
-        if (this.totalPage - num > 10) {
+        if (this.totalPage - num >= 10) {
           if (num + 9 > this.totalPage) {
             this.blockNum = this.totalPage - 9
           } else {
@@ -240,7 +245,7 @@ export default {
 
 <style lang="scss" scoped>
 .main {
-  margin-top: 197px;
+  margin-top: 0px;
   .body {
     width: 100%;
     max-width: 1200px;
@@ -389,6 +394,178 @@ export default {
         }
         .paging-num:hover {
           color: #9ad144;
+        }
+      }
+    }
+  }
+}
+@media (max-width: 720px) {
+  .main {
+    margin-top: 0px;
+    .body {
+      width: 100%;
+      max-width: 1200px;
+      margin: auto;
+      padding: 20px;
+      .notification-title {
+        color: #333;
+        font-size: 30px;
+        font-family: 'score6';
+      }
+      .tab-group::-webkit-scrollbar {
+        display: none;
+        -ms-overflow-style: none; /* IE and Edge */
+        scrollbar-width: none;
+      }
+      .tab-group {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        padding: 30px 0px;
+        overflow: auto;
+        white-space: nowrap;
+        -ms-overflow-style: none; /* IE and Edge */
+        scrollbar-width: none;
+        background-color: #fff;
+        .selected-tab-btn-area {
+          height: 45px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 14px;
+          font-family: 'score6';
+          color: #fff;
+          background-color: #333;
+          cursor: pointer;
+          padding: 16px 20px 15px 20px;
+          border-radius: 25px;
+        }
+        .tab-btn-area {
+          height: 45px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 14px;
+          font-family: 'score2';
+          color: #333;
+          background-color: #fff;
+          cursor: pointer;
+          padding: 16px 20px 15px 20px;
+          border-radius: 25px;
+        }
+      }
+      .consulting-list-group {
+        margin-top: 10px;
+        .consulting-list {
+          border-top: 2px solid #333;
+
+          .consulting-list-item {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            div {
+              border-bottom: 1px solid #ddd;
+              padding: 20px 2px;
+            }
+            .consulting-title {
+              flex: 0.7;
+              color: #333;
+              font-size: 14px;
+              font-family: 'score2';
+              text-overflow: ellipsis;
+              overflow: hidden;
+              white-space: nowrap;
+            }
+            .consulting-date {
+              flex: 0.3;
+              display: flex;
+              justify-content: flex-end;
+              color: #333;
+              font-size: 14px;
+              font-family: 'score2';
+            }
+          }
+        }
+      }
+      .paging-group {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 42px;
+        margin-top: 50px;
+        * + * {
+          margin-left: 8px;
+        }
+        .rectangle-area {
+          width: 25px;
+          height: 25px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border: 1px solid #ddd;
+          background-color: #fff;
+          cursor: pointer;
+          .one-arrow {
+            width: 6.36px;
+            height: 9.54px;
+          }
+
+          .two-arrow {
+            width: 12px;
+            height: 9.54px;
+          }
+          .rotate-one-arrow {
+            -webkit-transform: rotate(180deg);
+            -moz-transform: rotate(180deg);
+            -ms-transform: rotate(180deg);
+            -o-transform: rotate(180deg);
+            transform: rotate(180deg);
+            width: 6.36px;
+            height: 9.54px;
+          }
+          .rotate-two-arrow {
+            -webkit-transform: rotate(180deg);
+            -moz-transform: rotate(180deg);
+            -ms-transform: rotate(180deg);
+            -o-transform: rotate(180deg);
+            transform: rotate(180deg);
+            width: 12px;
+            height: 9.54px;
+          }
+        }
+        .rectangle-area:hover {
+          border: 1px solid rgba(154, 209, 68, 1);
+          //   filter: saturate(1%) brightness(150%) sepia(1%);
+        }
+        .paging-num-area {
+          display: flex;
+          .paging-num {
+            width: 5vw;
+            height: 10vw;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #666;
+            font-size: 14px;
+            font-family: 'score2';
+          }
+          .select-paging-num {
+            width: 5vw;
+            height: 10vw;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #9ad144;
+            font-size: 14px;
+            font-family: 'score2';
+            text-decoration: underline;
+          }
+          .paging-num:hover {
+            color: none;
+          }
         }
       }
     }

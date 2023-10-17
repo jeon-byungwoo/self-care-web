@@ -1,7 +1,7 @@
 <template>
   <div>
-    <Header></Header>
-    <div class="main">
+    <Header @update="onChildUpdate"> </Header>
+    <div class="main" v-if="!navigationStatus">
       <div class="body">
         <div class="box">
           <div class="buyer-title-text">구매자 정보</div>
@@ -133,6 +133,7 @@ export default {
   },
   data() {
     return {
+      navigationStatus: false,
       imgList: [
         { url: require('@/assets/image/img_medicine_test.png') },
         { url: require('@/assets/image/img_medicine_test.png') },
@@ -155,7 +156,12 @@ export default {
       ],
     }
   },
-  methods: {},
+  methods: {
+    onChildUpdate(newValue) {
+      console.log('index', newValue)
+      this.navigationStatus = newValue
+    },
+  },
 }
 </script>
 

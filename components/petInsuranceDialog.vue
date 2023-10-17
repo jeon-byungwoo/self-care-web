@@ -402,4 +402,250 @@ export default {
     }
   }
 }
+@media (max-width: 720px) {
+  .background {
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 1000;
+  }
+  .window {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+  .popup {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #ffffff;
+    box-shadow: 0 2px 7px rgba(0, 0, 0, 0.3);
+    overflow-y: scroll;
+    /* 임시 지정 */
+    width: 90%;
+    height: 90%;
+    border-radius: 30px;
+  }
+
+  .top-area {
+    width: 100%;
+    height: 200px;
+    background: url('@/assets/image/img_pet_bg.png') no-repeat;
+    background-size: 100% 100%;
+    // position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    .first-title-area {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      .green-text {
+        color: #9ad144;
+        font-size: 20px;
+        font-family: 'score7';
+        display: flex;
+      }
+      .basic-text {
+        color: #fff;
+        font-size: 20px;
+        font-family: 'score2';
+      }
+      .bold-text {
+        color: #fff;
+        font-size: 20px;
+        font-family: 'score6';
+        display: flex;
+      }
+    }
+    .sub-title-text {
+      margin-top: 13px;
+      color: #fff;
+      font-size: 12px;
+      font-family: 'score2';
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    .close-btn {
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: 35px;
+      height: 35px;
+      margin-top: 20px;
+      margin-right: 20px;
+      cursor: pointer;
+    }
+  }
+
+  .remains-area {
+    padding: 20px;
+    display: block;
+    height: 100%;
+    .title-text {
+      color: #555;
+      font-size: 14px;
+      font-family: 'score6';
+      margin-top: 20px;
+    }
+    .input-form {
+      border: 1px solid #ddd;
+      background-color: #fff;
+      flex: 1;
+      width: 100%;
+      height: 40px;
+      padding: 10px;
+      color: #000;
+      font-size: 14px;
+      font-family: 'score2';
+      outline: none;
+      margin-top: 20px;
+    }
+    .left-area {
+      flex: 1;
+      background-color: #f8f8f8;
+      border-left: 1px solid #eaeaea;
+      border-right: 1px solid #eaeaea;
+      border-top: 1px solid #eaeaea;
+      border-bottom: 0px solid #eaeaea;
+      padding: 20px;
+      .radio-area {
+        margin-top: 20px;
+        display: flex;
+        * + * {
+          margin-left: 20px;
+        }
+        .pet-select-radio-area {
+          display: flex;
+          align-items: center;
+          cursor: pointer;
+          .radio-img {
+            width: 28px;
+            height: 28px;
+          }
+          div {
+            margin-left: 12px;
+            justify-content: center;
+            .pet-img {
+              width: 60px;
+              height: 60px;
+            }
+            .pet-text {
+              color: #666;
+              font-size: 14px;
+              font-family: 'score5';
+              margin-top: 4px;
+            }
+          }
+        }
+      }
+      .gender-select-area {
+        display: flex;
+        margin-top: 20px;
+        * + * {
+          margin-left: 10px;
+        }
+        .gender-select {
+          width: 120px;
+          height: 40px;
+          font-size: 16px;
+          font-family: 'score6';
+          color: #fff;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background-color: #9ad144;
+          border-radius: 20px;
+        }
+        .gender-not-select {
+          width: 120px;
+          height: 40px;
+          font-size: 16px;
+          font-family: 'score6';
+          color: #9ad144;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border: 1px solid #9ad144;
+          background-color: #fff;
+          border-radius: 20px;
+        }
+      }
+    }
+    .right-area {
+      flex: 1;
+      margin-left: 0px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      .bg-area {
+        background-color: #f8f8f8;
+        border-left: 1px solid #eaeaea;
+        border-right: 1px solid #eaeaea;
+        border-top: 0px solid #eaeaea;
+        border-bottom: 1px solid #eaeaea;
+        padding: 0px 20px 20px 20px;
+
+        .input-half-group {
+          display: flex;
+          margin-top: 20px;
+          height: 40px;
+          * + * {
+            margin-left: 12px;
+          }
+          .coalition-area {
+            flex: 1;
+            border: 1px solid #ddd;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            position: relative;
+            select {
+              width: 100%;
+              height: 100%;
+              -moz-appearance: none;
+              -webkit-appearance: none;
+              appearance: none;
+              font-family: 'score2';
+              font-size: 14px;
+              color: #000;
+              background-color: #fff;
+              outline: none;
+              padding-left: 10px;
+            }
+            label {
+              font-family: 'score2';
+              font-size: 12px;
+              line-height: 1.3;
+              color: #444;
+              margin-right: 0.5em;
+            }
+            .right-arrow {
+              position: absolute;
+              width: 13.78px;
+              height: 8.81px;
+              right: 12px;
+            }
+          }
+        }
+      }
+      .insurance-btn {
+        width: 100%;
+        height: 60px;
+        background-color: #9ad144;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-size: 18px;
+        font-family: 'score6';
+        cursor: pointer;
+        margin-bottom: 20px;
+      }
+    }
+  }
+}
 </style>
