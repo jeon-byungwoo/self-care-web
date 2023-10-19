@@ -84,6 +84,8 @@ export default {
   name: 'pagerView',
   data() {
     return {
+      userInfo: '',
+
       topMenus: [
         { text: '건강설문', routerName: 'healthConsulting' },
         { text: '자가진단', routerName: 'healthConsulting' },
@@ -103,7 +105,11 @@ export default {
   },
   methods: {
     hrefKakao() {
-      window.open('http://pf.kakao.com/_xfnvuG/chat')
+      window.open(
+        'http://pf.kakao.com/_xfnvuG/chat',
+        'Kakao 톡 상담',
+        'width=450, height=600'
+      )
     },
     firstMenuClick(i, routerName) {
       // this.indicatorX = this.$refs.item[i].getBoundingClientRect().left
@@ -131,8 +137,11 @@ export default {
       this.$router.push({ name: 'index' })
     },
     myClick() {
-      // this.$router.push({ name: 'myInfo' })
-      this.$router.push({ name: 'login' })
+      if (this.userInfo == undefined) {
+        this.$router.push({ name: 'login' })
+      } else {
+        this.$router.push({ name: 'myInfo' })
+      }
     },
     cartClick() {
       this.$router.push({ name: 'cart' })
@@ -158,7 +167,14 @@ export default {
     window.addEventListener('resize', this.handleResize)
     //최초 한번 실행
     this.handleResize()
+    if (typeof window !== undefined) {
+      this.userInfo =
+        localStorage != undefined
+          ? JSON.parse(localStorage.getItem('userInfo'))
+          : undefined
+    }
   },
+  created() {},
   beforeDestroy() {
     window.removeEventListener('resize', this.handleResize)
   },
@@ -204,6 +220,7 @@ export default {
     max-width: 1200px;
     margin-top: 48px;
     width: 100%;
+    padding: 0px 20px;
     .menu-1step {
       display: flex;
       align-items: center;

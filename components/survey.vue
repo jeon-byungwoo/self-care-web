@@ -55,8 +55,7 @@ html {
 .main-warper {
   width: 100%;
   margin: auto;
-  padding-top: 100px;
-  padding-bottom: 100px;
+  padding: 100px 20px;
   background: #f6f6f6;
   .main-warper-group {
     max-width: 1200px;

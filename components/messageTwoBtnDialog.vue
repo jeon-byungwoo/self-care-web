@@ -11,14 +11,12 @@
         </div>
         <div class="info-area">
           <div class="first-text-area">
-            <div class="bold-text">건강체크</div>
-            <div class="text">는 3개월 이내에 추가로</div>
+            <div class="bold-text">{{ message }}</div>
           </div>
-          <div class="text" :style="'margin-top:12px'">진행할 수 없습니다.</div>
         </div>
-        <div style="flex: 1"></div>
         <div class="btn-area">
-          <div class="btn-done" @click="$router.go(-1)">확인</div>
+          <div class="cancel-btn" @click="closeAction">취소</div>
+          <div class="done-btn" @click="sendData">확인</div>
         </div>
       </div>
     </div>
@@ -28,11 +26,18 @@
 <script>
 export default {
   name: 'howToView',
+  props: ['message', 'dialogType'],
   data() {
     return {}
   },
   methods: {
     preClick() {},
+    closeAction() {
+      this.$emit('closeAction', 'messageTwoDialog')
+    },
+    sendData() {
+      this.$emit('sendData', 'messageTwoDialog', this.dialogType)
+    },
   },
 }
 </script>
@@ -54,6 +59,8 @@ export default {
 }
 .popup {
   position: absolute;
+  display: flex;
+  flex-direction: column;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -62,7 +69,7 @@ export default {
 
   /* 임시 지정 */
   width: 500px;
-  height: 400px;
+  height: auto;
   border-radius: 30px;
 }
 .img-area {
@@ -98,22 +105,33 @@ export default {
 }
 
 .btn-area {
-  margin-top: 46px;
-
   display: flex;
-  align-items: center;
-  justify-content: center;
-  .btn-done {
-    width: 300px;
-    height: 72px;
-    background-color: #9ad144;
+  margin: 40px 20px;
+  .cancel-btn {
+    flex: 1;
+    border: 1px solid #ddd;
+    background-color: #fff;
+    height: 60px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #fff;
-    font-size: 20px;
-    font-family: 'score5';
     cursor: pointer;
+    color: #333;
+    font-size: 18px;
+    font-family: 'score5';
+  }
+  .done-btn {
+    flex: 1;
+    background-color: #9ad144;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 20px;
+    cursor: pointer;
+    color: #fff;
+    font-size: 18px;
+    font-family: 'score5';
   }
 }
 @media (max-width: 720px) {
@@ -180,22 +198,34 @@ export default {
   }
 
   .btn-area {
-    margin-bottom: 20px;
-
     display: flex;
-    align-items: center;
-    justify-content: center;
-    .btn-done {
-      width: 90%;
-      height: 60px;
-      background-color: #9ad144;
+    margin-bottom: 20px;
+    margin-top: 40px;
+    .cancel-btn {
+      flex: 1;
+      border: 1px solid #ddd;
+      background-color: #fff;
+      height: 55px;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #fff;
-      font-size: 20px;
-      font-family: 'score5';
       cursor: pointer;
+      color: #333;
+      font-size: 18px;
+      font-family: 'score5';
+    }
+    .done-btn {
+      flex: 1;
+      background-color: #9ad144;
+      height: 55px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: 20px;
+      cursor: pointer;
+      color: #fff;
+      font-size: 18px;
+      font-family: 'score5';
     }
   }
 }

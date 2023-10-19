@@ -368,7 +368,7 @@ export default {
     width: 100%;
     background-color: #fff;
     margin-top: 400px;
-    padding-bottom: 100px;
+    padding: 0px 20px 100px 20px;
     .scroll-header-group {
       max-width: 1200px;
       margin: auto;

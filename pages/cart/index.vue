@@ -170,7 +170,7 @@ export default {
     width: 100%;
     max-width: 1200px;
     margin: auto;
-    padding: 40px 0px 100px 0px;
+    padding: 40px 20px 100px 20px;
     .product-list-group {
       border: 1px solid #ddd;
       background-color: #fff;

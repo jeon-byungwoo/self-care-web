@@ -2,9 +2,22 @@
   <div>
     <PwChangeDialog
       v-if="pwChangedialogStatus"
-      @closeAction="pwChangeDialogClose"
+      @closeAction="dialogClose"
       @sendData="pwChangeDialogSendData"
+      :message="currentPwCheck"
     ></PwChangeDialog>
+    <messageOneBtnDialog
+      v-if="messageOneBtnDialogStatus"
+      @closeAction="dialogClose"
+      :message="dialogText"
+    ></messageOneBtnDialog>
+    <messageTwoBtnDialog
+      v-if="messageTwoBtnDialogStatus"
+      @closeAction="dialogClose"
+      @sendData="sendDataDialog"
+      :message="dialogText"
+      :dialogType="twoBtnDialogType"
+    ></messageTwoBtnDialog>
     <Header @update="onChildUpdate"> </Header>
     <div :class="navigationStatus == false ? 'main' : 'mobile-main'">
       <div class="body">
@@ -42,20 +55,27 @@
             <div class="info-area">
               <div class="title">계정 정보</div>
               <div class="input-btn-area">
-                <div class="input-area">asdasd</div>
-                <div class="btn">비밀번호 변경</div>
+                <div class="input-area">{{ userInfo.email }}</div>
+                <div
+                  class="btn"
+                  v-if="loginType == 0"
+                  @click="pwChangedialogStatus = true"
+                >
+                  비밀번호 변경
+                </div>
               </div>
             </div>
             <div class="info-area">
               <div class="title">전화번호</div>
               <div class="input-btn-area">
-                <input class="input-area" value="asdasd" />
-                <div class="btn">수정</div>
+                <input class="input-area" v-model="phone" />
+                <div class="btn" @click="updateProfile(2)">수정</div>
               </div>
             </div>
-
-            <div class="withless-area">
-              <div class="withless-btn"><u>회원탈퇴</u></div>
+            <div class="logout-area">
+              <div class="logout-btn" @click="twoDialogClick('logout')">
+                로그아웃
+              </div>
             </div>
 
             <div class="staff-info-group">
@@ -67,6 +87,12 @@
               </div>
               <div style="flex: 1"></div>
               <div class="call-btn">전화하기</div>
+            </div>
+
+            <div class="withless-area">
+              <div class="withless-btn" @click="twoDialogClick('withless')">
+                <u>회원탈퇴</u>
+              </div>
             </div>
           </div>
         </div>
@@ -278,12 +304,16 @@
 <script>
 import Header from '../../components/header.vue'
 import PwChangeDialog from '../../components/passwordChangeDialog.vue'
+import messageOneBtnDialog from '~/components/messageOneBtnDialog.vue'
+import messageTwoBtnDialog from '~/components/messageTwoBtnDialog.vue'
 export default {
   layout: 'default',
   name: 'IndexPage',
   components: {
     Header,
     PwChangeDialog,
+    messageOneBtnDialog,
+    messageTwoBtnDialog,
   },
   created() {
     console.log('tabs: ', this.$route.params.tabs)
@@ -293,15 +323,24 @@ export default {
   },
   data() {
     return {
+      userInfo: '',
+      phone: '',
       navigationStatus: false,
       tabStatus: 1, //1 기본정보, 2 나의 AI 건강설문 결과, 3 구매내역, 4 나의 리뷰
       pwChangedialogStatus: false,
+      messageOneBtnDialogStatus: false,
+      messageTwoBtnDialogStatus: false,
+      twoBtnDialogType: '',
+      dialogText: '',
       consultingCurrentPageNum: 1,
       consultingPagingNum: 0,
       consultingTotalPage: 0,
       showLimit: 10,
       consultingBlockNum: 0,
       tabsSelect: 0,
+      loginType: 0,
+      currentPwCheck: 0, // 0 - none & success, 1 - fail
+      changePw: '',
       consultingList: [
         {
           title:
@@ -319,139 +358,6 @@ export default {
         { title: 'probiotics10', date: '23-09-21' },
         { title: 'probiotics11', date: '23-09-21' },
         { title: 'probiotics12', date: '23-09-21' },
-        { title: 'probiotics13', date: '23-09-21' },
-        { title: 'probiotics2', date: '23-09-21' },
-        { title: 'probiotics3', date: '23-09-21' },
-        { title: 'probiotics4', date: '23-09-21' },
-        { title: 'probiotics5', date: '23-09-21' },
-        { title: 'probiotics6', date: '23-09-21' },
-        { title: 'probiotics7', date: '23-09-21' },
-        { title: 'probiotics8', date: '23-09-21' },
-        { title: 'probiotics9', date: '23-09-21' },
-        { title: 'probiotics10', date: '23-09-21' },
-        { title: 'probiotics11', date: '23-09-21' },
-        { title: 'probiotics12', date: '23-09-21' },
-        { title: 'probiotics13', date: '23-09-21' },
-        { title: 'probiotics2', date: '23-09-21' },
-        { title: 'probiotics3', date: '23-09-21' },
-        { title: 'probiotics4', date: '23-09-21' },
-        { title: 'probiotics5', date: '23-09-21' },
-        { title: 'probiotics6', date: '23-09-21' },
-        { title: 'probiotics7', date: '23-09-21' },
-        { title: 'probiotics8', date: '23-09-21' },
-        { title: 'probiotics9', date: '23-09-21' },
-        { title: 'probiotics10', date: '23-09-21' },
-        { title: 'probiotics11', date: '23-09-21' },
-        { title: 'probiotics12', date: '23-09-21' },
-        { title: 'probiotics13', date: '23-09-21' },
-        { title: 'probiotics2', date: '23-09-21' },
-        { title: 'probiotics3', date: '23-09-21' },
-        { title: 'probiotics4', date: '23-09-21' },
-        { title: 'probiotics5', date: '23-09-21' },
-        { title: 'probiotics6', date: '23-09-21' },
-        { title: 'probiotics7', date: '23-09-21' },
-        { title: 'probiotics8', date: '23-09-21' },
-        { title: 'probiotics9', date: '23-09-21' },
-        { title: 'probiotics10', date: '23-09-21' },
-        { title: 'probiotics11', date: '23-09-21' },
-        { title: 'probiotics12', date: '23-09-21' },
-        { title: 'probiotics13', date: '23-09-21' },
-        { title: 'probiotics2', date: '23-09-21' },
-        { title: 'probiotics3', date: '23-09-21' },
-        { title: 'probiotics4', date: '23-09-21' },
-        { title: 'probiotics5', date: '23-09-21' },
-        { title: 'probiotics6', date: '23-09-21' },
-        { title: 'probiotics7', date: '23-09-21' },
-        { title: 'probiotics8', date: '23-09-21' },
-        { title: 'probiotics9', date: '23-09-21' },
-        { title: 'probiotics10', date: '23-09-21' },
-        { title: 'probiotics11', date: '23-09-21' },
-        { title: 'probiotics12', date: '23-09-21' },
-        { title: 'probiotics13', date: '23-09-21' },
-        { title: 'probiotics2', date: '23-09-21' },
-        { title: 'probiotics3', date: '23-09-21' },
-        { title: 'probiotics4', date: '23-09-21' },
-        { title: 'probiotics5', date: '23-09-21' },
-        { title: 'probiotics6', date: '23-09-21' },
-        { title: 'probiotics7', date: '23-09-21' },
-        { title: 'probiotics8', date: '23-09-21' },
-        { title: 'probiotics9', date: '23-09-21' },
-        { title: 'probiotics10', date: '23-09-21' },
-        { title: 'probiotics11', date: '23-09-21' },
-        { title: 'probiotics12', date: '23-09-21' },
-        { title: 'probiotics13', date: '23-09-21' },
-        { title: 'probiotics2', date: '23-09-21' },
-        { title: 'probiotics3', date: '23-09-21' },
-        { title: 'probiotics4', date: '23-09-21' },
-        { title: 'probiotics5', date: '23-09-21' },
-        { title: 'probiotics6', date: '23-09-21' },
-        { title: 'probiotics7', date: '23-09-21' },
-        { title: 'probiotics8', date: '23-09-21' },
-        { title: 'probiotics9', date: '23-09-21' },
-        { title: 'probiotics10', date: '23-09-21' },
-        { title: 'probiotics11', date: '23-09-21' },
-        { title: 'probiotics12', date: '23-09-21' },
-        { title: 'probiotics13', date: '23-09-21' },
-        { title: 'probiotics2', date: '23-09-21' },
-        { title: 'probiotics3', date: '23-09-21' },
-        { title: 'probiotics4', date: '23-09-21' },
-        { title: 'probiotics5', date: '23-09-21' },
-        { title: 'probiotics6', date: '23-09-21' },
-        { title: 'probiotics7', date: '23-09-21' },
-        { title: 'probiotics8', date: '23-09-21' },
-        { title: 'probiotics9', date: '23-09-21' },
-        { title: 'probiotics10', date: '23-09-21' },
-        { title: 'probiotics11', date: '23-09-21' },
-        { title: 'probiotics12', date: '23-09-21' },
-        { title: 'probiotics13', date: '23-09-21' },
-        { title: 'probiotics2', date: '23-09-21' },
-        { title: 'probiotics3', date: '23-09-21' },
-        { title: 'probiotics4', date: '23-09-21' },
-        { title: 'probiotics5', date: '23-09-21' },
-        { title: 'probiotics6', date: '23-09-21' },
-        { title: 'probiotics7', date: '23-09-21' },
-        { title: 'probiotics8', date: '23-09-21' },
-        { title: 'probiotics9', date: '23-09-21' },
-        { title: 'probiotics10', date: '23-09-21' },
-        { title: 'probiotics11', date: '23-09-21' },
-        { title: 'probiotics12', date: '23-09-21' },
-        { title: 'probiotics13', date: '23-09-21' },
-        { title: 'probiotics2', date: '23-09-21' },
-        { title: 'probiotics3', date: '23-09-21' },
-        { title: 'probiotics4', date: '23-09-21' },
-        { title: 'probiotics5', date: '23-09-21' },
-        { title: 'probiotics6', date: '23-09-21' },
-        { title: 'probiotics7', date: '23-09-21' },
-        { title: 'probiotics8', date: '23-09-21' },
-        { title: 'probiotics9', date: '23-09-21' },
-        { title: 'probiotics10', date: '23-09-21' },
-        { title: 'probiotics11', date: '23-09-21' },
-        { title: 'probiotics12', date: '23-09-21' },
-        { title: 'probiotics13', date: '23-09-21' },
-        { title: 'probiotics2', date: '23-09-21' },
-        { title: 'probiotics3', date: '23-09-21' },
-        { title: 'probiotics4', date: '23-09-21' },
-        { title: 'probiotics5', date: '23-09-21' },
-        { title: 'probiotics6', date: '23-09-21' },
-        { title: 'probiotics7', date: '23-09-21' },
-        { title: 'probiotics8', date: '23-09-21' },
-        { title: 'probiotics9', date: '23-09-21' },
-        { title: 'probiotics10', date: '23-09-21' },
-        { title: 'probiotics11', date: '23-09-21' },
-        { title: 'probiotics12', date: '23-09-21' },
-        { title: 'probiotics13', date: '23-09-21' },
-        { title: 'probiotics2', date: '23-09-21' },
-        { title: 'probiotics3', date: '23-09-21' },
-        { title: 'probiotics4', date: '23-09-21' },
-        { title: 'probiotics5', date: '23-09-21' },
-        { title: 'probiotics6', date: '23-09-21' },
-        { title: 'probiotics7', date: '23-09-21' },
-        { title: 'probiotics8', date: '23-09-21' },
-        { title: 'probiotics9', date: '23-09-21' },
-        { title: 'probiotics10', date: '23-09-21' },
-        { title: 'probiotics11', date: '23-09-21' },
-        { title: 'probiotics12', date: '23-09-21' },
-        { title: 'probiotics13', date: '23-09-21' },
       ],
       filterConsultingList: [],
 
@@ -569,6 +475,20 @@ export default {
     }
   },
   mounted() {
+    if (typeof window !== undefined) {
+      this.userInfo =
+        localStorage != undefined
+          ? JSON.parse(localStorage.getItem('userInfo'))
+          : undefined
+      if (this.userInfo == '' || this.userInfo == undefined) {
+        this.$router.replace('login')
+      } else {
+        this.phone = this.userInfo.phone
+        if (this.userInfo.type == '카카오' || this.userInfo.type == '네이버')
+          this.loginType = 1
+      }
+    }
+
     //나의 AI 건강설문 결과
     this.consultingListSlice()
     this.consultingTotalPage = Math.ceil(
@@ -638,14 +558,44 @@ export default {
       console.log('index', newValue)
       this.navigationStatus = newValue
     },
-    pwChangeDialogClose() {
-      console.log('action')
-      this.pwChangedialogStatus = false
+    dialogClose(dialogType) {
+      console.log('action', dialogType)
+      if (dialogType == 'pw') {
+        this.pwChangedialogStatus = false
+      } else if (dialogType == 'messageDialog') {
+        this.messageOneBtnDialogStatus = false
+        if (this.dialogText == '회원탈퇴가 정상적으로 진행되었습니다.') {
+          localStorage.clear()
+          this.$router.replace({ name: 'login' })
+        }
+      } else if (dialogType == 'messageTwoDialog') {
+        this.messageTwoBtnDialogStatus = false
+      }
+    },
+    twoDialogClick(dialogType) {
+      if (dialogType == 'logout') {
+        this.dialogText = '로그아웃을 하시겠습니까?'
+        this.twoBtnDialogType = 'logout'
+        this.messageTwoBtnDialogStatus = true
+      } else if (dialogType == 'withless') {
+        this.dialogText = '회원탈퇴를 하시겠습니까?'
+        this.messageTwoBtnDialogStatus = true
+        this.twoBtnDialogType = 'withless'
+      }
+    },
+    sendDataDialog(dialogType, type) {
+      console.log(type)
+      if (dialogType == 'messageTwoDialog') {
+        if (type == 'logout') {
+          this.logoutClick()
+        } else if (type == 'withless') {
+          this.withlessClick()
+        }
+      }
     },
     pwChangeDialogSendData(nowPw, newPw, confirmPw) {
-      console.log('nowPw: ' + nowPw)
-      console.log(newPw)
-      console.log(confirmPw)
+      this.changePw = newPw
+      this.checkPw(nowPw)
     },
     consultingListSlice() {
       //showLimit 만큼 보여주기
@@ -907,6 +857,130 @@ export default {
       }
       this.reviewListSlice()
     },
+    logoutClick() {
+      this.messageTwoBtnDialogStatus = false
+      localStorage.clear()
+      this.$router.replace({ name: 'login' })
+    },
+    withlessClick() {
+      this.messageTwoBtnDialogStatus = false
+      this.updateProfile(3)
+    },
+    async updateProfile(type) {
+      let formBody = {}
+      let obj = [{ table: 'user', col: 'no' }]
+      if (type == 1) {
+        // 1 - 비밀번호 변경, 2 - 전화번호 변경, 3 - 회원탈퇴
+        let conditions = [
+          { q: '=', f: 'no', v: this.userInfo.no },
+          // { q: '=', f: 'pw', v: '' },
+        ]
+        formBody = {
+          table: 'user',
+          pw: this.changePw,
+          no: this.userInfo.no,
+          conditions: conditions,
+        }
+        this.dialogText = '비밀번호가 변경되었습니다.'
+      } else if (type == 2) {
+        let conditions = [
+          { q: '=', f: 'no', v: this.userInfo.no },
+          // { q: '=', f: 'phone', v: '"' + this.phone + '"' },
+        ]
+        formBody = {
+          table: 'user',
+          phone: this.phone,
+          no: this.userInfo.no,
+          conditions: conditions,
+        }
+        this.dialogText = '전화번호가 변경되었습니다.'
+      } else if (type == 3) {
+        let conditions = [
+          { q: '=', f: 'no', v: this.userInfo.no },
+          // { q: '=', f: 'status', v: 0 },
+        ]
+        formBody = {
+          table: 'user',
+          status: 0,
+          no: this.userInfo.no,
+          conditions: conditions,
+        }
+        this.dialogText = '회원탈퇴가 정상적으로 진행되었습니다.'
+      }
+
+      console.log(formBody)
+
+      try {
+        await this.$axios
+          .post('/api/update', formBody)
+          .then((res) => {
+            console.log('인서트 결과값:: ', JSON.stringify(res.data))
+            console.log(res.data.length)
+            if (res.data.length > 0) {
+              if (type == 3) {
+                this.messageOneBtnDialogStatus = true
+              } else {
+                localStorage.removeItem('userInfo')
+                let userInfo = {
+                  no: res.data[0].no,
+                  type: res.data[0].type,
+                  email: res.data[0].email,
+                  gender: res.data[0].gender,
+                  token: res.data[0].token,
+                  name: res.data[0].name,
+                  phone: res.data[0].phone,
+                  email: res.data[0].email,
+                  status: res.data[0].status,
+                }
+                localStorage.setItem('loginStatus', true)
+                localStorage.setItem('userInfo', JSON.stringify(userInfo))
+                this.messageOneBtnDialogStatus = true
+              }
+            }
+          })
+          .catch(function (error) {
+            console.log('에러!!', err)
+          })
+      } catch (err) {
+        console.log('err!! : ' + err)
+      }
+    },
+    async checkPw(pw) {
+      let formBody = {}
+      let conditions = [
+        { q: '=', f: 'no', v: this.userInfo.no },
+        { op: 'AND', q: '=', f: 'pw', v: pw },
+      ]
+      formBody = {
+        table: 'user',
+        conditions: conditions,
+      }
+
+      console.log(formBody)
+
+      try {
+        await this.$axios
+          .post('/api/select', formBody)
+          .then((res) => {
+            console.log('인서트 결과값:: ', JSON.stringify(res.data))
+            console.log(res.data.length)
+            if (res.data.length > 0) {
+              console.log('found')
+              this.currentPwCheck = 0
+              this.pwChangedialogStatus = false
+              this.updateProfile(1)
+            } else {
+              this.currentPwCheck = 1
+              console.log('not found')
+            }
+          })
+          .catch(function (error) {
+            console.log('에러!!', err)
+          })
+      } catch (err) {
+        console.log('err!! : ' + err)
+      }
+    },
   },
 }
 </script>
@@ -918,7 +992,7 @@ export default {
     width: 100%;
     max-width: 1200px;
     margin: auto;
-    padding: 40px 0px;
+    padding: 40px 20px;
     .title {
       display: flex;
       align-items: center;
@@ -1004,6 +1078,24 @@ export default {
             font-family: 'score6';
             cursor: pointer;
           }
+        }
+      }
+      .logout-area {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        margin-top: 70px;
+        .logout-btn {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 300px;
+          height: 70px;
+          cursor: pointer;
+          font-size: 18px;
+          font-family: 'score5';
+          color: #fff;
+          background-color: #333;
         }
       }
       .withless-area {
@@ -1233,7 +1325,7 @@ export default {
 }
 @media (max-width: 720px) {
   .mobile-main {
-    height: 100%;
+    display: none;
   }
   .main {
     margin-top: 0px;
@@ -1332,6 +1424,24 @@ export default {
               font-family: 'score6';
               cursor: pointer;
             }
+          }
+        }
+        .logout-area {
+          width: 100%;
+          display: flex;
+          justify-content: center;
+          margin-top: 40px;
+          .logout-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 60px;
+            cursor: pointer;
+            font-size: 16px;
+            font-family: 'score5';
+            color: #fff;
+            background-color: #333;
           }
         }
         .withless-area {

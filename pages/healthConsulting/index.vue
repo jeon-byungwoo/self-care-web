@@ -4,7 +4,11 @@
     <div v-if="!navigationStatus" class="main">
       <div v-if="aiConsultingMove" class="rolling-group">
         <div class="logo-area">
-          <img src="@/assets/image/login-logo.png" class="logo-img" />
+          <img
+            src="@/assets/image/login-logo.png"
+            class="logo-img"
+            @click="logoClick"
+          />
         </div>
         <div class="main-warper">
           <div class="pager-group">
@@ -152,6 +156,7 @@
             class="logo-img"
             src="@/assets/image/ic_home_logo.png"
             draggable="false"
+            @click="logoClick"
           />
           <div style="flex: 1"></div>
           <div
@@ -520,7 +525,9 @@ export default {
     // test1[0].style.width = '20px'
   },
   methods: {
-    //
+    logoClick() {
+      this.$router.push({ name: 'index' })
+    },
     onChildUpdate(newValue) {
       console.log('index', newValue)
       this.navigationStatus = newValue
@@ -632,6 +639,7 @@ export default {
     height: 38px;
     margin-top: 40px;
     margin-bottom: 100px;
+    cursor: pointer;
   }
 }
 .main-warper {
@@ -752,7 +760,8 @@ export default {
   width: 100%;
   background: #fbfbfd;
   height: 100%;
-  padding-bottom: 0px;
+
+  padding: 0px 20px;
 
   .header {
     max-width: 1200px;

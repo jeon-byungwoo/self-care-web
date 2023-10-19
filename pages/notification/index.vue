@@ -250,7 +250,7 @@ export default {
     width: 100%;
     max-width: 1200px;
     margin: auto;
-    padding: 40px 0px 100px 0px;
+    padding: 40px 20px 100px 20px;
     .notification-title {
       color: #333;
       font-size: 36px;

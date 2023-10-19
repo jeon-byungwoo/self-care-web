@@ -11,14 +11,12 @@
         </div>
         <div class="info-area">
           <div class="first-text-area">
-            <div class="bold-text">건강체크</div>
-            <div class="text">는 3개월 이내에 추가로</div>
+            <div class="bold-text">{{ message }}</div>
           </div>
-          <div class="text" :style="'margin-top:12px'">진행할 수 없습니다.</div>
         </div>
         <div style="flex: 1"></div>
         <div class="btn-area">
-          <div class="btn-done" @click="$router.go(-1)">확인</div>
+          <div class="btn-done" @click="closeAction">확인</div>
         </div>
       </div>
     </div>
@@ -28,11 +26,15 @@
 <script>
 export default {
   name: 'howToView',
+  props: ['message'],
   data() {
     return {}
   },
   methods: {
     preClick() {},
+    closeAction() {
+      this.$emit('closeAction', 'messageDialog')
+    },
   },
 }
 </script>
@@ -62,7 +64,7 @@ export default {
 
   /* 임시 지정 */
   width: 500px;
-  height: 400px;
+  height: 350px;
   border-radius: 30px;
 }
 .img-area {

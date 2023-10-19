@@ -156,6 +156,7 @@ export default {
     height: 343x;
     margin: auto;
     display: flex;
+    padding: 0px 20px;
     flex-direction: column;
     .top-group {
       width: 100%;

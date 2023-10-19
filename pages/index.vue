@@ -14,7 +14,9 @@
       <div class="title-group">
         <div class="title">셀프케어 선정 인기 제품</div>
         <div class="product-detail-group">
-          <div class="product-detail">제품 전체보기 ></div>
+          <div class="product-detail" @click="$router.push({ name: 'store' })">
+            제품 전체보기 >
+          </div>
         </div>
       </div>
       <div class="item-group">
@@ -75,7 +77,12 @@
         </div>
       </div>
 
-      <div class="mobile-hot-item-detail">더보기</div>
+      <div
+        class="mobile-hot-item-detail"
+        @click="$router.push({ name: 'store' })"
+      >
+        더보기
+      </div>
     </div>
     <div class="magazine-group" v-if="!navigationStatus">
       <div class="magazine-title">셀프케어 매거진</div>
@@ -84,7 +91,12 @@
           셀프케어에서 전달하는 건강 소식을 모아보세요.
         </div>
         <div style="flex: 1"></div>
-        <div class="magazine-detail">제품 전체보기 ></div>
+        <div
+          class="magazine-detail"
+          @click="$router.push({ name: 'magazine' })"
+        >
+          제품 전체보기 >
+        </div>
       </div>
 
       <div class="magazine-item-group">
@@ -202,6 +214,14 @@ export default {
     },
   },
   mounted() {
+    if (typeof window !== undefined) {
+      this.userInfo =
+        localStorage != undefined
+          ? JSON.parse(localStorage.getItem('userInfo'))
+          : undefined
+      // Header.fetchData()
+      // console.log(Header.data)
+    }
     // var conditions = [
     //   { op: 'and', f: 'user_info.user_no', q: '=', v: '1' },
     //   { op: 'and', f: 'user_info.alive_flag', q: '=', v: '1' },
@@ -233,13 +253,11 @@ export default {
     //   console.log('err!! : ' + err)
     // }
   },
-  beforeDestroy() {},
-  created() {
-    Header.fetchData()
-    console.log(Header.data)
-  },
+
   data() {
     return {
+      userInfo: '',
+
       coalitionDialogStatus: false,
       navigationStatus: false,
       scrollStatus: true,
@@ -319,7 +337,7 @@ export default {
   width: 100%;
   margin: auto;
   max-width: 1200px;
-  padding: 100px 0px 0px 0px;
+  padding: 100px 20px 0px 20px;
 }
 .mobile-hot-item-detail {
   display: none;
@@ -344,13 +362,14 @@ export default {
   }
 }
 .item-group {
+  width: 100%;
   margin-top: 20px;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   grid-gap: 40px;
   .item-body {
-    width: 270px;
-    height: 446px;
+    width: 260px;
+    height: auto;
   }
 
   .item-img-group {
@@ -478,7 +497,7 @@ export default {
   width: 100%;
   max-width: 1200px;
   margin: auto;
-  padding: 20px 0px 150px 0px;
+  padding: 100px 20px 150px 20px;
   .magazine-title {
     font-size: 32px;
     font-family: 'score6';

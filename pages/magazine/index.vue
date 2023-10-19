@@ -165,6 +165,7 @@ export default {
     background-color: #fff;
     margin-top: 400px;
     margin-bottom: 100px;
+    padding: 0px 20px;
     .scroll-header-group {
       max-width: 1200px;
       margin: auto;
@@ -240,7 +241,7 @@ export default {
       }
 
       .magazine-item {
-        width: 45%;
+        width: 47%;
         height: 477px;
       }
       .magazine-item-image-group {

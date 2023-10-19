@@ -10,7 +10,7 @@ export default {
     return {
       naverClientId: 'n_Jfo39bgxlZcWQcQhYf',
       clientSecret: '8nfsmd6vRH',
-      callbackUrl: 'http://localhost:3000/naverLCallback',
+      callbackUrl: 'http://localhost:8080/naverLCallback',
     }
   },
   mounted() {
