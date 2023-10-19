@@ -28,7 +28,16 @@ export default {
         'X-Naver-Client-Id': this.naverClientId,
         'X-Naver-Client-Secret': this.clientSecret,
       }
-      const { data } = await this.$axios.get(url, { headers })
+      console.log('여기11')
+      // const { data } = await this.$axios.get(url, { headers })
+      await this.$axios
+        .get(url, { headers })
+        .then((res) => {
+          console.log('인서트 결과값:: ', JSON.stringify(res.data))
+        })
+        .catch(function (error) {
+          console.log('에러!!', err)
+        })
 
       console.log('data => ', data)
 
@@ -49,11 +58,6 @@ export default {
       console.log('*****naverUserInfo data***** => ', data)
       this.token = data.response.id
       this.email = data.response.email
-      // window.opener.document.getElementById('parentValue').value = this.token
-      // document.cookie = 'loginSuccess=true'
-      // document.cookie = 'data=' + this.token
-      // window.opener.postMessage('value', this.token)
-      // window.opener.parentValue = this.token
       window.parent.opener.setChildValue(this.token, this.email)
       window.close()
     },

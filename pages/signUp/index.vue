@@ -35,18 +35,18 @@
               <div>
                 <select v-model="city">
                   <option value="">시/도</option>
-                  <option>가</option>
-                  <option>나</option>
-                  <option>다</option>
+                  <option v-for="(item, index) in cityList" :key="index">
+                    {{ item.name }}
+                  </option>
                 </select>
               </div>
             </div>
             <div class="right-group">
-              <select v-model="region">
+              <select v-model="region" :disabled="city == ''">
                 <option value="">군/구</option>
-                <option>가</option>
-                <option>나</option>
-                <option>다</option>
+                <option v-for="(item, index) in townList" :key="index">
+                  {{ item.name }}
+                </option>
               </select>
             </div>
           </div>
@@ -57,9 +57,9 @@
               <div class="title-area">출생년도</div>
               <select v-model="birth">
                 <option value="">선택</option>
-                <option>가</option>
-                <option>나</option>
-                <option>다</option>
+                <option v-for="(item, index) in birthList" :key="index">
+                  {{ item }}
+                </option>
               </select>
             </div>
             <div class="right-group">
@@ -146,6 +146,8 @@
 
 <script>
 import Header from '../../components/header.vue'
+import moment from 'moment'
+
 export default {
   layout: 'default',
   name: 'IndexPage',
@@ -172,6 +174,9 @@ export default {
       check1: false,
       check2: false,
       check3: false,
+      cityList: [],
+      townList: [],
+      birthList: [],
     }
   },
   created() {
@@ -182,6 +187,19 @@ export default {
         this.email = this.$route.params.email
       }
     }
+  },
+  mounted() {
+    this.getCityTown(1)
+    let year = Number(moment().format('YYYY'))
+    for (let i = year; i > 1919; i--) {
+      this.birthList.push('' + i)
+    }
+  },
+  watch: {
+    city(value) {
+      this.townList = []
+      this.getCityTown(2)
+    },
   },
   methods: {
     onChildUpdate(newValue) {
@@ -219,12 +237,18 @@ export default {
         if (req == false) {
           return
         }
+        let selectCity = this.cityList.filter(
+          (item, index) => item.name == this.city
+        )
+        let selectTown = this.townList.filter(
+          (item, index) => item.name == this.region
+        )
         let obj = {
           table: 'user',
           name: this.name,
           phone: this.phone,
-          city: 1,
-          town: 1,
+          city: selectCity[0].no,
+          town: selectTown[0].no,
           birth: this.birth,
           gender: this.gender == '남' ? 0 : 1,
           email: this.email,
@@ -267,6 +291,53 @@ export default {
         // console.log(this.emailCheck())
       }
     },
+    getCityTown(type) {
+      let obj = {}
+      if (type == 1) {
+        obj = { table: 'city' }
+      } else {
+        let selectCity = this.cityList.filter(
+          (item, index) => item.name == this.city
+        )
+        console.log(selectCity)
+        let conditions = [{ q: '=', f: 'city_no', v: selectCity[0].no }]
+        obj = { table: 'town', conditions: conditions }
+      }
+      try {
+        this.$axios
+          .post('/api/select', obj)
+          .then((res) => {
+            console.log('인서트 결과값:: ', JSON.stringify(res.data))
+            console.log(res.data.length)
+            if (res.data.length > 0) {
+              if (type == 1) {
+                for (let i = 0; i < res.data.length; i++) {
+                  if (res.data[i].country_no == 1) {
+                    let cityObj = {
+                      no: res.data[i].no,
+                      name: res.data[i].ko,
+                    }
+                    this.cityList.push(cityObj)
+                  }
+                }
+              } else {
+                for (let i = 0; i < res.data.length; i++) {
+                  let townObj = {
+                    no: res.data[i].no,
+                    name: res.data[i].ko,
+                  }
+                  this.townList.push(townObj)
+                }
+              }
+            }
+          })
+          .catch(function (error) {
+            console.log('에러!!', err)
+          })
+      } catch (err) {
+        console.log('err!! : ' + err)
+      }
+    },
     async signUpDone() {
       if (
         this.lengthCheck(this.name) &&
@@ -289,12 +360,19 @@ export default {
         } else if (req1 == false) {
           return
         }
+
+        let selectCity = this.cityList.filter(
+          (item, index) => item.name == this.city
+        )
+        let selectTown = this.townList.filter(
+          (item, index) => item.name == this.region
+        )
         let obj = {
           table: 'user',
           name: this.name,
           phone: this.phone,
-          city: 1,
-          town: 1,
+          city: selectCity[0].no,
+          town: selectTown[0].no,
           birth: this.birth,
           gender: this.gender == '남' ? 0 : 1,
           email: this.email,
@@ -426,8 +504,7 @@ export default {
     width: 100%;
     max-width: 1200px;
     margin: auto;
-    padding-top: 100px;
-    padding-bottom: 100px;
+    padding: 100px 20px;
     .title {
       font-family: 'score7';
       font-size: 36px;

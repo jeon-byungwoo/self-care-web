@@ -6,7 +6,7 @@ export default {
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    titleTemplate: '%s - self-care',
+    titleTemplate: '%s',
     title: 'self-care',
     htmlAttrs: {
       lang: 'en',
@@ -67,7 +67,9 @@ export default {
   axios: {
     // Workaround to avoid enforcing hard-coded localhost:3000: https://github.com/nuxt-community/axios-module/issues/308
     // baseURL: 'https://self-care.kr/',
-    baseURL: process.env.BASE_URL
+    baseURL: process.env.BASE_URL,
+    proxyHeaders: false,
+    credentials: false
   },
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
   vuetify: {
