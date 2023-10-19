@@ -17,12 +17,15 @@
     "chart.js": "^3.9.1",
     "core-js": "^3.25.3",
     "hooper": "^0.3.4",
+    "moment": "^2.29.4",
     "nuxt": "^2.15.8",
+    "tiptap-vuetify": "^2.24.0",
     "vue": "^2.7.10",
     "vue-chartjs": "^4.1.2",
     "vue-server-renderer": "^2.7.10",
     "vue-slick": "^1.2.0",
     "vue-template-compiler": "^2.7.10",
+    "vuescroll": "^4.18.1",
     "vuetify": "^2.6.10"
   },
   "devDependencies": {

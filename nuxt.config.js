@@ -17,7 +17,13 @@ export default {
       { hid: 'description', name: 'description', content: '' },
       { name: 'format-detection', content: 'telephone=no' },
     ],
-    link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
+    link: [
+      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+      // Iconfonts for Vuetify. You need to leave only which one you use
+      { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons' },
+      { rel: 'stylesheet', href: 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css' },
+      { rel: 'stylesheet', href: 'https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/4.4.95/css/materialdesignicons.min.css' }
+    ],
 
     script: [
       {
@@ -32,7 +38,9 @@ export default {
   css: [],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: [],
+  plugins: [
+    { src: '~/plugins/TiptapVuetify', mode: 'client' }
+  ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
@@ -63,8 +71,8 @@ export default {
   //   },
   // },
   server: {
-    port: 3000,
-    host: '192.168.0.14'
+    // port: 3000,
+    // host: '192.168.0.14'
   },
   proxy: {
     '/oauth2.0': 'https://nid.naver.com/',
@@ -76,6 +84,7 @@ export default {
     // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
     '@nuxtjs/proxy',
+    "@nuxtjs/vuetify"
   ],
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
@@ -87,7 +96,7 @@ export default {
   vuetify: {
     customVariables: ['~/assets/variables.scss'],
     theme: {
-      dark: true,
+      dark: false,
       themes: {
         dark: {
           primary: colors.blue.darken2,
@@ -103,7 +112,9 @@ export default {
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
-  build: {},
+  build: {
+    transpile: ['vuetify/lib', "tiptap-vuetify"]
+  },
   //generate by directory
   generate: {
     dir: './public'
