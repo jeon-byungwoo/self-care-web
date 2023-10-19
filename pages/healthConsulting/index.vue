@@ -4,7 +4,11 @@
     <div v-if="!navigationStatus" class="main">
       <div v-if="aiConsultingMove" class="rolling-group">
         <div class="logo-area">
-          <img src="@/assets/image/login-logo.png" class="logo-img" />
+          <img
+            src="@/assets/image/login-logo.png"
+            class="logo-img"
+            @click="logoClick"
+          />
         </div>
         <div class="main-warper">
           <div class="pager-group">
@@ -152,6 +156,7 @@
             class="logo-img"
             src="@/assets/image/ic_home_logo.png"
             draggable="false"
+            @click="logoClick"
           />
           <div style="flex: 1"></div>
           <div
@@ -520,7 +525,9 @@ export default {
     // test1[0].style.width = '20px'
   },
   methods: {
-    //
+    logoClick() {
+      this.$router.push({ name: 'index' })
+    },
     onChildUpdate(newValue) {
       console.log('index', newValue)
       this.navigationStatus = newValue
@@ -536,15 +543,16 @@ export default {
       this.$refs.test.slideNext()
     },
     yesClick(index) {
-      if (this.stepNum == 1) {
-        console.log('yesClick', index)
-        this.stepList[0].stepList[index].selected = 1
-      }
+      // if (this.stepNum == 1) {
+      //   console.log('yesClick', index)
+      // }
+      this.stepList[this.stepNum - 1].stepList[index].selected = 1
     },
     noClick(index) {
-      if (this.stepNum == 1) {
-        this.stepList[0].stepList[index].selected = 2
-      }
+      // if (this.stepNum == 1) {
+      //   this.stepList[0].stepList[index].selected = 2
+      // }
+      this.stepList[this.stepNum - 1].stepList[index].selected = 2
     },
     doneClick() {
       if (this.stepNum == 0) {
@@ -594,7 +602,7 @@ export default {
 
 <style lang="scss" scoped>
 .header-display {
-  display: none;
+  display: none !important;
 }
 #snackbar {
   visibility: hidden;
@@ -631,6 +639,7 @@ export default {
     height: 38px;
     margin-top: 40px;
     margin-bottom: 100px;
+    cursor: pointer;
   }
 }
 .main-warper {
@@ -725,7 +734,7 @@ export default {
     }
     .rolling-ai-btn-group {
       position: relative;
-      margin-top: 0px;
+      margin-top: 40px;
       width: 100%;
       display: flex;
       justify-content: center;
@@ -751,7 +760,8 @@ export default {
   width: 100%;
   background: #fbfbfd;
   height: 100%;
-  padding-bottom: 0px;
+
+  padding: 0px 20px;
 
   .header {
     max-width: 1200px;
@@ -946,6 +956,7 @@ export default {
         }
       }
       .radio-dicease-no {
+        margin-top: 50px;
       }
       .radio-area {
         margin-top: 50px;

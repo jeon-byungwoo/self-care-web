@@ -183,8 +183,7 @@ export default {
   width: 100%;
   max-width: 1200px;
   margin: auto;
-  padding-top: 100px;
-  padding-bottom: 100px;
+  padding: 100px 20px;
   background: white;
   .main-warper-group {
     display: flex;

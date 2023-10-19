@@ -1,7 +1,7 @@
 <template>
   <div>
-    <Header> </Header>
-    <div class="main">
+    <Header @update="onChildUpdate"> </Header>
+    <div class="main" v-if="!navigationStatus">
       <div class="banner-group">
         <div class="title">셀프케어 스토어</div>
         <div class="title-sub">
@@ -129,10 +129,15 @@ export default {
       console.log('click')
       this.$router.push({ name: 'productDetail' })
     },
+    onChildUpdate(newValue) {
+      console.log('index', newValue)
+      this.navigationStatus = newValue
+    },
   },
   data() {
     return {
       tabStatus: 1, //1 전체보기, 2 라이프, 3 영양성분, 4 후기
+      navigationStatus: false,
       categories: [
         {
           title: '여성건강',
@@ -363,7 +368,7 @@ export default {
     width: 100%;
     background-color: #fff;
     margin-top: 400px;
-    padding-bottom: 100px;
+    padding: 0px 20px 100px 20px;
     .scroll-header-group {
       max-width: 1200px;
       margin: auto;
@@ -676,7 +681,7 @@ export default {
             width: 15vw;
             align-items: center;
             cursor: pointer;
-            margin-bottom: 40px;
+            margin-bottom: 10px;
             .category-img {
               width: 15vw;
               height: 15vw;

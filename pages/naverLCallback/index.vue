@@ -1,5 +1,5 @@
 <template>
-  <div class="main-warper">main content</div>
+  <div class="main-warper"></div>
 </template>
 
 <script>
@@ -10,7 +10,9 @@ export default {
     return {
       naverClientId: 'n_Jfo39bgxlZcWQcQhYf',
       clientSecret: '8nfsmd6vRH',
-      callbackUrl: 'http://localhost:3000/naverLCallback',
+      callbackUrl: process.env.BASE_URL + '/naverLCallback',
+      token: '',
+      email: '',
     }
   },
   mounted() {
@@ -45,6 +47,15 @@ export default {
       console.log('headers => ', headers)
       const { data } = await this.$axios.get(url, { headers })
       console.log('*****naverUserInfo data***** => ', data)
+      this.token = data.response.id
+      this.email = data.response.email
+      // window.opener.document.getElementById('parentValue').value = this.token
+      // document.cookie = 'loginSuccess=true'
+      // document.cookie = 'data=' + this.token
+      // window.opener.postMessage('value', this.token)
+      // window.opener.parentValue = this.token
+      window.parent.opener.setChildValue(this.token, this.email)
+      window.close()
     },
   },
 }
@@ -52,11 +63,5 @@ export default {
 
 <style lang="scss" scoped>
 .main-warper {
-  width: 100%;
-  max-width: 1080px;
-  min-width: 960px;
-  margin: auto;
-  height: 100vh;
-  background-color: aqua;
 }
 </style>

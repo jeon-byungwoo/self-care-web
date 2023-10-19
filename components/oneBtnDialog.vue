@@ -143,7 +143,7 @@ export default {
 
     /* 임시 지정 */
     width: 80%;
-    height: 40%;
+    height: auto;
     border-radius: 30px;
     padding: 0px 20px;
   }

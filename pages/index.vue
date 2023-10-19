@@ -12,9 +12,11 @@
     <survey v-if="!navigationStatus" />
     <div class="hot-item-group" v-if="!navigationStatus">
       <div class="title-group">
-        <div class="title">셀프케어 선정 인기 제품1234567890</div>
+        <div class="title">셀프케어 선정 인기 제품</div>
         <div class="product-detail-group">
-          <div class="product-detail">제품 전체보기 ></div>
+          <div class="product-detail" @click="$router.push({ name: 'store' })">
+            제품 전체보기 >
+          </div>
         </div>
       </div>
       <div class="item-group">
@@ -75,7 +77,12 @@
         </div>
       </div>
 
-      <div class="mobile-hot-item-detail">더보기</div>
+      <div
+        class="mobile-hot-item-detail"
+        @click="$router.push({ name: 'store' })"
+      >
+        더보기
+      </div>
     </div>
     <div class="magazine-group" v-if="!navigationStatus">
       <div class="magazine-title">셀프케어 매거진</div>
@@ -84,7 +91,12 @@
           셀프케어에서 전달하는 건강 소식을 모아보세요.
         </div>
         <div style="flex: 1"></div>
-        <div class="magazine-detail">제품 전체보기 ></div>
+        <div
+          class="magazine-detail"
+          @click="$router.push({ name: 'magazine' })"
+        >
+          제품 전체보기 >
+        </div>
       </div>
 
       <div class="magazine-item-group">
@@ -120,7 +132,7 @@
         </div>
       </div>
     </div>
-    <Footer v-if="!navigationStatus"></Footer>
+    <Footer v-if="!navigationStatus" @sendData="footerSendData"></Footer>
   </div>
 </template>
 
@@ -157,6 +169,17 @@ export default {
       console.log(newPw)
       console.log(confirmPw)
     },
+    footerSendData(status) {
+      console.log(status)
+      //status 1 - 브랜드 스토리, 2 - 제휴/입점 문의, 3 - 이용약관, 4 - 개인정보, 5 - 고객센터
+      if (status == 1) {
+      } else if (status == 2) {
+        this.coalitionDialogStatus = true
+      } else if (status == 3) {
+      } else if (status == 4) {
+      } else if (status == 5) {
+      }
+    },
     select(tableName, conditions, listObject) {
       let obj = {}
       obj['table'] = tableName
@@ -191,6 +214,14 @@ export default {
     },
   },
   mounted() {
+    if (typeof window !== undefined) {
+      this.userInfo =
+        localStorage != undefined
+          ? JSON.parse(localStorage.getItem('userInfo'))
+          : undefined
+      // Header.fetchData()
+      // console.log(Header.data)
+    }
     // var conditions = [
     //   { op: 'and', f: 'user_info.user_no', q: '=', v: '1' },
     //   { op: 'and', f: 'user_info.alive_flag', q: '=', v: '1' },
@@ -222,13 +253,11 @@ export default {
     //   console.log('err!! : ' + err)
     // }
   },
-  beforeDestroy() {},
-  created() {
-    Header.fetchData()
-    console.log(Header.data)
-  },
+
   data() {
     return {
+      userInfo: '',
+
       coalitionDialogStatus: false,
       navigationStatus: false,
       scrollStatus: true,
@@ -308,7 +337,7 @@ export default {
   width: 100%;
   margin: auto;
   max-width: 1200px;
-  padding: 100px 0px 0px 0px;
+  padding: 100px 20px 0px 20px;
 }
 .mobile-hot-item-detail {
   display: none;
@@ -333,13 +362,14 @@ export default {
   }
 }
 .item-group {
+  width: 100%;
   margin-top: 20px;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   grid-gap: 40px;
   .item-body {
-    width: 270px;
-    height: 446px;
+    width: 260px;
+    height: auto;
   }
 
   .item-img-group {
@@ -467,7 +497,7 @@ export default {
   width: 100%;
   max-width: 1200px;
   margin: auto;
-  padding: 20px 0px 150px 0px;
+  padding: 100px 20px 150px 20px;
   .magazine-title {
     font-size: 32px;
     font-family: 'score6';

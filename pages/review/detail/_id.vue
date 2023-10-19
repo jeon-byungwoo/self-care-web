@@ -1,7 +1,7 @@
 <template>
   <div>
-    <Header></Header>
-    <div class="main">
+    <Header @update="onChildUpdate"> </Header>
+    <div class="main" v-if="!navigationStatus">
       <div class="body">
         <div class="review-detail-title-back-area">
           <div class="review-detail-title">고객 후기</div>
@@ -57,7 +57,9 @@
         </div>
 
         <div class="review-list-move-area">
-          <div class="review-list-move-btn">목록보기</div>
+          <div class="review-list-move-btn" @click="$router.go(-1)">
+            목록보기
+          </div>
         </div>
       </div>
     </div>
@@ -72,6 +74,7 @@ export default {
   },
   data() {
     return {
+      navigationStatus: false,
       no: '0',
       name: '김민우',
       medicineName: 'test',
@@ -99,12 +102,18 @@ export default {
       ],
     }
   },
+  methods: {
+    onChildUpdate(newValue) {
+      console.log('index', newValue)
+      this.navigationStatus = newValue
+    },
+  },
 }
 </script>
 
 <style lang="scss" scoped>
 .main {
-  margin-top: 197px;
+  margin-top: 40px;
   .body {
     width: 100%;
     max-width: 1200px;
@@ -257,6 +266,166 @@ export default {
         color: #333;
         border: 1px solid #333;
         background-color: #fff;
+      }
+    }
+  }
+}
+@media (max-width: 720px) {
+  .main {
+    margin-top: 40px;
+    .body {
+      width: 100%;
+      max-width: 1200px;
+      margin: auto;
+      padding: 20px;
+      .review-detail-title-back-area {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        .review-detail-title {
+          color: #333;
+          font-size: 30px;
+          font-family: 'score6';
+        }
+        .review-detail-back {
+          width: 60px;
+          height: 35px;
+          border: 1px solid #ddd;
+          background-color: #fff;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          color: #333333;
+          font-size: 14px;
+          font-family: 'score6';
+          border-radius: 25px;
+        }
+      }
+      .review-detail-content-group {
+        display: block;
+        margin-top: 40px;
+        .line {
+          width: 10px;
+          background-color: #f8f8f8;
+          margin-left: 0px;
+          margin-right: 0px;
+        }
+
+        .review-detail-left-content {
+          flex: 0.65;
+          .review-detail-top-name-area {
+            padding: 0px 0px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            .reiview-detail-top-user-name {
+              color: #333;
+              font-size: 16px;
+              font-family: 'score6';
+            }
+            .review-detail-date {
+              margin-right: 0px;
+              color: #666;
+              font-size: 14px;
+              font-family: 'score2';
+            }
+          }
+          .rating-area {
+            padding: 0px 0px;
+            margin-top: 10px;
+            display: flex;
+
+            // * + * {
+            //   margin-left: 8px;
+            // }
+
+            .rating-img {
+              width: 16px;
+              height: 16px;
+            }
+          }
+          .rep-image {
+            width: 100%;
+            height: auto;
+            margin-top: 20px;
+          }
+          .contents {
+            padding: 0px 0px;
+            max-lines: 3;
+            margin-top: 30px;
+            color: #333;
+            font-size: 16px;
+            font-family: 'score2';
+          }
+        }
+        .review-detail-right-content {
+          margin-top: 40px;
+          flex: 0.35;
+          .review-detail-right-title {
+            padding: 0px 0px;
+            color: #333;
+            font-size: 16px;
+            font-family: 'score6';
+          }
+          .review-detail-medicine-list-item {
+            width: 100%;
+            margin-top: 30px;
+            margin-left: 10px;
+            display: flex;
+            .medicine-list-item-rep-image {
+              width: 25%;
+              height: auto;
+            }
+            .medicine-list-item-name-tags-area {
+              display: flex;
+              flex-direction: column;
+              justify-content: flex-start;
+              margin-left: 20px;
+              .medicine-list-item-name {
+                color: #333;
+                font-size: 14px;
+                font-family: 'score4';
+              }
+              .medicine-list-item-tags-area {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+                margin-top: 10px;
+                .medicine-list-item-tags {
+                  padding: 9px 12px 7px 12px;
+                  border-width: 1px;
+                  border-style: solid;
+                  border-color: #e5e5e5;
+                  border-radius: 20px;
+                  text-align: center;
+                  font-size: 10px;
+                  font-family: 'score2';
+                  color: #666666;
+                }
+              }
+            }
+          }
+        }
+      }
+      .review-list-move-area {
+        margin-top: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        .review-list-move-btn {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 100%;
+          height: 60px;
+          cursor: pointer;
+          font-size: 16px;
+          font-family: 'score5';
+          color: #333;
+          border: 1px solid #333;
+          background-color: #fff;
+        }
       }
     }
   }

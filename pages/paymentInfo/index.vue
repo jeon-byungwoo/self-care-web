@@ -1,7 +1,7 @@
 <template>
   <div>
-    <Header></Header>
-    <div class="main">
+    <Header @update="onChildUpdate"> </Header>
+    <div class="main" v-if="!navigationStatus">
       <div class="body">
         <div class="box">
           <div class="buyer-title-text">구매자 정보</div>
@@ -12,23 +12,52 @@
               <div class="text-area">주문자 이메일</div>
             </div>
             <div class="input-group">
-              <input class="input-area" />
-              <input class="input-area" />
-              <input class="input-area" />
+              <input
+                class="input-area"
+                :value="buyerName"
+                @input="buyerName = $event.target.value"
+              />
+              <input
+                class="input-area"
+                :value="buyerPhone"
+                @input="buyerPhone = $event.target.value"
+              />
+              <input
+                class="input-area"
+                :value="buyerEmail"
+                @input="buyerEmail = $event.target.value"
+              />
             </div>
           </div>
           <div class="mobile-text-inpit-group">
             <div class="text-area">주문자 이름</div>
-            <input class="input-area" />
+            <input
+              class="input-area"
+              :value="buyerName"
+              @input="buyerName = $event.target.value"
+            />
             <div class="text-area">주문자 연락처</div>
-            <input class="input-area" />
+            <input
+              class="input-area"
+              :value="buyerPhone"
+              @input="buyerPhone = $event.target.value"
+            />
             <div class="text-area">주문자 이메일</div>
-            <input class="input-area" />
+            <input
+              class="input-area"
+              :value="buyerEmail"
+              @input="buyerEmail = $event.target.value"
+            />
           </div>
           <div class="recipient-title-text-checkbox-area">
             <div class="recipient-title-text">받는사람 정보</div>
             <div class="recipient-checkbox-area">
-              <input type="checkbox" id="same" value="" />
+              <input
+                type="checkbox"
+                id="same"
+                :value="sameCheck"
+                v-model="sameCheck"
+              />
               <label for="same"></label>
               <div class="recipient-checkbox-label">주문자와 동일합니다.</div>
             </div>
@@ -46,34 +75,42 @@
               <div class="text-area">이름</div>
               <div class="text-area">연락처</div>
               <div class="text-area">우편번호</div>
-              <div class="text-area">나머지 주소</div>
+              <div class="text-area">주소</div>
+              <div class="text-area">상세 주소</div>
               <div class="text-area">배송 요청사항</div>
             </div>
             <div class="input-group">
-              <input class="input-area" />
-              <input class="input-area" />
+              <input class="input-area" v-model="receiptName" />
+              <input class="input-area" v-model="receiptPhone" />
               <div class="input-address-area">
-                <input class="input-area-address" />
-                <div class="address-search-btn">주소찾기</div>
+                <div class="input-area-address">{{ zoneCode }}</div>
+                <div class="address-search-btn" @click="addressOpen">
+                  주소찾기
+                </div>
               </div>
-              <input class="input-area" />
-              <input class="input-area" />
+              <div class="input-area">{{ roadAddress }}</div>
+              <input class="input-area" v-model="receiptDetailAddress" />
+              <input class="input-area" v-model="receiptDescript" />
             </div>
           </div>
           <div class="mobile-text-inpit-group">
             <div class="text-area">이름</div>
-            <input class="input-area" />
+            <input class="input-area" v-model="receiptName" />
             <div class="text-area">연락처</div>
-            <input class="input-area" />
+            <input class="input-area" v-model="receiptPhone" />
             <div class="text-area">우편번호</div>
             <div class="input-address-area">
-              <input class="input-area-address" />
-              <div class="address-search-btn">주소찾기</div>
+              <div class="input-area-address">{{ zoneCode }}</div>
+              <div class="address-search-btn" @click="addressOpen">
+                주소찾기
+              </div>
             </div>
-            <div class="text-area">나머지 주소</div>
-            <input class="input-area" />
+            <div class="text-area">주소</div>
+            <div class="input-area">{{ roadAddress }}</div>
+            <div class="text-area">상세 주소</div>
+            <input class="input-area" v-model="receiptDetailAddress" />
             <div class="text-area">배송 요청사항</div>
-            <input class="input-area" />
+            <input class="input-area" v-model="receiptDescript" />
           </div>
           <div class="payment-info-title-text">결제 정보</div>
           <div class="final-price-group">
@@ -122,7 +159,6 @@
     </div>
   </div>
 </template>
-
 <script>
 import Header from '../../components/header.vue'
 export default {
@@ -133,6 +169,18 @@ export default {
   },
   data() {
     return {
+      navigationStatus: false,
+      buyerName: '',
+      buyerPhone: '',
+      buyerEmail: '',
+      receiptName: '',
+      receiptPhone: '',
+      zoneCode: '',
+      roadAddress: '',
+      detailAddress: '',
+      receiptDetailAddress: '',
+      receiptDescript: '',
+      sameCheck: false,
       imgList: [
         { url: require('@/assets/image/img_medicine_test.png') },
         { url: require('@/assets/image/img_medicine_test.png') },
@@ -155,18 +203,51 @@ export default {
       ],
     }
   },
-  methods: {},
+  watch: {
+    sameCheck(value) {
+      // console.log(value)
+      if (value == true) {
+        this.receiptName = this.buyerName
+        this.receiptPhone = this.buyerPhone
+      }
+    },
+    buyerName(value) {
+      if (this.sameCheck == true) {
+        this.receiptName = value
+      }
+    },
+    buyerPhone(value) {
+      if (this.sameCheck == true) {
+        this.receiptPhone = value
+      }
+    },
+  },
+  methods: {
+    onChildUpdate(newValue) {
+      console.log('index', newValue)
+      this.navigationStatus = newValue
+    },
+    addressOpen() {
+      new daum.Postcode({
+        oncomplete: (data) => {
+          console.log(data)
+          this.zoneCode = data.zonecode
+          this.roadAddress = data.roadAddress
+        },
+      }).open()
+    },
+  },
 }
 </script>
 
 <style lang="scss" scoped>
 .main {
-  margin-top: 197px;
+  margin-top: 40px;
   .body {
     width: 100%;
     max-width: 1200px;
     margin: auto;
-    padding: 40px 0px 100px 0px;
+    padding: 40px 20px 100px 20px;
     .box {
       border: 1px solid #ddd;
       background-color: #fff;
@@ -246,6 +327,8 @@ export default {
             width: 100%;
             border: 1px solid #dddddd;
             background-color: #fff;
+            display: flex;
+            align-items: center;
             color: #333;
             font-size: 16px;
             font-family: 'score5';
@@ -266,6 +349,8 @@ export default {
               font-size: 16px;
               font-family: 'score5';
               vertical-align: baseline;
+              display: flex;
+              align-items: center;
               padding: 0px 20px;
               height: 45px;
               margin-top: 15px;
@@ -535,6 +620,8 @@ export default {
             font-size: 14px;
             font-family: 'score5';
             vertical-align: baseline;
+            display: flex;
+            align-items: center;
             padding: 0px 10px;
             height: 45px;
             margin-top: 5px;
@@ -549,6 +636,8 @@ export default {
               background-color: #fff;
               color: #333;
               font-size: 14px;
+              display: flex;
+              align-items: center;
               font-family: 'score5';
               vertical-align: baseline;
               padding: 0px 10px;
@@ -597,6 +686,8 @@ export default {
               font-size: 16px;
               font-family: 'score5';
               vertical-align: baseline;
+              display: flex;
+              align-items: center;
               padding: 0px 20px;
               height: 45px;
               margin-top: 15px;
