@@ -16,7 +16,7 @@
         </v-toolbar>
         
         <div class="pa-4">
-            <div class="elevation-2">
+            <div class="elevation-2 editor_cover">
                 <Editor ref="editor"/>
             </div>
         </div>
@@ -61,5 +61,9 @@ export default {
     padding: 16px;
     min-height: 84vh;
     overflow-y: auto;
+}
+.editor_cover {
+    width: 1220px;
+    margin: auto;
 }
 </style>
