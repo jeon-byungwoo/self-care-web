@@ -1,1 +1,0 @@
-(window.webpackJsonp=window.webpackJsonp||[]).push([[25],{544:function(n,e,l){"use strict";l.r(e);var t={layout:"Login",name:"IndexPage"},o=l(25),component=Object(o.a)(t,(function(){return(0,this._self._c)("div",[this._v("Hello")])}),[],!1,null,null,null);e.default=component.exports}}]);

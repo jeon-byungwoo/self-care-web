@@ -6,7 +6,7 @@ export default {
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    titleTemplate: '%s - self-care',
+    titleTemplate: '%s',
     title: 'self-care',
     htmlAttrs: {
       lang: 'en',
@@ -20,18 +20,17 @@ export default {
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
       // Iconfonts for Vuetify. You need to leave only which one you use
-      // { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons' },
-      // { rel: 'stylesheet', href: 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css' },
-      // { rel: 'stylesheet', href: 'https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/4.4.95/css/materialdesignicons.min.css' }
+      { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons' },
+      { rel: 'stylesheet', href: 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css' },
+      { rel: 'stylesheet', href: 'https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/4.4.95/css/materialdesignicons.min.css' }
     ],
 
     script: [
-      {
-        src: 'https://developers.kakao.com/sdk/js/kakao.js',
-      },
+      { src: 'https://developers.kakao.com/sdk/js/kakao.js' },
       { src: 'https://static.nid.naver.com/js/naverLogin_implicit-1.0.3.js' },
       { src: 'http://code.jquery.com/jquery-1.11.3.min.js' },
-      { src: "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js" }
+      { src: "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js" },
+
     ]
   },
 
@@ -40,7 +39,6 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
-    // { src: '~/plugins/TiptapVuetify', mode: 'client' }
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -54,14 +52,15 @@ export default {
     // 'axios'
   ],
 
-
   server: {
     port: 8080,
+    // port: 443,
     // host: '192.168.0.14'
+    // host: '211.37.179.90'
   },
   proxy: {
-    '/oauth2.0': 'https://nid.naver.com/',
-    '/v1': 'https://openapi.naver.com/'
+    '^/oauth2.0': { target: 'https://nid.naver.com/', changeOrigin: true, pathRewrite: { '^/oauth2.0/': '/' } },
+    '^/v1': { target: 'https://openapi.naver.com/', changeOrigin: true, pathRewrite: { '^/v1/': '/' } },
   },
 
   // Modules: https://go.nuxtjs.dev/config-modules
@@ -69,14 +68,13 @@ export default {
     // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
     '@nuxtjs/proxy',
-    "@nuxtjs/vuetify",
-    '@nuxtjs/dotenv'
+    // "@nuxtjs/vuetify",
+    // '@nuxtjs/dotenv'
   ],
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
     // Workaround to avoid enforcing hard-coded localhost:3000: https://github.com/nuxt-community/axios-module/issues/308
-    // baseURL: 'https://self-care.kr/',
-    baseURL: process.env.BASE_URL
+    baseURL: process.env.BASE_URL,
   },
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
   vuetify: {
@@ -99,7 +97,6 @@ export default {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
-    // transpile: ['vuetify/lib', "tiptap-vuetify"]
   },
   //generate by directory
   generate: {

@@ -77,7 +77,7 @@ export default {
       pw: '',
       naverClientId: 'n_Jfo39bgxlZcWQcQhYf',
       clientSecret: '8nfsmd6vRH',
-      callbackUrl: process.env.BASE_URL + '/naverLCallback',
+      callbackUrl: 'http://localhost:8080' + '/naverLCallback',
       parentValue: '',
       snackbarMessage: '이메일 및 비밀번호를 확인해주세요.',
     }
@@ -87,12 +87,13 @@ export default {
   },
   methods: {
     async naverLoginBtn() {
+      console.log(this.callbackUrl)
       const url =
         `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=n_Jfo39bgxlZcWQcQhYf&redirect_uri=` +
         this.callbackUrl
 
       console.log('==================url====================')
-      console.log(url)
+      // console.log(url)
       console.log(this.parentValue)
       // window.location.href = url
 
