@@ -26,12 +26,13 @@ export default {
     ],
 
     script: [
-      {
-        src: 'https://developers.kakao.com/sdk/js/kakao.js',
-      },
+      { src: 'https://developers.kakao.com/sdk/js/kakao.js' },
       { src: 'https://static.nid.naver.com/js/naverLogin_implicit-1.0.3.js' },
       { src: 'http://code.jquery.com/jquery-1.11.3.min.js' },
-      { src: "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js" }
+      { src: "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js" },
+      {src:"../node_modules/@ckeditor/ckeditor5-build-classic/build/ckeditor.js"},
+      {src:"../node_modules/@ckeditor/ckeditor5-vue/dist/ckeditor.js"}
+
     ]
   },
 
@@ -56,7 +57,7 @@ export default {
 
 
   server: {
-    port: 8080,
+    port: 3000,
     // host: '192.168.0.14'
   },
   proxy: {
