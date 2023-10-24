@@ -10,29 +10,8 @@
         ref="test"
         class="hooper"
       >
-        <slide>
-          <img
-            class="rolling-banner"
-            src="@/assets/image/selfcare_banner_1.jpg"
-          />
-        </slide>
-        <slide>
-          <img
-            class="rolling-banner"
-            src="@/assets/image/selfcare_banner_2.jpg"
-          />
-        </slide>
-        <slide>
-          <img
-            class="rolling-banner"
-            src="@/assets/image/selfcare_banner_3.jpg"
-          />
-        </slide>
-        <slide>
-          <img
-            class="rolling-banner"
-            src="@/assets/image/selfcare_banner_4.jpg"
-          />
+        <slide v-for="(item, i) in bannerList" :key="i">
+          <img class="rolling-banner" :src="item.image" />
         </slide>
         <!-- <hooper-navigation slot="hooper-addons"></hooper-navigation>
         <hooper-pagination slot="hooper-addons"></hooper-pagination> -->
@@ -78,7 +57,12 @@ export default {
     HooperNavigation,
   },
   data() {
-    return {}
+    return {
+      bannerList: [],
+    }
+  },
+  mounted() {
+    this.getBannerList()
   },
   methods: {
     prevClick() {
@@ -86,6 +70,37 @@ export default {
     },
     nextClick() {
       this.$refs.test.slideNext()
+    },
+    getBannerList() {
+      let obj = {}
+      let conditions = [{ q: '=', f: 'status', v: '활성' }]
+      obj = { table: 'banner', conditions: conditions }
+
+      try {
+        this.$axios
+          .post('/api/select', obj)
+          .then((res) => {
+            console.log('인서트 결과값:: ', JSON.stringify(res.data))
+            console.log(res.data.length)
+            if (res.data.length > 0) {
+              for (let i = 0; i < res.data.length; i++) {
+                let bannerObj = {
+                  no: res.data[i].no,
+                  image: process.env.BASE_URL + res.data[i].image,
+                  type: res.data[i].type,
+                  priority: res.data[i].priority,
+                  content: res.data[i].content,
+                }
+                this.bannerList.push(bannerObj)
+              }
+            }
+          })
+          .catch(function (error) {
+            console.log('에러!!', err)
+          })
+      } catch (err) {
+        console.log('err!! : ' + err)
+      }
     },
   },
 }

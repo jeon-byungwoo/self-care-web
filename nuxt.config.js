@@ -30,7 +30,7 @@ export default {
         src: 'https://developers.kakao.com/sdk/js/kakao.js',
       },
       { src: 'https://static.nid.naver.com/js/naverLogin_implicit-1.0.3.js' },
-      { src: 'http://code.jquery.com/jquery-1.11.3.min.js' },
+      { src: 'https://code.jquery.com/jquery-1.11.3.min.js' },
       { src: "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js" }
     ]
   },
@@ -54,14 +54,15 @@ export default {
     // 'axios'
   ],
 
-
   server: {
     port: 8080,
+    // port: 443,
     // host: '192.168.0.14'
+    // host: '211.37.179.90'
   },
   proxy: {
-    '/oauth2.0': 'https://nid.naver.com/',
-    '/v1': 'https://openapi.naver.com/'
+    '^/oauth2.0': { target: 'https://nid.naver.com/', changeOrigin: true, pathRewrite: { '^/oauth2.0/': '/' } },
+    '^/v1': { target: 'https://openapi.naver.com/', changeOrigin: true, pathRewrite: { '^/v1/': '/' } },
   },
 
   // Modules: https://go.nuxtjs.dev/config-modules
@@ -69,16 +70,13 @@ export default {
     // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
     '@nuxtjs/proxy',
-    "@nuxtjs/vuetify",
-    '@nuxtjs/dotenv'
+    // "@nuxtjs/vuetify",
+    // '@nuxtjs/dotenv'
   ],
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
     // Workaround to avoid enforcing hard-coded localhost:3000: https://github.com/nuxt-community/axios-module/issues/308
-    // baseURL: 'https://self-care.kr/',
     baseURL: process.env.BASE_URL,
-    proxyHeaders: false,
-    credentials: false
   },
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
   vuetify: {
