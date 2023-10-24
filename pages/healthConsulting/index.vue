@@ -428,7 +428,7 @@ export default {
       weight: '',
       diseaseCheck: 0,
       disease: '',
-      indicatorNum: 1,
+      indicatorNum: -1,
       stepList: [
         {
           stepList: [
@@ -519,10 +519,30 @@ export default {
     let test = document.getElementsByClassName('hooper-indicator')
     console.log(test)
     test[0].style.width = '12px'
+    test[0].style.height = '12px'
+    test[0].style.borderRadius = '12px'
+    test[0].style.border = '1px solid #32b783'
+    test[0].style.background = '#fff'
 
-    let test1 = document.getElementsByClassName('hooper-indicator.is-active')
+    let test1 = document.getElementsByClassName('hooper-indicator is-active')
     console.log(test1)
-    // test1[0].style.width = '20px'
+    test1[0].style.background = '#32b783'
+    // test[0].style.active.background = '#32b783'
+
+    test[1].style.width = '12px'
+    test[1].style.height = '12px'
+    test[1].style.borderRadius = '12px'
+    test[1].style.border = '1px solid #32b783'
+    test[1].style.background = '#fff'
+
+    test[2].style.width = '12px'
+    test[2].style.height = '12px'
+    test[2].style.borderRadius = '12px'
+    test[2].style.border = '1px solid #32b783'
+    test[2].style.background = '#fff'
+  },
+  watch: {
+    indicatorNum() {},
   },
   methods: {
     logoClick() {
@@ -535,6 +555,17 @@ export default {
     updateCarousel(payload) {
       console.log(payload.currentSlide)
       this.indicatorNum = payload.currentSlide
+      let test = document.getElementsByClassName('hooper-indicator')
+      console.log(test)
+      test[0].style.background = '#fff'
+
+      test[1].style.background = '#fff'
+
+      test[2].style.background = '#fff'
+
+      let test1 = document.getElementsByClassName('hooper-indicator is-active')
+      console.log(test1)
+      test1[0].style.background = '#32b783'
     },
     prevClick() {
       this.$refs.test.slidePrev()

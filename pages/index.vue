@@ -257,7 +257,6 @@ export default {
   data() {
     return {
       userInfo: '',
-
       coalitionDialogStatus: false,
       navigationStatus: false,
       scrollStatus: true,

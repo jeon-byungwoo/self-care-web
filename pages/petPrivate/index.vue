@@ -148,6 +148,10 @@ export default {
       //   test[0].style['overflow-y=hidden']
       // }
     },
+    productDetailClick() {
+      console.log('click')
+      this.$router.push({ name: 'productDetail' })
+    },
   },
   data() {
     return {
