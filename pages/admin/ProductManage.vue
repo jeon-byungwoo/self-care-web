@@ -9,32 +9,31 @@
             @click:row="clickRow"
         >
             <template v-slot:top>
-                <div class="product_toolbar">
-                    <div class="product_filter_wrapper">
-                        <div class="product_filter_wrapper_row">
-                            <v-text-field
-                                v-model="searchedText"
-                                hide-details
-                                dense
-                                placeholder="상품을 검색하세요."
-                                outlined
-                                class="product_filter_text_field"
-                                @key.enter="searchProduct"
-                            >
-                            </v-text-field>
-                            <v-btn 
-                                dense
-                                color="#2D7DC8"
-                                dark
-                                @click="searchProduct"
-                                class="ml-4"
-                            >
-                                검색
-                            </v-btn>
-                            <v-btn class="product_filter_btn_float_right" @click="editProduct">상품 추가</v-btn>
-                        </div>
-                    </div>
-                </div>
+                <!-- <div class="product_toolbar"> -->
+                <v-row class="ma-0 pa-2 d-flex align-center justify-center" >
+                    <v-col class="ma-0 pa-2 d-flex " cols="12" sm="4" md="4">
+                        <v-text-field
+                            v-model="searchedText"
+                            hide-details
+                            dense
+                            placeholder="상품을 검색하세요."
+                            outlined
+                            cols="12" sm="4" md="4"
+                            @key.enter="selectProduct"
+                        >
+                        </v-text-field>
+                        <v-btn 
+                            dense
+                            color="#2D7DC8"
+                            dark
+                            @click="selectProduct"
+                            class="ml-4"
+                        >
+                            검색
+                        </v-btn>
+                        <v-btn class="ml-4" @click="editProduct">상품 추가</v-btn>
+                    </v-col>
+                </v-row>
             </template>
             <template v-slot:[`item.alive`]="{item}">
                 <div class="text-center">{{item.alive == 0 ? '비활성' : '활성'}}</div>
@@ -47,10 +46,21 @@
                 />
                 <!-- {{item.i_r.length}} -->
             </template>
+            <template v-slot:[`item.hashtag`]="{item}">
+                <v-row class="ma-0 pa-0">
+                    <v-chip 
+                        v-for="(obj, index) in item.hashtag"
+                        :key="index"
+                        dense
+                    >
+                        {{obj}}
+                    </v-chip>
+                </v-row>
+            </template>
         </v-data-table>
         <v-dialog
             v-model="productPopup"
-            max-width="900"
+            max-width="1100"
             persistent
         >
             <ProductEdit
@@ -111,16 +121,15 @@ export default {
             await this.$axios.post('/admin/select', param).then(res => {
                 console.log("res.data : ", res.data)
                 res.data.filter(item => {
-                    item.i_r = JSON.parse(item.i_r)
-                    item.i_list = JSON.parse(item.i_list)
+                    if (item.i_r != null && item.i_r != undefined) item.i_r = JSON.parse(item.i_r)
+                    if (item.i_list != null && item.i_list != undefined) item.i_list = JSON.parse(item.i_list)
+                    if (item.hashtag != null && item.hashtag != undefined && item.hashtag != '') item.hashtag = JSON.parse(item.hashtag)
+                    item.cd = moment(item.cd).format('YYYY-MM-DD')
                 })
                 this.items = res.data
             }).catch(err => {
                 console.log("err : ", err)
             })
-        },
-        searchProduct () {
-            
         },
         clickRow(item) {
             console.log("clickRow : ", item)
@@ -129,6 +138,7 @@ export default {
             
         },
         closePopup(type) {
+            this.selectedProduct = null
             if (type == 'product') {
                 this.productPopup = !this.productPopup
                 this.selectProduct()
@@ -139,40 +149,13 @@ export default {
 
         },
         imgRequire(src) {
-            console.log("src : ", src)
             if(src != null || src != undefined || src != '') return "https://self-care.kr/"+src
             else return src
         },
     }
 }
 </script>
-<style lang="scss">
-.product_toolbar {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.product_filter_wrapper {
-    display: flex;
-    flex-direction: column;
-    margin: 0px;
-    padding: 4px;
-}
-.product_filter_wrapper_row {
-    display: flex;
-    flex-direction: row;
-    margin: 0px;
-    padding: 4px;
-    align-items: center;
-}
-.product_filter_btn_float_right {
-    float:right;
-    margin-left: 32px;
-}
-.product_filter_text_field {
-    margin-right: 16px;
-    min-width: 400px;
-}
+<style scopted>
 .product_main_image {
     width: 150px ;
     height: 150px ;
@@ -180,7 +163,4 @@ export default {
     background-position: center;
     border: none ;
 }
-// .product_custom-dialog.v-dialog:not(.v-dialog--fullscreen) {
-//   max-height: 100%;
-// }
 </style>
