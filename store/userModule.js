@@ -5,6 +5,7 @@ let USERMODULE = {
     state: () => ({
         userInfo: {},
         login: false,
+        table: "table test"
     }),
     mutations: {
         loginRegist (state, param) {
@@ -23,6 +24,9 @@ let USERMODULE = {
                 login: false,
             })
         },
+        setTable(state, table) {
+            state.table = table
+        }
     },
     actions: {
         logout(context) {
@@ -31,5 +35,9 @@ let USERMODULE = {
         loginRegist(context, param) {
             context.commit('loginRegist', param)
         },
+        setTable(context, table) {
+            context.commit('setTable', table)
+        }
     },
 }
+export default USERMODULE

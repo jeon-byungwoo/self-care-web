@@ -1,16 +1,16 @@
 <template>
-    <v-card class="main_card">
-        <v-app-bar flat class="app_bar">
-            <v-card-title class="app_bar_title">상품정보 {{productObj.no == null ? '등록' : '수정'}}</v-card-title>
+    <v-card >
+        <v-app-bar flat >
+            <v-card-title class="ma-0 pa-0">상품정보 {{productObj.no == null ? '등록' : '수정'}}</v-card-title>
         </v-app-bar>
-        <v-container class="main_container">
-            <div class="product_image_row">
-                <div class="product_title_row">
-                    <div class="product_main_iamge_title">
-                        <h3>대표 이미지</h3>
-                    </div>
-                    <div class="product_image_row ml-6">
-                        <h5>제품 이미지</h5>
+        <v-container class="main_container ma-0 pa-5">
+            <v-row class="ma-0 pa-0 align-center my-2" >
+                <v-col cols="12" sm="3" md="3" class="ma-0 pa-0 ">
+                    <h3>대표 이미지</h3>
+                </v-col>
+                <v-col cols="12" sm="9" md="9" class="ma-0 pa-0">
+                    <v-row class="ma-0 pa-0 align-center ">
+                        <h5 class="mr-3">제품 이미지</h5>
                         <v-file-input
                             multiple
                             placeholder="최대 10장의 이미지 등록 가능합니다"
@@ -20,8 +20,9 @@
                             v-model="files"
                             dense
                             hide-details
-                            style="width: 600px;"
+                            clearable
                             @change="fileAdded"
+                            @click:clear="removeAllFiles"
                         >
                             <template v-slot:selection="{ index, text }">
                                 <v-chip
@@ -41,54 +42,64 @@
                                 </span>
                             </template>
                         </v-file-input>
-                    </div>
-                </div>
-                
-            </div>
-            <div class="product_image_row">
-                <div class="product_title_component">
+                    </v-row>
+                </v-col>
+            </v-row>
+            <v-row class="ma-0 pa-0 align-center my-2" >
+                <v-col cols="12" sm="3" md="3" class="ma-0 pa-0 ">
                     <div
                         class="product_image"
                         :style="productObj.i_r != null ? {backgroundImage: 'url('+profileImageUrl(productObj.i_r)+')'} : ''"
                     >
-                        <v-file-input
-                            ref="multi_image_input"
-                            class="profile_image"
-                            id="imageUp"
-                            accept="image/*"
-                            v-model="profileImage"
-                            hide-spin-buttons 
-                            hide-input 
-                            hide-details
-                            @change="fileInfo"
-                            dark
-                            style="width:46px; height: 46px;"
-                        />
+                        <v-row class="ma-0 pa-0 ">
+                            <v-file-input
+                                ref="multi_image_input"
+                                class="ma-0 pa-2"
+                                id="imageUp"
+                                accept="image/*"
+                                v-model="profileImage"
+                                hide-spin-buttons 
+                                hide-input 
+                                hide-details
+                                @change="fileInfo"
+                                dark
+                                rounded
+                                dense
+                                prepend-icon="mdi-paperclip"
+                                :center-affix="true"
+                                style="width:44px; height: 44px; backgroundColor:gray;"
+                            >
+                            </v-file-input>
+                            <v-btn icon large depressed @click="deleteProductImage(index)" style="backgroundColor:gray;" dark v-if="productObj.i_r != null">
+                                <v-icon>mdi-trash-can-outline</v-icon>
+                            </v-btn>
+                        </v-row>
                     </div>
-                </div>
-                <div
-                    class="scroll-container ml-4"
-                >
+                </v-col>
+                <v-col cols="12" sm="9" md="9" class="ma-0 pa-0">
                     <div
-                        v-for="(obj, index) in files"
-                        :key="index"
-                        class="product_image"
-                        :style="obj != null ? {backgroundImage: 'url('+createFileUrl(obj)+')'} : ''"
+                        class="scroll-container"
                     >
-                        <v-btn icon large depressed @click="deleteProductImage(index)">
-                            <v-icon>mdi-trash-can-outline</v-icon>
-                        </v-btn>
+                        <div
+                            v-for="(obj, index) in filesUrls"
+                            :key="index"
+                            class="product_image"
+                            :style="obj != null ? {backgroundImage: 'url('+obj+')'} : ''"
+                        >
+                            <v-btn icon large depressed @click="deleteProductImage(index)" style="backgroundColor:gray;" dark>
+                                <v-icon>mdi-trash-can-outline</v-icon>
+                            </v-btn>
+                        </div>
                     </div>
-                </div>
-            </div>
-            <div class="product_row">
-                <div class="product_title_with_contents">
+                </v-col>
+            </v-row>
+            <v-row class="ma-0 pa-0 align-end justify-space-between">
+                <v-col cols="12" sm="3" md="3" class="ma-0 pa-0">
                     <v-btn-toggle 
                         v-model="productObj.status"
                         mandatory
                         dense
                         rounded
-                        class="basic-text-field"
                     >
                         <v-btn 
                             v-for="(obj, index) in statusObj"
@@ -96,12 +107,13 @@
                             :color="color"
                             :value="obj.value"
                             :outlined="obj.value != productObj.status"
+                            class="px-3"
                         >
                             {{obj.text}}
                         </v-btn>
                     </v-btn-toggle>
-                </div>
-                <div class="product_title_with_contents">
+                </v-col>
+                <v-col cols="12" sm="3" md="3" class="ma-0 pa-0 ml-4">
                     <h5>상품명</h5>
                     <v-text-field 
                         dense
@@ -112,8 +124,8 @@
                         v-model="productObj.name"
                     >
                     </v-text-field>
-                </div>
-                <div class="product_title_with_contents">
+                </v-col>
+                <v-col cols="12" sm="5" md="5" class="ma-0 pa-0 ml-4">
                     <h5>해시태그</h5>
                     <v-autocomplete
                         chips
@@ -123,7 +135,6 @@
                         outlined
                         placeholder="해시태그"
                         clearable
-                        class="autocomplete_hashtag"
                         :items="hashtags"
                         multiple
                         @keyup.enter="addHashtag"
@@ -149,103 +160,98 @@
                             >{{item}}</v-chip>
                         </template>
                     </v-autocomplete>
-                </div>
-            </div>
-            <div class="product_row">
-                <div class="product_title_with_contents">
+                </v-col>
+                <v-spacer />
+            </v-row>
+            <v-row class="ma-0 pa-0 align-end my-2">
+                <v-col cols="12" sm="3" md="3" class="ma-0 pa-0">
                     <h5>상품 판매가</h5>
                     <v-text-field 
                         dense
                         hide-details
                         outlined
                         placeholder="상품 판매가"
-                        class="basic-text-field"
                         v-model="productObj.p_sell"
                         suffix="원"
                         oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1').replace(/(\.\d{2}).+/g, '$1');" 
                         inputmode="numeric"
                     >
                     </v-text-field>
-                </div>
-                <div class="product_title_with_contents">
+                </v-col>
+                <v-col cols="12" sm="3" md="3" class="ma-0 pa-0 ml-4">
                     <h5>상품 할인가</h5>
                     <v-text-field 
                         dense
                         hide-details
                         outlined
                         placeholder="상품 할인가"
-                        class="basic-text-field"
                         v-model="productObj.p_discount"
                         suffix="원"
                         oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1').replace(/(\.\d{2}).+/g, '$1');" 
                         inputmode="numeric"
                     >
                     </v-text-field>
-                </div>
-                <div class="product_title_with_contents">
+                </v-col>
+                <v-col cols="12" sm="3" md="3" class="ma-0 pa-0 ml-4">
                     <h5>상품 할인율</h5>
                     <v-text-field 
                         dense
                         hide-details
                         outlined
                         placeholder="상품 할인율"
-                        class="basic-text-field"
                         v-model="productObj.p_discount_per"
                         suffix="%"
                         oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1').replace(/(\.\d{2}).+/g, '$1');" 
                         inputmode="numeric"
                     >
                     </v-text-field>
-                </div>
-            </div>
-            <div class="product_row">
-                <div class="product_title_with_contents">
+                </v-col>
+                <v-spacer/>
+            </v-row>
+            <v-row class="ma-0 pa-0 align-end my-2">
+                <v-col cols="12" sm="3" md="3" class="ma-0 pa-0">
                     <h5>배송비</h5>
                     <v-text-field 
                         dense
                         hide-details
                         outlined
                         placeholder="배송비"
-                        class="basic-text-field"
                         v-model="productObj.delivery_fee"
                         suffix="원"
                         oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1').replace(/(\.\d{2}).+/g, '$1');" 
                         inputmode="numeric"
                     >
                     </v-text-field>
-                </div>
-                <div class="product_title_with_contents">
+                </v-col>
+                <v-col cols="12" sm="3" md="3" class="ma-0 pa-0 ml-4">
                     <h5>배송 메모</h5>
                     <v-text-field 
                         dense
                         hide-details
                         outlined
                         placeholder="배송 메모"
-                        class="basic-text-field"
                         v-model="productObj.delivery_memo"
                     >
                     </v-text-field>
-                </div>
-                <div class="product_title_with_contents">
+                </v-col>
+                <v-col cols="12" sm="3" md="3" class="ma-0 pa-0 ml-4">
                     <h5>카테고리</h5>
                     <v-select 
                         dense
                         hide-details
                         outlined
-                        class="basic-text-field"
                         v-model="productObj.category"
                         :items="categories"
                     >
                     </v-select>
-                </div>
-                <div class="product_title_with_contents">
+                </v-col>
+                <v-col cols="12" sm="2" md="2" class="ma-0 pa-0 ml-4">
                     <h5>인큐텐 여부</h5>
                     <v-btn-toggle 
                         v-model="productObj.isIQT"
                         mandatory
                         dense
                         rounded
-                        class="basic-text-field"
                     >
                         <v-btn 
                             v-for="(obj, index) in IQTObj"
@@ -253,14 +259,15 @@
                             :color="color"
                             :value="obj.value"
                             :outlined="obj.value != productObj.isIQT"
+                            class="px-4"
                         >
                             {{obj.text}}
                         </v-btn>
                     </v-btn-toggle>
-                </div>
-            </div>
-            <div class="product_row">
-                <div class="product_title_with_contents">
+                </v-col>
+            </v-row>
+            <v-row class="ma-0 pa-0 align-end my-2">
+                <v-col cols="12" sm="6" md="6" class="ma-0 pa-0">
                     <h5>건강설문 추천 사항</h5>
                     <v-combobox
                         v-model="productObj.survay_recomand"
@@ -268,32 +275,31 @@
                         multiple
                         chips
                         closable-chips
-                        class="autocomplete_hashtag"
                         clearable
                         dense
                         hide-details
                         outlined
                     >
                     </v-combobox>
-                </div>
-            </div>
-            <div class="product_row">
-                <div class="product_title_with_contents">
+                </v-col>
+            </v-row>
+            <v-row class="ma-0 pa-0 align-end my-2">
+                <v-col cols="12" sm="12" md="12" class="ma-0 pa-0">
                     <h5>상품 상세 설명</h5>
-                    <div class="product_detail">
-                        <Editor ref="editor" 
-                        />
+                    <div class="product_detail elevation-2">
+                        <Editor ref="editor" />
                     </div>
-                </div>
-            </div>
+                </v-col>
+            </v-row>
         </v-container>
-        <v-footer class="footer">
+        <v-footer class="ma-0 pa-2 justify-end">
             <v-btn color="warning" @click="clickCancel">취소</v-btn>
-            <v-btn class="btn_done" color="success" @click="clickDone">저장</v-btn>
+            <v-btn class="ml-2" color="success" @click="clickDone">저장</v-btn>
         </v-footer>
     </v-card>
 </template>
 <script>
+
 import Editor from '@/components/admin/Editor.vue'
 import _ from 'lodash'
 export default {
@@ -323,6 +329,7 @@ export default {
             color: this.$vuetify.theme.themes.light.basicColor,
             profileImage: null,
             files: [],
+            filesUrls: [],
             prevFiles: [],
             currFiles: [],
             statusObj: [
@@ -345,28 +352,35 @@ export default {
                 {text:"면역 - 양호 x", value:"면역 - 양호 x"},
                 {text:"면역 - 경계 x", value:"면역 - 경계 x"},
             ],
-            content: null,
-            
+            content: '',
+            hostUrl: process.env.BASE_URL,
         }
     },
     mounted() {
-        // selectProduct = () => {
-        //     this.$axios.post('/admin/select', {
-        //         table: 'product',
-        //         conditions: [{"q":"=", "f":"no", "v":obj.no}]
-        //     })
-        // }
         this.selectProduct()  
     },
     methods: {
-        selectProduct() {
+        async selectProduct() {
             if (this.obj != null) {
                 Object.assign(this.productObj, this.obj)
-                this.$refs.editor.setContent(this.productObj.content)
-                this.profileImage = this.productObj.i_r
+                this.$refs.editor.setContents(this.productObj.content, 'product')
+                if (this.productObj.i_r.length > 0) {
+                    this.profileImage = this.productObj.i_r[0]
+                }
+                if (this.productObj.i_list.length > 0) {
+                    // this.files = this.productObj.i_list
+                    for (const i of this.productObj.i_list) {
+                        let url = this.imgRequire(i)
+                        let image = await this.convertUrl(url)
+                        this.files.push(image)
+                        this.filesUrls.push(url)
+                    }
+                }
             }
         },
         async clickDone() {
+            this.content = this.$refs.editor.editor.getHTML()
+            
             if (this.productObj.no != null || this.productObj.no != undefined) {
                 this.updateProduct()
             } else {
@@ -384,12 +398,8 @@ export default {
         fileInfo() {
             this.productObj.i_r = URL.createObjectURL(this.profileImage)
         },
-        createFileUrl(file) {
-            let url = URL.createObjectURL(file)
-            return this.profileImageUrl(url)
-        },
         profileImageUrl(url) {
-            if(url.includes('http://')) return url
+            if(url.includes('http')) return url
             else return this.hostUrl+url
         },
         deleteProductImage(index) {
@@ -397,6 +407,7 @@ export default {
         },
         fileAdded() {
             Object.assign(this.currFiles, this.prevFiles)
+            
             if (this.files.length + this.currFiles.length <= 10) {
                 this.files.push(...this.currFiles)
                 this.prevFiles = this.files
@@ -406,9 +417,16 @@ export default {
                 this.files = this.currFiles
                 this.currFiles = []
             }
+            this.filesUrls = []
+            for (const file of this.files) {
+                this.filesUrls.push(URL.createObjectURL(file))
+            }
         },
         imgRequire(src) {
-            if(!this.$isEmpty(src)) return "https://self-care.kr/"+src
+            if(src != null || src != undefined || src != '') {
+                if (src.includes("http")) return url
+                else return "https://self-care.kr/"+src
+            }
             else return src
         },
         addHashtag(event) {
@@ -434,7 +452,7 @@ export default {
                 category:this.productObj.category,
                 isIQT:this.productObj.isIQT,
                 survay_recomand:JSON.stringify(this.productObj.survay_recomand),
-                content:this.$refs.editor.content,
+                content:this.content,
                 part:this.productObj.part,
                 table: 'product',
             }
@@ -442,12 +460,9 @@ export default {
             for (const [key, value] of Object.entries(param)) {    
                 if (this.validateVariableExist(value)) delete param[key]
             }
-            console.log(param)
             this.$axios.post('/admin/insert', param).then(res => {
-                console.log("insert res : ", res.data)
                 if (res.data.length > 0) {
                     this.productObj = _.cloneDeep(res.data[0])
-                    console.log("this.productObj : ", this.productObj)
                     if (!this.validateVariableExist(this.profileImage)) {
                         this.updateImage(this.profileImage, 'i_r')
                     } 
@@ -472,7 +487,7 @@ export default {
                 category:this.productObj.category,
                 isIQT:this.productObj.isIQT,
                 survay_recomand:JSON.stringify(this.productObj.survay_recomand),
-                content:this.$refs.editor.content,
+                content:this.content,
                 part:this.productObj.part,
                 table: 'product',
                 conditions:[{q:"=",f:"no",v:this.productObj.no}]
@@ -481,9 +496,8 @@ export default {
             for (const [key, value] of Object.entries(param)) {    
                 if (this.validateVariableExist(value)) delete param[key]
             }
-            console.log("update param : ", param)
+
             this.$axios.post('/admin/update', param).then(res => {
-                console.log("update res : ", res)
                 if (!this.validateVariableExist(this.profileImage)) {
                     this.updateImage(this.profileImage, 'i_r')
                 } 
@@ -499,14 +513,13 @@ export default {
             formData.append('imageParam', text)
             formData.append('no', this.productObj.no)
             formData.append('table', 'product')
+            formData.append('conditions', JSON.stringify([{q:"=",f:"no",v:this.productObj.no}]))
             if (obj.length > 0) {
                 for (const file of obj) 
                     formData.append('files', file)
             } else {
                 formData.append('files', obj)
             }
-            
-            formData.append('conditions', JSON.stringify([{q:"=",f:"no",v:this.productObj.no}]))
 
             await this.$axios.post('/admin/updateMultipart', formData, {
                 headers: {'Content-Type': 'multipart/form-data'}
@@ -516,39 +529,29 @@ export default {
                 console.log("multipart error : ", err);
             })
         },
+        removeAllFiles() {
+            this.files = []
+            this.filesUrls = []
+        },
+        async convertUrl(url){
+            const response =  await fetch(url);
+            const data =  await response.blob();
+            const ext = await url.split(".").pop();
+            const filename = await url.split("/").pop()
+            const metadata = { type: `image/${ext}` };
+            return new File([data], filename, metadata);
+        },
     }
 }
 </script>
 <style lang="scss">
-.main_card {
-    margin: 0px;
-    padding: 0px;
-}
-.app_bar {
-    margin: 0px;
-    padding: 0px;
-}
-.app_bar_title {
-    margin: 0px;
-    padding: 0px;
-}
 .main_container {
     overflow-y: auto;
     height: 74vh !important;
     min-height: 74vh !important;
     max-height: 74vh !important;
     margin: 0px;
-    padding: 20px;
     max-width: none;
-}
-.footer {
-    margin: 0px;
-    padding: 16px;
-    flex:1;
-    justify-content: end;
-}
-.btn_done {
-    margin-left: 8px;
 }
 .product_image_row {
     flex-direction: row; 
@@ -608,15 +611,11 @@ div.scroll-container {
 }
 .product_detail {
     /* height: 200px; */
-    width: 860px;
+    width: 1060px;
 }
-.tiptap-vuetify-editor__content {
-    .ProseMirror {
-        height: 300px;
-        max-height: 300px;
-    }
+.tiptap {
+    height: fit-content;
+    min-height: 300px;
+    padding: 16px;
 }
-// .tiptap-vuetify-editor__content .ProseMirror {
-    
-// }
 </style>
