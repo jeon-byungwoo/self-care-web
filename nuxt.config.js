@@ -39,6 +39,7 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
+    '~/plugins/axios.js'
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -49,27 +50,15 @@ export default {
     // https://go.nuxtjs.dev/vuetify
     '@nuxtjs/vuetify',
     '@nuxtjs/dotenv'
-    // 'axios'
   ],
 
   server: {
     port: 8080,
-    // port: 443,
-    // host: '192.168.0.14'
-    // host: '211.37.179.90'
   },
-  proxy: {
-    '^/oauth2.0': { target: 'https://nid.naver.com/', changeOrigin: true, pathRewrite: { '^/oauth2.0/': '/' } },
-    '^/v1': { target: 'https://openapi.naver.com/', changeOrigin: true, pathRewrite: { '^/v1/': '/' } },
-  },
-
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
-    // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
     '@nuxtjs/proxy',
-    // "@nuxtjs/vuetify",
-    // '@nuxtjs/dotenv'
   ],
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {

@@ -13,26 +13,7 @@
         <slide v-for="(item, i) in bannerList" :key="i">
           <img class="rolling-banner" :src="item.image" />
         </slide>
-        <!-- <hooper-navigation slot="hooper-addons"></hooper-navigation>
-        <hooper-pagination slot="hooper-addons"></hooper-pagination> -->
-        <!-- <hooper-progress slot="hooper-addons"></hooper-progress> -->
       </hooper>
-
-      <!-- <div class="arrow-group">
-        <img
-          class="prev-img"
-          src="@/assets/image/btn_prev.png"
-          @click="prevClick"
-          draggable="false"
-        />
-        <div class="arrow-empty"></div>
-        <img
-          class="next-img"
-          src="@/assets/image/btn_next.png"
-          @click="nextClick"
-          draggable="false"
-        />
-      </div> -->
     </div>
   </div>
 </template>
