@@ -164,7 +164,21 @@
                 <v-spacer />
             </v-row>
             <v-row class="ma-0 pa-0 align-end my-2">
-                <v-col cols="12" sm="3" md="3" class="ma-0 pa-0">
+                <v-col cols="12" sm="3" md="3" class="ma-0 pa-0 pr-4">
+                    <h5>할인 전 가격</h5>
+                    <v-text-field 
+                        dense
+                        hide-details
+                        outlined
+                        placeholder="할인 전 가격"
+                        v-model="productObj.p_discount"
+                        suffix="원"
+                        oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1').replace(/(\.\d{2}).+/g, '$1');" 
+                        inputmode="numeric"
+                    >
+                    </v-text-field>
+                </v-col>
+                <v-col cols="12" sm="3" md="3" class="ma-0 pa-0 pr-4">
                     <h5>상품 판매가</h5>
                     <v-text-field 
                         dense
@@ -178,21 +192,21 @@
                     >
                     </v-text-field>
                 </v-col>
-                <v-col cols="12" sm="3" md="3" class="ma-0 pa-0 ml-4">
-                    <h5>상품 할인가</h5>
+                <v-col cols="12" sm="3" md="3" class="ma-0 pa-0 pr-4">
+                    <h5>구독 가격</h5>
                     <v-text-field 
                         dense
                         hide-details
                         outlined
-                        placeholder="상품 할인가"
-                        v-model="productObj.p_discount"
+                        placeholder="구독 가격"
+                        v-model="productObj.p_subscribe"
                         suffix="원"
                         oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1').replace(/(\.\d{2}).+/g, '$1');" 
                         inputmode="numeric"
                     >
                     </v-text-field>
                 </v-col>
-                <v-col cols="12" sm="3" md="3" class="ma-0 pa-0 ml-4">
+                <v-col cols="12" sm="3" md="3" class="ma-0 pa-0 pr-4">
                     <h5>상품 할인율</h5>
                     <v-text-field 
                         dense
@@ -315,6 +329,7 @@ export default {
                 p_sell: null,
                 p_discount: null,
                 p_discount_per: null,
+                p_subscribe: null,
                 delivery_fee: null,
                 delivery_memo: null,
                 hashtag: [],
@@ -404,6 +419,7 @@ export default {
         },
         deleteProductImage(index) {
             this.files.splice(index, 1)
+            this.filesUrls.splice(index, 1)
         },
         fileAdded() {
             Object.assign(this.currFiles, this.prevFiles)
@@ -435,7 +451,6 @@ export default {
                 this.hashtags.push(event.target.value)
                 this.productObj.hashtag.push(`${event.target.value}`)
             }
-            
         },
         validateVariableExist(value) {
             return (value == null || value == undefined || value == '' || value == '[]')
@@ -446,6 +461,7 @@ export default {
                 p_sell:this.productObj.p_sell,
                 p_discount:this.productObj.p_discount,
                 p_discount_per:this.productObj.p_discount_per,
+                p_subscribe: this.productObj.p_subscribe,
                 delivery_fee:this.productObj.delivery_fee,
                 delivery_memo:this.productObj.delivery_memo,
                 hashtag:JSON.stringify(this.productObj.hashtag),
@@ -481,6 +497,7 @@ export default {
                 p_sell:this.productObj.p_sell,
                 p_discount:this.productObj.p_discount,
                 p_discount_per:this.productObj.p_discount_per,
+                p_subscribe: this.productObj.p_subscribe,
                 delivery_fee:this.productObj.delivery_fee,
                 delivery_memo:this.productObj.delivery_memo,
                 hashtag:JSON.stringify(this.productObj.hashtag),
@@ -544,7 +561,7 @@ export default {
     }
 }
 </script>
-<style lang="scss">
+<style scoped>
 .main_container {
     overflow-y: auto;
     height: 74vh !important;
@@ -611,9 +628,10 @@ div.scroll-container {
 }
 .product_detail {
     /* height: 200px; */
-    width: 1060px;
+    width: 1000px;
 }
 .tiptap {
+    overflow: auto;
     height: fit-content;
     min-height: 300px;
     padding: 16px;
