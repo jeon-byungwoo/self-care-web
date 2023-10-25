@@ -1,11 +1,5 @@
 <template>
     <div>
-        <!-- <v-data-iterator
-            :items="items"
-            :items-per-page.sync="ipp"
-            :page.sync="page"
-            class="d-flex flex-column mh-100 overflow-hidden"
-        > -->
         <v-data-iterator
             :items="items"
             :items-per-page="10"

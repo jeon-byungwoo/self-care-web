@@ -343,9 +343,10 @@ div.scroll-container {
 }
 .tiptap {
     height: fit-content;
-    min-height: 200px;
-    max-height: 200px;
+    min-height: 305px;
+    max-height: 305px;
     padding: 16px;
+    overflow: auto;
 }
 .selection_text_field {
     max-width: 68px;
