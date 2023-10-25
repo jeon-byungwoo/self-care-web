@@ -88,7 +88,7 @@ export default {
 
       topMenus: [
         { text: '건강설문', routerName: 'healthConsulting' },
-        { text: '자가진단', routerName: 'healthConsulting' },
+        { text: '자가진단', routerName: 'selfCheck' },
         { text: '스토어', routerName: 'store' },
         { text: '펫 전용관', routerName: 'petPrivate' },
         { text: '후기', routerName: 'review' },
@@ -138,13 +138,13 @@ export default {
     },
     myClick() {
       if (this.userInfo == undefined) {
-        this.$router.push({ name: 'login' })
+        this.$router.push({ name: 'Login' })
       } else {
         this.$router.push({ name: 'myInfo' })
       }
     },
     cartClick() {
-      this.$router.push({ name: 'cart' })
+      this.$router.push({ name: 'art' })
     },
     update() {
       this.shadowNav = this.shadowNav == false ? true : false

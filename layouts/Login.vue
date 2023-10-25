@@ -70,7 +70,7 @@
 
 <script>
 export default {
-    head: {
+  head: {
     script: [
       { src: 'https://static.nid.naver.com/js/naveridlogin_js_sdk_2.0.2.js' },
       { src: 'https://developers.kakao.com/sdk/js/kakao.min.js' }
@@ -93,30 +93,15 @@ export default {
   },
   methods: {
     async naverLoginBtn() {
-
-      const naverLogin = new naver.LoginWithNaverId({
-        clientId: 'n_Jfo39bgxlZcWQcQhYf', // Naver client key
+        const naverLogin = new naver.LoginWithNaverId({
+        clientId: 'n_Jfo39bgxlZcWQcQhYf',
         callbackUrl: `${window.location.origin}/auth/callback/naver`,
         callbackHandle: true
       })
       naverLogin.init()
       naverLogin.reprompt()
-    //   console.log(this.callbackUrl)
-    //   const url =
-    //     `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=n_Jfo39bgxlZcWQcQhYf&redirect_uri=` +
-    //     this.callbackUrl
-
-    //   console.log('==================url====================')
-    //   // console.log(url)
-    //   console.log(this.parentValue)
-    //   // window.location.href = url
-
-    //   var child
-    //   window.open(url, 'Naver Login', 'width=450, height=600')
-    //   window.setChildValue = this.setChildValue
     },
     setChildValue: function (token, email) {
-      console.log('asdsadasdsa', token, email)
       this.socialLogin(token, email, '네이버')
     },
     socialLogin: function (token, email, type) {
