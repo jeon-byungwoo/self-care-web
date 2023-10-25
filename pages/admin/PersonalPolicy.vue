@@ -1,7 +1,7 @@
 <template>
     <v-col class="ma-0 pa-0">
         <v-toolbar flat class="ma-0 pa-0"> 
-            <v-toolbar-title>이용약관</v-toolbar-title>
+            <v-toolbar-title>개인정보 처리방침</v-toolbar-title>
             <v-divider class="mx-5" inset vertical></v-divider>
             <v-spacer></v-spacer>
             <v-btn 
@@ -27,7 +27,7 @@ import Editor from '@/components/admin/Editor.vue'
 export default {
     components: {Editor},
     layout: 'Admin',
-    name: 'PolicyPage',
+    name: 'PersonalPolicyPage',
     data() {
         return {
             content: '',
@@ -40,6 +40,7 @@ export default {
     },
     mounted() {
         this.selectSite()
+        
     },
     methods: {
         async selectSite() {
@@ -48,7 +49,7 @@ export default {
             await this.$axios.post('/admin/select', param).then(res => {
                 if (res.data.length > 0) {
                     this.policyObj = res.data[0]
-                    this.$refs.editor.setContents(this.policyObj.term, 'site')
+                    this.$refs.editor.setContents(this.policyObj.policy, 'site')
                 }
             }).catch(err => {
                 console.log("err : ", err)
@@ -64,7 +65,7 @@ export default {
             let url = '/admin/update'
             let param = {
                 table: 'site',
-                term: this.content,
+                policy: this.content,
                 conditions:[{q:"=",f:"no",v:this.policyObj.no}]
             }
             await this.$axios.post(url, param).then(res => {
