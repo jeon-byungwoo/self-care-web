@@ -51,11 +51,7 @@ export default {
         console.log('err!! : ' + err)
       }
     }
-
   }
-  
-
-
 }
 </script>
 <style lang="scss" scoped>

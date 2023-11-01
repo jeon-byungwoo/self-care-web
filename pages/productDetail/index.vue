@@ -11,6 +11,7 @@
               <img
                 class="product-img-swipe-left-arrow"
                 src="@/assets/image/ic_product_swipe_prev.png"
+                @click="arrowLeft()"
               />
               <div class="product-img-swipe-main-img-area">
                 <img
@@ -21,6 +22,7 @@
               <img
                 class="product-img-swipe-right-arrow"
                 src="@/assets/image/ic_product_swipe_next.png"
+                @click="arrowRight()"
               />
             </div>
             <div class="product-img-list-group" v-if="product.i_list!=null">
@@ -227,12 +229,28 @@ export default {
       curImage:null,
       calPrice:0,
       productCnt:1,
+      imageIndex:0,
+      cartList:[],
     }
   },
   mounted() {
     this.selectItem()
   },
   methods: {
+    arrowLeft(){
+        if(this.imageIndex!=0){
+            this.imageIndex--
+        }
+        this.curImage = this.hostUrl+this.imgList[this.imageIndex]
+    },
+    arrowRight(){
+        console.log(this.imageIndex)
+        console.log(this.imgList)
+        if(this.imageIndex<this.imgList.length-1){
+            this.imageIndex++
+        }
+        this.curImage = this.hostUrl+this.imgList[this.imageIndex]
+    },
     onPlus(){
       this.productCnt++
       this.calPrice = this.productCnt*this.product.p_sell
@@ -246,17 +264,93 @@ export default {
     onSelectImage(src){
       this.curImage = src
     },
-    buyClick() {
-      this.$router.push({name: 'cart', query: { itemCnt:this.productCnt, ...this.product}});
+    async buyClick() {
+      //이 회원번호로 되어있는 사람의 카트정보 가져오기
+      await this.selectCart()
+      let addObject = {
+        cnt: this.productCnt,
+        product: this.product
+      }
+      let itemList = []
+      if(this.cartList.length==0){
+            await this.insertCart(addObject)
+            // itemList.push(addObject)
+            // this.cartList.item_list = JSON.stringify(itemList)
+            // this.updateCart()
+      }else{
+            itemList = JSON.parse(this.cartList.item_list)
+            let isExist = false
+            for(let item of itemList){
+                if(item.product.no==addObject.product.no){
+                    isExist = true
+                    item.cnt = item.cnt+addObject.cnt
+                }else{
+                    
+                }
+            }
+
+            if(!isExist){
+                itemList.push(addObject)
+            }
+            this.cartList.item_list = JSON.stringify(itemList)
+            this.updateCart()
+      }
+
+      this.$router.push({name: 'cart' });
 
     },
     onChildUpdate(newValue) {
-      console.log('index', newValue)
       this.navigationStatus = newValue
+    },
+    async insertCart(addObject){
+        let formBody = {
+        table: 'cart',
+        item_list: JSON.stringify([addObject]),
+        u_no: JSON.parse(localStorage.getItem('userInfo')).no
+      }
+      try {
+        await this.$axios.post('/api/insert', formBody).then((res) => {
+            if (res.data.length > 0) {
+                this.cartList = res.data[0]
+            } 
+          })
+          .catch(function (error) { console.log('에러!!', error) })
+      } catch (err) { console.log('err!! : ' + err) }
+    },
+    async updateCart(){
+        let conditions = [{ q: '=', f: 'u_no', v: JSON.parse(localStorage.getItem('userInfo')).no}]
+        let formBody = {
+        table: 'cart',
+        conditions: conditions,
+        item_list: this.cartList.item_list,
+        no:this.cartList.no
+      }
+      try {
+        await this.$axios.post('/api/update', formBody).then((res) => {
+            if (res.data.length > 0) {
+                this.cartList = res.data[0]
+            } 
+          })
+          .catch(function (error) { console.log('에러!!', error) })
+      } catch (err) { console.log('err!! : ' + err) }
+    },
+    async selectCart(){
+        let conditions = [{ q: '=', f: 'u_no', v: JSON.parse(localStorage.getItem('userInfo')).no }]
+        let formBody = {
+        table: 'cart',
+        conditions: conditions,
+      }
+      try {
+        await this.$axios.post('/api/select', formBody).then((res) => {
+            if (res.data.length > 0) {
+                this.cartList = res.data[0]
+            }
+          })
+          .catch(function (error) { console.log('에러!!', error) })
+      } catch (err) { console.log('err!! : ' + err) }
     },
     async selectItem(){
 
-      console.log(this.$route.query.no)
       let no = this.$route.query.no
       let conditions = [{ q: '=', f: 'no', v: no }]
       let formBody = {
@@ -272,6 +366,7 @@ export default {
                 this.product = res.data[0]
                 this.curImage = this.hostUrl+JSON.parse(this.product.i_list)[0]
                 this.calPrice = this.product.p_sell
+                this.imgList = JSON.parse(this.product.i_list)
             }
 
           })

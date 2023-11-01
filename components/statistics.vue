@@ -45,7 +45,7 @@
               src="@/assets/image/ic_ai_check.png"
               draggable="false"
             />
-            <div class="big-data-ai-btn-text">AI 건강설문 하기</div>
+            <div class="big-data-ai-btn-text" @click=" $router.push({ name: 'healthConsulting' })">AI 건강설문 하기</div>
           </div>
         </div>
       </div>

@@ -13,7 +13,7 @@
               src="@/assets/image/ic_ai_check.png"
               draggable="false"
             />
-            <div class="survey-ai-btn-text">AI 건강설문 하기</div>
+            <div class="survey-ai-btn-text" @click=" $router.push({ name: 'healthConsulting' })">AI 건강설문 하기</div>
           </div>
           <div class="survey-consulting-btn">
             <div class="survey-consulting-btn-text">전문가와 상담하기</div>

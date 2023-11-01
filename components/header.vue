@@ -75,6 +75,23 @@
         </div>
       </div>
     </div>
+    <div class="mobile-menu"
+
+    >
+    <a
+        v-for="(item, index) in mobileMenus"
+        :key="index"
+        @click="firstMenuClick(index, item.routerName)"
+        ref="item"
+        :class="
+        shadowNav == false
+            ? 'mobile-menu-a-show'
+            : 'mobile-menu-a-hide'
+        "
+    >
+        {{ item.text }}
+    </a>
+    </div>
     <div :class="shadowNav == true ? 'line-display-none' : 'line'"></div>
   </div>
 </template>
@@ -94,6 +111,13 @@ export default {
         { text: '후기', routerName: 'review' },
         { text: '매거진', routerName: 'magazine' },
         { text: '소식', routerName: 'notification' },
+      ],
+        mobileMenus: [
+        { text: '건강설문', routerName: 'healthConsulting' },
+        { text: '자가진단', routerName: 'selfCheck' },
+        { text: '스토어', routerName: 'store' },
+        { text: '펫 전용관', routerName: 'petPrivate' },
+        { text: '로그인', routerName: 'Login' },
       ],
       selectedTopMenus: 0, // 1-건강설문, 2-자가진단, 3-스토어, 4-펫전용관, 5-후기, 6-매거진, 7-소식
       indicatorX: 0,
@@ -117,9 +141,17 @@ export default {
       // this.indicatorTop =
       //   this.$refs.item[i].getBoundingClientRect().y +
       //   this.$refs.item[i].getBoundingClientRect().height
-      console.log('click', routerName)
+      
+
+    if(routerName=='Login'){
+      this.$router.replace({ name: 'Login' })
+    }else{
       this.selectedTopMenus = this.topMenus[i].text
       this.$router.push({ name: routerName })
+    }
+
+
+
     },
     divDragOver(e, i) {
       // console.log(this.$refs.item[i].getBoundingClientRect())
@@ -144,7 +176,7 @@ export default {
       }
     },
     cartClick() {
-      this.$router.push({ name: 'art' })
+      this.$router.push({ name: 'cart' })
     },
     update() {
       this.shadowNav = this.shadowNav == false ? true : false
@@ -192,6 +224,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.mobile-menu{
+    width:100%;
+    display: none;
+}
 .main-wrapper {
   display: flex;
   flex-direction: column;
@@ -346,11 +382,33 @@ export default {
   //   overflow-x: hidden;
   //   width: 100%;
   // }
+  .mobile-menu-a-show{
+    display: flex;
+    margin-top:10px;
+    height: 36;
+    display: flex;
+    font-size: 14px;
+    font-family: "score6";
+    flex: 1;
+    //width:90px;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+  }
+  .mobile-menu-a-hide{
+    display: none;
+  }
+  .mobile-menu{
+    width:100%;
+    display: flex;
+    flex-direction: row;
+    height: 40px;
+  }
   .main-wrapper {
     display: flex;
     flex-direction: column;
     width: 100%;
-    height: 76px;
+    height: 110px;
     background: white;
     top: 0px;
     left: 0px;

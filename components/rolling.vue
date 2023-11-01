@@ -11,8 +11,18 @@
         class="hooper"
       >
         <slide v-for="(item, i) in bannerList" :key="i">
-          <div class="rolling-banner" :style="{'background-image':'url('+item.image+')'}" @click="onClickBanner(item)"></div>
-          <div class="rolling-banner-m" :style="{'background-image': 'url('+item.m_image+')'}" @click="onClickBanner(item)"></div>
+          <!-- <div class="rolling-banner" :style="{'background-image':'url('+item.image+')'}" @click="onClickBanner(item)"></div> -->
+          <!-- <div class="rolling-banner-m" :style="{'background-image': 'url('+item.m_image+')'}" @click="onClickBanner(item)"></div> -->
+            <v-img  class="rolling-banner" 
+                @click="onClickBanner(item)"
+                :src="item.image"
+                cover
+            />
+            <v-img  class="rolling-banner-m" 
+                @click="onClickBanner(item)"
+                :src="item.m_image"
+                cover
+            />
         </slide>
       </hooper>
     </div>
@@ -60,15 +70,13 @@ export default {
     },
     getBannerList() {
       let obj = {}
-      let conditions = [{ q: '=', f: 'status', v: '활성' }]
+      let conditions = [{ q: '=', f: 'status', v: '활성' },{ q: 'order', f: 'priority', o: 'ASC' }]
       obj = { table: 'banner', conditions: conditions }
 
       try {
         this.$axios
           .post('/api/select', obj)
           .then((res) => {
-            console.log('인서트 결과값:: ', JSON.stringify(res.data))
-            console.log(res.data.length)
             if (res.data.length > 0) {
               for (let i = 0; i < res.data.length; i++) {
                 let linkTo = ''
@@ -79,8 +87,8 @@ export default {
                 }
                 let bannerObj = {
                   no: res.data[i].no,
-                  image: process.env.BASE_URL + res.data[i].image,
-                  m_image: process.env.BASE_URL + res.data[i].m_image,
+                  image: process.env.BASE_URL + JSON.parse(res.data[i].image)[0],
+                  m_image: process.env.BASE_URL + JSON.parse(res.data[i].m_image)[0],
                   type: res.data[i].type,
                   priority: res.data[i].priority,
                   content: res.data[i].content,
@@ -91,7 +99,7 @@ export default {
             }
           })
           .catch(function (error) {
-            console.log('에러!!', err)
+            console.log('에러!!', error)
           })
       } catch (err) {
         console.log('err!! : ' + err)
@@ -239,8 +247,9 @@ export default {
         background-size: cover;
         display: block;
         width: 100%;
-        height: auto;
-        min-height: 300px;
+        height: calc(100vw * 80 / 144);
+        min-height: 200px;
+        
       }
     }
   }

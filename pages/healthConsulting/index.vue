@@ -140,7 +140,7 @@
 
             <div class="rolling-ai-btn-group">
               <div class="rolling-ai-btn" @click="aiConsultingMove = false">
-                AI 건강설문 시작하기 >
+                AI 건강설문 시작하기
               </div>
             </div>
           </div>
@@ -276,6 +276,7 @@
             </div>
             <div class="input-area">
               <input
+               type='number'
                 v-model="birth"
                 class="input"
                 placeholder="출생년도 4자리 입력"
@@ -283,16 +284,16 @@
               <div class="input-info">년</div>
             </div>
             <div class="input-area">
-              <input v-model="tall" class="input" placeholder="키 입력" />
+              <input v-model="tall" class="input" placeholder="키 입력"  type='number'/>
               <div class="input-info">cm</div>
             </div>
             <div class="input-area">
-              <input v-model="weight" class="input" placeholder="몸무게 입력" />
+              <input v-model="weight" class="input" placeholder="몸무게 입력"  type='number'/>
               <div class="input-info">kg</div>
             </div>
             <div class="disease-area">
               <div class="name-text">
-                {{ '홍길동' }}
+                {{ name }}
                 <span class="remain-text"
                   >님 과거에 앓았거나 현재 앓고 있는 질병이 있으시면
                   알려주세요.</span
@@ -429,6 +430,7 @@ export default {
       diseaseCheck: 0,
       disease: '',
       indicatorNum: -1,
+      serializedData : [],
       stepList: [
         {
           stepList: [
@@ -516,25 +518,20 @@ export default {
     }
   },
   mounted() {
+    this.name = ""
     let test = document.getElementsByClassName('hooper-indicator')
-    console.log(test)
     test[0].style.width = '12px'
     test[0].style.height = '12px'
     test[0].style.borderRadius = '12px'
     test[0].style.border = '1px solid #32b783'
     test[0].style.background = '#fff'
-
     let test1 = document.getElementsByClassName('hooper-indicator is-active')
-    console.log(test1)
     test1[0].style.background = '#32b783'
-    // test[0].style.active.background = '#32b783'
-
     test[1].style.width = '12px'
     test[1].style.height = '12px'
     test[1].style.borderRadius = '12px'
     test[1].style.border = '1px solid #32b783'
     test[1].style.background = '#fff'
-
     test[2].style.width = '12px'
     test[2].style.height = '12px'
     test[2].style.borderRadius = '12px'
@@ -545,26 +542,28 @@ export default {
     indicatorNum() {},
   },
   methods: {
+    checkNum(event) {
+        if(event.key === '.' 
+            || event.key === '-'
+            || event.key >= 0 && event.key <= 9) {
+            return true;
+        }
+        return false;
+    },
     logoClick() {
       this.$router.push({ name: 'index' })
     },
     onChildUpdate(newValue) {
-      console.log('index', newValue)
       this.navigationStatus = newValue
     },
     updateCarousel(payload) {
       console.log(payload.currentSlide)
       this.indicatorNum = payload.currentSlide
       let test = document.getElementsByClassName('hooper-indicator')
-      console.log(test)
       test[0].style.background = '#fff'
-
       test[1].style.background = '#fff'
-
       test[2].style.background = '#fff'
-
       let test1 = document.getElementsByClassName('hooper-indicator is-active')
-      console.log(test1)
       test1[0].style.background = '#32b783'
     },
     prevClick() {
@@ -574,21 +573,13 @@ export default {
       this.$refs.test.slideNext()
     },
     yesClick(index) {
-      // if (this.stepNum == 1) {
-      //   console.log('yesClick', index)
-      // }
       this.stepList[this.stepNum - 1].stepList[index].selected = 1
     },
     noClick(index) {
-      // if (this.stepNum == 1) {
-      //   this.stepList[0].stepList[index].selected = 2
-      // }
       this.stepList[this.stepNum - 1].stepList[index].selected = 2
     },
     doneClick() {
       if (this.stepNum == 0) {
-        console.log(this.name)
-        console.log(this.gender)
         if (
           this.name.length == 0 ||
           this.gender == 0 ||
@@ -598,9 +589,8 @@ export default {
           this.diseaseCheck == 0 ||
           (this.diseaseCheck == 1 && this.disease.length == 0)
         ) {
-          console.log('check!!')
           this.showToast()
-          // return
+          return
         }
       } else {
         let check = this.stepList[this.stepNum - 1].stepList.filter(
@@ -609,15 +599,68 @@ export default {
         console.log(check.length > 1 ? 'true' : 'false')
         if (check.length > 1) {
           this.showToast()
-          // return
+          return
         }
       }
-
       if (this.stepNum != 5) {
         this.stepNum += 1
         $('html').scrollTop(0)
       } else {
-        this.$router.push({ name: 'healthConsultingResult' })
+        if(localStorage!= undefined){//로그인 정보가 있는 경우
+            //데이터 준비
+            for(let p of this.stepList){//5개의 화면
+                for(let q of p.stepList){
+                    this.serializedData.push(q.selected)
+                }
+            }
+            //DB insert Proc
+            this.insertSurveyResult()
+            
+        }else{//로그인 정보가 없는 경우
+            //세션 정보에 정보 저장 -> 로그인 이후 데이터 존재 시 삽입
+            for(let p of this.stepList){//5개의 화면
+                for(let q of p.stepList){
+                    this.serializedData.push(q.selected)
+                }
+            }
+            let user_info = {
+                name:this.name,
+                tall:Number(this.tall),
+                birth:Number(this.birth),
+                gender:this.gender,
+                weight:Number(this.weight),
+                disease:this.disease
+            }
+            localStorage.setItem('surveyResult', JSON.stringify(this.serializedData))
+            localStorage.setItem('surveyUserInfo', JSON.stringify(user_info))
+            this.$router.replace({ name: 'Login' })
+        }
+      }
+    },
+    async insertSurveyResult(){
+        let formBody = {
+            table: 'survey_result',
+            result:JSON.stringify(this.serializedData),
+            u_no:JSON.parse(localStorage.getItem('userInfo')).no,
+            gender:this.gender,
+            birth:Number(this.birth),
+            weight:Number(this.weight),
+            tall:Number(this.tall),
+            disease:this.disease,
+        }
+      try {
+        await this.$axios
+          .post('/api/insert', formBody)
+          .then((res) => {
+            let resultNo = res.data[0].no
+            //화면 이동
+            this.$router.push({name: 'healthConsultingResult', query: {no: resultNo}})
+          })
+          .catch(function (error) {
+            console.log('에러!!', error)
+          })
+      } catch (err) {
+        console.log('err!! : ' + err)
       }
     },
     showToast() {

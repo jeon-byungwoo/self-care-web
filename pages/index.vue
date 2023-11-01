@@ -167,8 +167,6 @@ export default {
     },
     coalitionDialogSendData(nowPw, newPw, confirmPw) {
       console.log('nowPw: ' + nowPw)
-      console.log(newPw)
-      console.log(confirmPw)
     },
     footerSendData(status) {
       console.log(status)
@@ -214,12 +212,10 @@ export default {
       return o
     },
     onChildUpdate(newValue) {
-      console.log('index', newValue)
       this.navigationStatus = newValue
     },
     
     productDetailClick(item) {
-      console.log('click')
       //this.$router.push({ name: 'productDetail' })
         this.$router.push({name: 'productDetail', query: {no: item.no}});
     },
@@ -233,7 +229,6 @@ export default {
         await this.$axios
           .post('/api/select', formBody)
           .then((res) => {
-            console.log('조회된 데이터:: ', (res.data))
             if (res.data.length > 0) {
                 this.itemList = res.data
                 
@@ -249,7 +244,6 @@ export default {
   },
   mounted() {
     this.hostUrl = process.env.BASE_URL
-    console.log(this.hostUrl, process.env.BASE_URL)
     if (typeof window !== undefined) {
       this.userInfo =
         localStorage != undefined

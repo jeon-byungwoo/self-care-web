@@ -31,7 +31,7 @@
             <div class="left-group">
               <div class="first-line">
                 <div class="left-text">문의</div>
-                <div class="right-text">031.123.4567</div>
+                <div class="right-text">1544-1942</div>
               </div>
               <div class="second-line">평일 오전9시-오후6시</div>
             </div>

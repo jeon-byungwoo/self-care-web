@@ -3,34 +3,32 @@
     <Header @update="onChildUpdate"> </Header>
     <div class="main" v-if="!navigationStatus">
       <div class="body">
-        <div class="notification-title">건강설문</div>
+        <div class="notification-title">자가진단</div>
         <div class="magazine-group">
           <div class="magazine-item-group">
             <div
-              v-for="(item, index) in magazineList"
+              v-for="(item, index) in itemList"
               :key="index"
               class="magazine-item"
             >
               <div class="magazine-item-image-group">
-                <img
+                <img v-if="JSON.parse(item.image)[0]!=null"
                   class="magazine-item-image"
-                  src="@/assets/image/img_magazine_test.png"
+                  :src="`${hostUrl+JSON.parse(item.image)[0]}`"
                   draggable="false"
                 />
                 <div class="magazine-item-magazine-title">
                   {{ item.title }}
                 </div>
               </div>
-
               <div class="magazine-item-bottom-group">
-                <div class="magazine-item-bottom-description">
-                  {{ item.description }}
-                </div>
+                <!-- <div class="magazine-item-bottom-description">
+                  {{ item.content }}
+                </div> -->
                 <div class="magazine-item-bottom-share-explore-group">
-                  <div class="magazine-item-bottom-share" @click="onClickCheck(index)">설문 진행하기</div>
+                  <div class="magazine-item-bottom-share" @click="onClickCheck(item.no)">설문 진행하기</div>
                 </div>
               </div>
-
             </div>
           </div>
         </div>
@@ -50,34 +48,15 @@ export default {
   },
   data() {
     return {
+      hostUrl:process.env.BASE_URL,
       navigationStatus: false,
       blockNum: 0,
-      magazineList: [
-        {
-          magazineTitle: 'TOP 10 Australian beaches',
-          title: 'Nomber 10',
-          description: 'Whitehaven Beach',
-        },
-        {
-          magazineTitle: 'TOP 5 Australian beaches',
-          title: 'Nomber 10',
-          description: 'Whitsunday Island, Whitsunday Islands',
-        },
-        {
-          magazineTitle: 'TOP 10 Australian beaches',
-          title: 'Nomber 10',
-          description: 'Whitehaven Beach',
-        },
-        {
-          magazineTitle: 'TOP 5 Australian beaches',
-          title: 'Nomber 10',
-          description: 'Whitsunday Island, Whitsunday IslandsWhitsunday Island, Whitsunday IslandsWhitsunday Island, Whitsunday IslandsWhitsunday Island, Whitsunday IslandsWhitsunday Island, Whitsunday IslandsWhitsunday Island, Whitsunday Islands',
-        },
-      ],
+      itemList:[],
     }
   },
   mounted() {
-    //나의 AI 건강설문 결과
+    this.selectItem()
+    this.hostUrl = process.env.BASE_URL
   },
   methods: {
     onChildUpdate(newValue) {
@@ -85,10 +64,32 @@ export default {
       this.navigationStatus = newValue
     },
     onClickCheck(index){
-        this.$router.push({name: 'doCheck', params: { id: index } })
-    }
+        this.$router.push({name: 'doCheck', query: { no: index } })
+    },
+    async selectItem(){
 
-  },
+        let conditions = [{ q: '=', f: '1', v: 1 },{ q: 'order', f: 'priority', o: 'ASC' }]
+        let formBody = {
+        table: 'test',
+        conditions: conditions,
+      }
+      try {
+        await this.$axios
+          .post('/api/select', formBody)
+          .then((res) => {
+            console.log('조회된 데이터:: ', (res.data))
+            if (res.data.length > 0) {
+                this.itemList = res.data
+            } 
+          })
+          .catch(function (error) {
+            console.log('에러!!', error)
+          })
+      } catch (err) {
+        console.log('err!! : ' + err)
+      }
+    }
+  }
 }
 </script>
 
@@ -142,7 +143,7 @@ export default {
           height: 300px;
         }
         .magazine-item-magazine-title {
-          font-size: 30px;
+          font-size: 25px;
           font-family: 'score6';
           color: #ffffff;
           position: relative;
@@ -152,7 +153,7 @@ export default {
       }
       .magazine-item-bottom-group {
         width: 100%;
-        height: 112px;
+        height: 100px;
         border-left-width: 1px;
         border-right-width: 1px;
         border-bottom-width: 1px;
@@ -180,11 +181,17 @@ export default {
       }
 
       .magazine-item-bottom-share-explore-group {
+        height: 100%;
         display: flex;
         justify-content: center;
         margin: 5px;
+        align-items: center;
         .magazine-item-bottom-share {
-          font-size: 16px;
+          justify-content: center;
+          align-items: center;
+          display: flex;
+          height: 100%;
+          font-size: 30px;
           font-family: Arial;
           color: #9ad144;
           cursor: pointer;
@@ -429,11 +436,16 @@ export default {
             }
 
             .magazine-item-bottom-share-explore-group {
+              height: 100%;
               display: flex;
               justify-content: center;
               margin: 5px;
               .magazine-item-bottom-share {
-                font-size: 16px;
+                justify-content: center;
+                align-items: center;
+                display: flex;
+                height: 100%;
+                font-size: 30px;
                 font-family: Arial;
                 color: #9ad144;
                 cursor: pointer;

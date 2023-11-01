@@ -86,12 +86,63 @@ export default {
       callbackUrl: 'http://localhost:8080' + '/naverLCallback',
       parentValue: '',
       snackbarMessage: '이메일 및 비밀번호를 확인해주세요.',
+      serializedData:[],
+      name: '',
+      gender: 0,
+      birth: '',
+      tall: '',
+      weight: '',
+      diseaseCheck: 0,
+      disease: '',
     }
   },
   mounted() {
-    console.log(process.env.BASE_URL)
+    
+    if(localStorage!=undefined){
+
+        //측정 하고 넘어온 유저인 경우 회원가입을 유도하기 위해 데이터를 일단 준비하는 과정
+            if(localStorage.getItem('surveyUserInfo')!=null){
+            let surveyUserInfo = JSON.parse(localStorage.getItem('surveyUserInfo'))
+            let surveyResult = JSON.parse(localStorage.getItem('surveyResult'))
+            this.name = surveyUserInfo.name
+            this.gender = surveyUserInfo.gender
+            this.birth = surveyUserInfo.gender
+            this.tall = surveyUserInfo.tall
+            this.weight = surveyUserInfo.weight
+            this.disease = surveyUserInfo.disease
+            this.serializedData = surveyResult
+            //세군데로 넘겨줘야함
+            //로그인, 회원가입, 네이버가입(로그인)
+        }
+
+    }
   },
   methods: {
+    async insertSurveyResult(){
+        let formBody = {
+            table: 'survey_result',
+            result:JSON.stringify(this.serializedData),
+            u_no:JSON.parse(localStorage.getItem('userInfo')).no,
+            gender:this.gender,
+            weight:this.weight,
+            tall:this.tall,
+            disease:this.disease,
+        }
+      try {
+        await this.$axios
+          .post('/api/insert', formBody)
+          .then((res) => {
+            let resultNo = res.data[0].no
+            //화면 이동
+            this.$router.push({name: 'healthConsultingResult', query: {no: resultNo}})
+          })
+          .catch(function (error) {
+            console.log('에러!!', error)
+          })
+      } catch (err) {
+        console.log('err!! : ' + err)
+      }
+    },
     async naverLoginBtn() {
         const naverLogin = new naver.LoginWithNaverId({
         clientId: 'n_Jfo39bgxlZcWQcQhYf',
@@ -132,7 +183,16 @@ export default {
                 }
                 localStorage.setItem('loginStatus', true)
                 localStorage.setItem('userInfo', JSON.stringify(userInfo))
-                this.$router.push({ name: 'index' })
+                
+                if(localStorage!=undefined){
+                    if(localStorage.getItem('surveyResult')!=undefined){
+                        this.insertSurveyResult()
+                    }else if(localStorage.getItem('surveyResult')!=undefined){
+                        this.$router.push({ name: 'cart' })
+                    }
+                }else{
+                    this.$router.push({ name: 'index' })
+                }
               } else {
                 this.snackbarMessage =
                   '회원탈퇴된 계정입니다. 고객센터에 문의바랍니다.'
@@ -233,6 +293,16 @@ export default {
                   localStorage.setItem('loginStatus', true)
                   localStorage.setItem('userInfo', JSON.stringify(userInfo))
                   this.$router.push({ name: 'index' })
+
+                  if(localStorage!=undefined){
+                    if(localStorage.getItem('surveyResult')!=undefined){
+                      this.insertSurveyResult()
+                    }else if(localStorage.getItem('surveyResult')!=undefined){
+                      this.$router.push({ name: 'cart' })
+                    }
+                  }else{
+                    this.$router.push({ name: 'index' })
+                  }
                 } else {
                   this.snackbarMessage =
                     '회원탈퇴된 계정입니다. 고객센터에 문의바랍니다.'

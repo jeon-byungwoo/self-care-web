@@ -481,7 +481,7 @@ export default {
           ? JSON.parse(localStorage.getItem('userInfo'))
           : undefined
       if (this.userInfo == '' || this.userInfo == undefined) {
-        this.$router.replace('login')
+        this.$router.replace('Login')
       } else {
         this.phone = this.userInfo.phone
         if (this.userInfo.type == '카카오' || this.userInfo.type == '네이버')
@@ -860,7 +860,7 @@ export default {
     logoutClick() {
       this.messageTwoBtnDialogStatus = false
       localStorage.clear()
-      this.$router.replace({ name: 'login' })
+      this.$router.replace({ name: 'Login' })
     },
     withlessClick() {
       this.messageTwoBtnDialogStatus = false

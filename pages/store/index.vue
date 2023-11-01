@@ -22,19 +22,19 @@
               :class="tabStatus == 2 ? 'selected-tab-btn-area' : 'tab-btn-area'"
               @click="tabStatus = 2"
             >
-              건식카테고리1
+              헬스케어
             </div>
             <div
               :class="tabStatus == 3 ? 'selected-tab-btn-area' : 'tab-btn-area'"
               @click="tabStatus = 3"
             >
-              건식카테고리2
+              퍼스널케어
             </div>
             <div
               :class="tabStatus == 4 ? 'selected-tab-btn-area' : 'tab-btn-area'"
               @click="tabStatus = 4"
             >
-              건식카테고리3
+              의료기기
             </div>
           </div>
           <div class="category-group">

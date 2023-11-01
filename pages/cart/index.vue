@@ -8,25 +8,31 @@
           <div v-for="(item, i) in itemList" :key="i">
             <div v-if="i != 0" class="spacing-line"></div>
             <div class="product-list-item">
-              <input type="checkbox" :id="i" value="" />
+              <input 
+                type="checkbox" 
+                :id="i" 
+                value=""
+                v-model="item.selected"
+                @change="selected($event)"                
+              />
               <label :for="i"></label>
               <img
                 class="product-list-item-rep-image"
-                src="@/assets/image/img_medicine_test.png"
+                 :src="`${hostUrl+JSON.parse(item.product.i_r)[0]}`"
               />
 
               <div class="right-group">
                 <div class="product-list-item-rep-info-area">
                   <div class="product-list-item-rep-info-name">
-                    {{ item.name }}
+                    {{ item.product.name }}
                   </div>
                   <div class="product-list-item-rep-info-tag-area">
                     <div
-                      v-for="(item1, i1) in item.tags"
+                      v-for="(item1, i1) in JSON.parse(item.product.hashtag)"
                       :key="i1"
                       class="product-list-item-rep-info-tag"
                     >
-                      {{ item1.text }}
+                      {{ item1 }}
                     </div>
                   </div>
                 </div>
@@ -34,7 +40,7 @@
                 <div class="product-list-item-rep-price-area">
                   <div class="product-list-item-rep-price-text">제품가격</div>
                   <div class="product-list-item-rep-price">
-                    {{ item.price }}
+                    {{ item.product.p_sell }}
                     <div class="product-list-item-rep-price-won">원</div>
                   </div>
                 </div>
@@ -42,32 +48,32 @@
                   <div class="product-list-item-rep-unit-info-text">
                     제품 수량
                   </div>
-                  <div class="product-list-item-rep-unit-minus">
+                  <div class="product-list-item-rep-unit-minus" @click="onClickMinus(i)">
                     <img
                       class="product-list-item-rep-unit-minus-img"
                       src="@/assets/image/ic_minus.png"
                     />
                   </div>
-                  <div class="product-list-item-rep-unit-text">1</div>
-                  <div class="product-list-item-rep-unit-plus">
+                  <div class="product-list-item-rep-unit-text">{{item.cnt}}</div>
+                  <div class="product-list-item-rep-unit-plus" @click="onClickPlus(i)">
                     <img
                       class="product-list-item-rep-unit-plus-img"
                       src="@/assets/image/ic_cart_plus_btn.png"
                     />
                   </div>
                 </div>
-                <div class="product-list-item-rep-delete">삭제</div>
+                <div class="product-list-item-rep-delete" @click="onClickDel(i)">삭제</div>
               </div>
             </div>
           </div>
         </div>
 
         <div class="store-move-area">
-          <div class="store-move-btn">상품 더 담기</div>
+          <div class="store-move-btn" @click="moveToStore()">상품 더 담기</div>
         </div>
 
         <div class="product-all-select-area">
-          <input type="checkbox" id="allCheck" value="" />
+          <input type="checkbox" id="allCheck" v-model="allChecked" @click="checkedAll($event.target.checked)"/>
           <label for="allCheck"></label>
           <div class="product-all-select-text">전체 선택</div>
         </div>
@@ -76,7 +82,7 @@
           <div class="final-price-product-price-area">
             <div class="final-price-product-price-text">총 상품 가격</div>
             <div class="final-price-product-price-price">
-              41,000
+              {{totalPrice}}
               <div class="final-price-product-price-won">원</div>
             </div>
           </div>
@@ -90,7 +96,7 @@
           <div class="final-price-delivery-price-area">
             <div class="final-price-delivery-price-text">총 배송비</div>
             <div class="final-price-delivery-price-price">
-              3,000
+              {{d_fee}}
               <div class="final-price-delivery-price-won">원</div>
             </div>
           </div>
@@ -104,7 +110,7 @@
           <div class="final-price-total-price-area">
             <div class="final-price-total-price-text">총 주문금액</div>
             <div class="final-price-total-price-price">
-              44,000
+              {{totalPrice+d_fee}}
               <div class="final-price-total-price-won">원</div>
             </div>
           </div>
@@ -120,6 +126,7 @@
 
 <script>
 import Header from '../../components/header.vue'
+import _ from 'lodash'
 export default {
   layout: 'default',
   name: 'IndexPage',
@@ -128,32 +135,157 @@ export default {
   },
   data() {
     return {
+      hostUrl:process.env.BASE_URL,
       navigationStatus: false,
       imgList: [
         { url: require('@/assets/image/img_medicine_test.png') },
         { url: require('@/assets/image/img_medicine_test.png') },
         { url: require('@/assets/image/img_medicine_test.png') },
       ],
-      itemList: [
-        {
-          name: '홍길동',
-          rating: 1,
-          price: '13,000',
-          tags: [{ text: '#제품태그' }, { text: '#좋아요' }],
-        },
-        {
-          name: '김민우',
-          rating: 5,
-          price: '12,500',
-          tags: [{ text: '#건강' }, { text: '#유산균' }],
-        },
-        { name: '우민김', rating: 3.6, price: '113,000', tags: [] },
-      ],
+      itemList: [],
+      userInfo:[],
+      checkedItemList: [],
+      allChecked: true,
+      totalPrice:0,
+      d_fee:0,
+      confirmList:[],
+      cartNo:0,
+      updateList:[],
+
     }
   },
+  mounted() {
+    this.selectItem()
+    this.hostUrl = process.env.BASE_URL
+    
+  },
   methods: {
+    onClickMinus(index){
+        if(this.itemList[index].cnt>1){
+            this.itemList[index].cnt--
+        }
+    },
+    onClickPlus(index){
+        this.itemList[index].cnt++
+    },
+    async updateCart(){
+        let conditions = [{ q: '=', f: 'u_no', v: JSON.parse(localStorage.getItem('userInfo')).no}]
+        let formBody = {
+        table: 'cart',
+        conditions: conditions,
+        item_list: JSON.stringify(this.updateList),
+        no:this.cartNo
+      }
+      try {
+        await this.$axios.post('/api/update', formBody).then((res) => {
+            if (res.data.length > 0) {
+                
+            } 
+          })
+          .catch(function (error) { console.log('에러!!', error) })
+      } catch (err) { console.log('err!! : ' + err) }
+    },
+    onClickDel(index){
+        this.itemList.splice(index,1)
+        this.updateList = _.cloneDeep(this.itemList)
+        for(let item of this.updateList){
+            delete item['selected']
+        }
+        this.updateCart()
+    },
+    checkedAll(checked) {
+        this.allChecked = checked
+        for (let i in this.itemList) {
+            this.itemList[i].selected = this.allChecked;
+        }
+        this.totalPrice = 0
+        for(let item of this.itemList){
+            if(item.selected){
+                this.totalPrice = this.totalPrice + (item.cnt*item.product.p_sell)
+                if(item.product.delivery_fee!=null){
+                    if(this.d_fee < item.product.delivery_fee){
+                        this.d_fee = item.product.delivery_fee
+                    }
+                }
+                
+            }
+        }
+    },
+    selected (e) {
+        this.totalPrice = 0
+        for (let i in this.itemList) {
+            if(! this.itemList[i].selected) {
+                this.allChecked = false;
+            } else {
+                this.allChecked = true;
+            }
+        }
+        for(let item of this.itemList){
+            if(item.selected){
+                this.totalPrice = this.totalPrice + (item.cnt*item.product.p_sell)
+                if(item.product.delivery_fee!=null){
+                    if(this.d_fee < item.product.delivery_fee){
+                        this.d_fee = item.product.delivery_fee
+                    }
+                }
+                
+            }
+        }
+        //this.$forceUpdate()
+    },
+    moveToStore(){
+        this.$router.push({name: 'store'})
+    },
+      async selectItem(){
+        let conditions = [{ q: '=', f: 'u_no', v: JSON.parse(localStorage.getItem('userInfo')).no }]
+        let formBody = {
+        table: 'cart',
+        conditions: conditions,
+      }
+      try {
+        await this.$axios
+          .post('/api/select', formBody)
+          .then((res) => {
+            if (res.data.length > 0) {
+                this.itemList = JSON.parse(res.data[0].item_list)
+                this.cartNo = res.data[0].no
+                for (let i in this.itemList) {
+                    this.itemList[i]['selected'] = true
+                }
+
+                this.totalPrice = 0
+                for(let item of this.itemList){
+                    if(item.selected){
+                        this.totalPrice = this.totalPrice + (item.cnt*item.product.p_sell)
+                        if(item.product.delivery_fee!=null){
+                            if(this.d_fee < item.product.delivery_fee){
+                                this.d_fee = item.product.delivery_fee
+                            }
+                        }
+                        
+                    }
+                }
+
+
+            } 
+          })
+          .catch(function (error) {
+            console.log('에러!!', error)
+          })
+      } catch (err) {
+        console.log('err!! : ' + err)
+      }
+    },
     paymentInfoClick() {
-      this.$router.push({ name: 'paymentInfo' })
+        this.confirmList = []
+        for(let i of this.itemList){
+            if(i.selected){
+                this.confirmList.push(i)
+            }
+        }
+        localStorage.removeItem('orderList')
+        localStorage.setItem('orderList', JSON.stringify(this.confirmList))
+        this.$router.push({ name: 'paymentInfo' })
     },
     onChildUpdate(newValue) {
       console.log('index', newValue)
