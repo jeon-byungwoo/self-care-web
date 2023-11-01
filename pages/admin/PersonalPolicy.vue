@@ -70,6 +70,7 @@ export default {
             }
             await this.$axios.post(url, param).then(res => {
                 console.log("res : ", res)
+                alert('저장되었습니다.')
             }).catch(err => {
                 console.log("err : ", err)
             })
@@ -77,11 +78,11 @@ export default {
     }
 }
 </script>
-<style scopted>
-.tiptap {
+<style scoped>
+div::v-deep .tiptap {
     padding: 16px;
-    min-height: 84vh;
-    max-height: 84vh;
+    min-height: 84vh ;
+    max-height: 84vh ;
     overflow-y: auto;
 }
 .editor_cover {

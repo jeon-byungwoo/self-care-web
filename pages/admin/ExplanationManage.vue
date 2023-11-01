@@ -33,10 +33,10 @@
                 </v-btn>
             </v-btn-toggle>
         </v-col>
-        <v-row class="ma-0 pa-4 align-center">
-            <v-col cols="12" sm="1" md="1" class="ma-0 pa-0">
-                <v-row class="ma-0 pa-0 pr-4">
-                    <div class="mx-auto">양호</div>
+        <v-row class="ma-0 pa-4 align-center" >
+            <v-col cols="auto" class="ma-0 pa-0 mr-4">
+                <v-row class="ma-0 pa-0 good align-center justify-center">
+                    <h3 class="white--text">양호</h3>
                 </v-row>
             </v-col>
             <v-col cols="12" sm="11" md="11" class="ma-0 pa-0">
@@ -46,9 +46,9 @@
             </v-col>
         </v-row>
         <v-row class="ma-0 pa-4 align-center">
-            <v-col cols="12" sm="1" md="1" class="ma-0 pa-0">
-                <v-row class="ma-0 pa-0 pr-4 ">
-                    <div class="mx-auto">보통</div>
+            <v-col cols="auto" class="ma-0 pa-0 mr-4">
+                <v-row class="ma-0 pa-0 normal align-center justify-center">
+                    <h3 class="white--text">보통</h3>
                 </v-row>
             </v-col>
             <v-col cols="12" sm="11" md="11" class="ma-0 pa-0">
@@ -58,9 +58,9 @@
             </v-col>
         </v-row>
         <v-row class="ma-0 pa-4 align-center">
-            <v-col cols="12" sm="1" md="1" class="ma-0 pa-0">
-                <v-row class="ma-0 pa-0 pr-4">
-                    <div class="mx-auto">경계</div>
+            <v-col cols="auto" class="ma-0 pa-0 mr-4">
+                <v-row class="ma-0 pa-0 caution align-center justify-center">
+                    <h3 class="white--text">경계</h3>
                 </v-row>
             </v-col>
             <v-col cols="12" sm="11" md="11" class="ma-0 pa-0">
@@ -70,9 +70,9 @@
             </v-col>
         </v-row>
         <v-row class="ma-0 pa-4 align-center">
-            <v-col cols="12" sm="1" md="1" class="ma-0 pa-0">
-                <v-row class="ma-0 pa-0 pr-4">
-                    <div class="mx-auto">주의</div>
+            <v-col cols="auto" class="ma-0 pa-0 mr-4">
+                <v-row class="ma-0 pa-0 bad align-center justify-center">
+                    <h3 class="white--text">주의</h3>
                 </v-row>
             </v-col>
             <v-col cols="12" sm="11" md="11" class="ma-0 pa-0">
@@ -131,37 +131,72 @@ export default {
             })
         },
         save() {
+            let params = []
             for (const obj of this.contentObjs) {
                 if (obj.lv == '양호') obj.content = this.$refs.level_1.editor.getHTML()
                 if (obj.lv == '보통') obj.content = this.$refs.level_2.editor.getHTML()
                 if (obj.lv == '경계') obj.content = this.$refs.level_3.editor.getHTML()
                 if (obj.lv == '주의') obj.content = this.$refs.level_4.editor.getHTML()
                 
-                if (obj.content != "" || obj.content != null)
-                    this.updateComment(obj)
+                if (obj.content != "" || obj.content != null) {
+                    // this.updateComment(obj)
+                    let param = {
+                        no: obj.no,
+                        content: obj.content,
+                        table: 'survey_comment',
+                        conditions:[{q:"=",f:"no",v:obj.no}]
+                    }
+                    params.push(param)
+                }
             }
-        },
-        updateComment(obj) {
-            let param = {
-                no: obj.no,
-                content: obj.content,
-                table: 'survey_comment',
-                conditions:[{q:"=",f:"no",v:obj.no}]
-            }
-            this.$axios.post('/admin/update', param).then(res => {
-                
-            }).catch(err => {
-                console.log("update err : ", err)
+            Promise.all(
+                params.map(async param => {
+                    // HTTP 요청
+                    return await this.$axios.post('/admin/update', param)
+                })
+            ).then(() => {
+            // HTTP 요청 완료 코드
+                alert('저장되었습니다.')
+            }).catch (error => {
+                console.log("error : ", error)
             })
-        }
+        },
     }
 }
 </script>
-<style scopted>
-.tiptap {
+<style scoped>
+.good {
+    background: rgb(170,208,145);
+    background: linear-gradient(90deg, rgba(170,208,145,1) 0%, rgba(57,86,38,1) 100%);
+    height: 236px;
+    min-width: 120px;
+    border-radius:30px;
+}
+.normal {
+    background: rgb(144,171,218);
+    background: linear-gradient(90deg, rgba(144,171,218,1) 0%, rgba(34,79,119,1) 100%);
+    height: 236px;
+    min-width: 120px;
+    border-radius:30px;
+}
+.bad {
+    background: rgb(254,138,111);
+    background: linear-gradient(90deg, rgba(254,138,111,0.7637429971988796) 0%, rgba(126,17,17,1) 100%);
+    height: 236px;
+    min-width: 120px;
+    border-radius:30px;
+}
+.caution {
+    background: rgb(254,216,111);
+    background: linear-gradient(90deg, rgba(254,216,111,1) 0%, rgba(126,95,17,1) 100%);
+    height: 236px;
+    min-width: 120px;
+    border-radius:30px;
+}
+div::v-deep .tiptap {
     padding: 16px;
-    min-height: 200px;
-    max-height: 200px;
-    overflow-y: auto;
+    min-height: 200px ;
+    max-height: 200px ;
+    overflow: auto;
 }
 </style>

@@ -3,54 +3,52 @@
         <v-app-bar flat >
             <v-card-title class="ma-0 pa-0">매거진 {{magazineObj.no == null ? '등록' : '수정'}}</v-card-title>
         </v-app-bar>
-        <v-container class="main_container ma-0 pa-5">
-            <v-row class="ma-0 pa-0 align-center my-2" >
+        <v-container class="ma-0 pa-5 magazine_main_container">
+            <v-row class="ma-0 pa-0 align-center" >
                 <v-col cols="12" sm="2" md="2" class="ma-0 pa-0 ">
-                    <h3>대표 이미지</h3>
+                    <v-row class="ma-0 pa-0 align-center">
+                        <h3>대표 이미지</h3>
+                        <v-spacer/>
+                        <v-file-input
+                            ref="multi_image_input"
+                            class="ma-0 pa-2"
+                            accept="image/*"
+                            v-model="profileImage"
+                            hide-spin-buttons 
+                            hide-input 
+                            hide-details
+                            @change="fileInfo"
+                            rounded
+                            dense
+                            prepend-icon="mdi-plus"
+                        >
+                        </v-file-input>
+                    </v-row>
                 </v-col>
-                <v-col cols="12" sm="9" md="9" class="ma-0 pa-0">
+                <v-col cols="12" sm="10" md="10" class="ma-0 pa-0">
                     <h3>타이틀</h3>
                 </v-col>
             </v-row>
-            <v-row class="ma-0 pa-0 align-start my-2" >
+            <v-row class="ma-0 pa-0 align-start my-4" >
                 <v-col cols="12" sm="2" md="2" class="ma-0 pa-0 ">
                     <div
                         class="magazine_image"
                         :style="magazineObj.image != null ? {backgroundImage: 'url('+profileImageUrl(magazineObj.image)+')'} : ''"
                     >
                         <v-row class="ma-0 pa-0 ">
-                            <v-file-input
-                                ref="multi_image_input"
-                                class="ma-0 pa-2"
-                                id="imageUp"
-                                accept="image/*"
-                                v-model="profileImage"
-                                hide-spin-buttons 
-                                hide-input 
-                                hide-details
-                                @change="fileInfo"
-                                dark
-                                rounded
-                                dense
-                                prepend-icon="mdi-paperclip"
-                                :center-affix="true"
-                                style="width:44px; height: 44px; backgroundColor:gray;"
-                            >
-                            </v-file-input>
-                            <v-btn icon large depressed @click="deleteMagazineImage(index)" style="backgroundColor:gray;" dark v-if="magazineObj.image != null">
+                            <v-btn class="elevation-2" icon depressed @click="deleteMagazineImage(index)" style="backgroundColor:gray;" dark v-if="magazineObj.image != null">
                                 <v-icon>mdi-trash-can-outline</v-icon>
                             </v-btn>
                         </v-row>
                     </div>
                 </v-col>
-                <v-col cols="12" sm="9" md="9" class="ma-0 pa-0">
+                <v-col cols="12" sm="10" md="10" class="ma-0 pa-0">
                     <v-col cols="12" sm="3" md="3" class="ma-0 pa-0">
                         <v-text-field 
                             dense
                             hide-details
                             outlined
                             placeholder="타이틀"
-                            class="basic-text-field"
                             v-model="magazineObj.title"
                         >
                         </v-text-field>
@@ -110,6 +108,7 @@
 
 import Editor from '@/components/admin/Editor.vue'
 import _ from 'lodash'
+import moment from 'moment'
 export default {
     components: { Editor },
     props: ['obj'],
@@ -145,11 +144,26 @@ export default {
         },
         async selectMagazine() {
             if (this.obj != null) {
-                console.log(this.obj)
-                Object.assign(this.magazineObj, this.obj)
-                this.$refs.editor.setContents(this.magazineObj.content, 'magazine')
-                this.profileImage = this.magazineObj.image
-                this.hashtags = this.magazineObj.hashtag
+                let conditions = []
+                conditions.push({"q":"=","f":"no","v":this.obj.no})
+                conditions.push({"q":"order","f":"no","o":"ASC"})
+                let param = {table:"magazine", conditions: conditions}
+                await this.$axios.post('/admin/select', param).then(res => {
+                    console.log(res.data)
+                    if (res.data.length > 0) {
+                        res.data.filter(item => {
+                            if (item.image != null && item.image != undefined) item.image = JSON.parse(item.image)
+                            if (item.hashtag != null && item.hashtag != undefined && item.hashtag != '') item.hashtag = JSON.parse(item.hashtag)
+                            item.cd = moment(item.cd).format('YYYY-MM-DD')
+                        })
+                        this.magazineObj = res.data[0]
+                        this.$refs.editor.setContents(this.magazineObj.content, 'magazine')
+                        this.profileImage = this.magazineObj.image
+                        this.hashtags = this.magazineObj.hashtag
+                    }
+                }).catch(err => {
+                    console.log("err : ", err)
+                })
             }
         },
         async clickDone() {
@@ -198,6 +212,7 @@ export default {
                     if (!this.validateVariableExist(this.profileImage)) {
                         this.updateImage(this.profileImage, 'image')
                     }
+                    alert('저장되었습니다.')
                 }
             }).catch(err => {
                 console.log("insert err : ", err)
@@ -222,6 +237,7 @@ export default {
                 if (!this.validateVariableExist(this.profileImage)) {
                     this.updateImage(this.profileImage, 'image')
                 }
+                alert('저장되었습니다.')
             }).catch(err => {
                 console.log("update err : ", err)
             })
@@ -272,36 +288,15 @@ export default {
     }
 }
 </script>
-<style lang="scss">
-.main_container {
+<style scoped>
+.magazine_main_container {
     overflow-y: auto;
     height: 74vh !important;
     min-height: 74vh !important;
     max-height: 74vh !important;
     margin: 0px;
     max-width: none;
-}
-.magazine_image_row {
-    flex-direction: row; 
-    display:flex;
-    align-items: center;
-}
-.magazine_row {
-    flex-direction: row; 
-    display:flex;
-    align-items: flex-end;
-    margin-top: 16px;
-    margin-bottom: 16px;
-    width: 100%;
-}
-.magazine_title_row {
-    flex-direction: row; 
-    display:inline-flex;
-    align-items: center;
-    height: 54px;
-}
-.magazine_main_iamge_title {
-    width: 160px;
+    padding: 10px;
 }
 .magazine_image {
     width: 160px !important;
@@ -313,48 +308,15 @@ export default {
     flex:none;
     margin: 0px 16px 0px 0px;
 }
-.magazine_title_component {
-    flex-direction: column;
-    align-items: center;
-}
-div.scroll-container {
-    overflow-y: hidden;
-    overflow-x: auto;
-    display:flex;
-    flex-wrap: nowrap;
-}
-.magazine_title_with_contents {
-    flex-direction: column;  
-    display:flex;
-    margin-right: 16px;
-}
-.basic-text-field {
-    margin: 4px 8px 0px 8px;
-    height: 40px;
-}
-.autocomplete_hashtag {
-    margin: 4px 8px 0px 8px;
-    width: 400px; 
-    height: 40px;
-}
+
 .magazine_detail {
-    /* height: 200px; */
     width: 1360px;
 }
-.tiptap {
-    height: fit-content;
-    min-height: 305px;
-    max-height: 305px;
+div::v-deep .tiptap {
+    height: fit-content ;
+    min-height: 290px ;
+    max-height: 290px ;
     padding: 16px;
-    overflow: auto;
-}
-.selection_text_field {
-    max-width: 68px;
-}
-.header_line {
-    border-top: 1px solid #ccc;
-    border-bottom: 1px solid #ccc;
-    border-left: 0.5px solid #ccc;
-    border-right: 0.5px solid #ccc;
+    overflow: auto ;
 }
 </style>

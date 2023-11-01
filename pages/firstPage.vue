@@ -4,7 +4,7 @@
 
 <script>
 export default {
-  layout: 'Login',
+  layout: 'LoginTest',
   name: 'IndexPage',
 }
 </script>

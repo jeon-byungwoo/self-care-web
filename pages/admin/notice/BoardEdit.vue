@@ -69,6 +69,7 @@
 
 import Editor from '@/components/admin/Editor.vue'
 import _ from 'lodash'
+import moment from 'moment'
 export default {
     components: { Editor },
     props: ['obj'],
@@ -110,8 +111,21 @@ export default {
     methods: {
         async selectBoard() {
             if (this.obj != null) {
-                Object.assign(this.boardObj, this.obj)
-                this.$refs.editor.setContents(this.boardObj.content, 'test')
+                // Object.assign(this.boardObj, this.obj)
+                // this.$refs.editor.setContents(this.boardObj.content, 'test')
+                let conditions = []
+                conditions.push({"q":"=","f":"no","v":this.obj.no})
+                conditions.push({"q":"order","f":"no","o":"ASC"})
+                let param = {table:"board", conditions: conditions}
+                await this.$axios.post('/admin/select', param).then(res => {
+                    console.log(res.data)
+                    if (res.data.length > 0) {
+                        this.boardObj = res.data[0]
+                        this.$refs.editor.setContents(this.boardObj.content, 'board')
+                    }
+                }).catch(err => {
+                    console.log("err : ", err)
+                })
             }
         },
         async clickDone() {
@@ -148,6 +162,7 @@ export default {
                 console.log(res.data)
                 if (res.data.length > 0) {
                     this.boardObj.no = res.data[0].no
+                    alert('저장되었습니다.')
                 }
             }).catch(err => {
                 console.log("insert err : ", err)
@@ -170,6 +185,7 @@ export default {
             console.log(param)
             this.$axios.post('/admin/update', param).then(res => {
                 console.log(res.data)
+                alert('저장되었습니다.')
             }).catch(err => {
                 console.log("update err : ", err)
             })
@@ -191,8 +207,8 @@ export default {
     }
 }
 </script>
-<style lang="scss">
-.main_container {
+<style scoped>
+.board_main_container {
     overflow-y: auto;
     height: 74vh !important;
     min-height: 74vh !important;
@@ -204,10 +220,12 @@ export default {
     /* height: 200px; */
     width: 1360px;
 }
-.tiptap {
-    height: fit-content;
-    min-height: 395px;
-    max-height: 395px;
+div::v-deep .tiptap {
+    height: fit-content ;
+    min-height: 395px ;
+    max-height: 395px ;
     padding: 16px;
+    overflow: auto;
 }
+
 </style>

@@ -22,7 +22,7 @@
                 </v-row>
             </template>
             <template v-slot:[`item.survey`]="{item}">
-                {{item.survey.length}}
+                {{item.survey?.length}}
             </template>
         </v-data-table>
         <v-dialog

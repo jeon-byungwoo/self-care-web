@@ -425,6 +425,11 @@ export default {
         clearInterval(this.inicisFormStatus);
         console.log('fetch')
         //주문된 상품으로 넘길지를 여기서 결정
+
+        //생성된 주문의 결제 정보가 존재한다면 주문 완료 화면으로 이동
+
+        //주문 취소, 팝업 닫기 등의 행위로 완전히 결제를 하지 않았다면 그냥 아무것도 하지 않음
+
         // if (!this.orderNumber) return this.$router.push({name: '/payment/failed' })
         // else this.$router.push({name: `/payment/result/${this.orderNumber}` })
     },

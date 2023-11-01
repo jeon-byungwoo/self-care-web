@@ -34,8 +34,8 @@
                             </v-btn>
                         </div>
                         <div class="filter_wrapper_block">
-                            <v-btn class="filter_btn" :color="isManager ? '#2D7DC8' : '#7A7A7A'" v-model="isManager" @click="isManager = !isManager">매니저</v-btn>
-                            <v-btn :color="isNormal ? '#2D7DC8' : '#7A7A7A'" v-model="isNormal" @click="isNormal = !isNormal">일반</v-btn>
+                            <v-btn class="filter_btn" :class="isManager ? 'white--text' : 'black--text'" :color="isManager ? '#2D7DC8' : '#FFFFFF'" v-model="isManager" @click="isManager = !isManager">매니저</v-btn>
+                            <v-btn :color="isNormal ? '#2D7DC8' : '#FFFFFF'" :class="isNormal ? 'white--text' : 'black--text'" v-model="isNormal" @click="isNormal = !isNormal">일반</v-btn>
 
                             <v-btn class="filter_btn_float_right" @click="editUser">매니저 추가</v-btn>
                         </div>
@@ -49,7 +49,7 @@
                 <div class="text-center">{{item.is_manager == 0 ? '일반' : '매니저'}}</div>
             </template>
             <template v-slot:[`item.temp_pw`]="{item}">
-                <div class="text-center"><v-btn @click="sendTempPw(item)">SEND</v-btn></div>
+                <div class="text-center"><v-btn @click.stop="sendTempPw(item)">SEND</v-btn></div>
             </template>
             <template v-slot:[`item.manager_no`]="{item}">
                 <div class="text-center">{{item.manager_no ? 'O' : 'X'}}</div>
@@ -58,17 +58,16 @@
                 <div class="text-center">{{item.cd.substr(0, 10)}}</div>
             </template>
             <template v-slot:[`item.progress_question`]="{item}">
-                <div class="text-center"><v-btn @click="showProgressQuestion(item)">설문진행</v-btn></div>
+                <div class="text-center"><v-btn @click.stop="showProgressQuestion(item)">설문진행</v-btn></div>
             </template>
             <template v-slot:[`item.buy`]="{item}">
-                <div class="text-center"><v-btn @click="sendBuyList(item)">구매내역</v-btn></div>
+                <div class="text-center"><v-btn @click.stop="sendBuyList(item)">구매내역</v-btn></div>
             </template>
         </v-data-table>
         <v-dialog
             v-model="userPopup"
             max-width="900"
             persistent
-            content-class="custom-dialog"
         >
             <UserEdit
                 v-if="userPopup"
@@ -130,7 +129,6 @@ export default {
             
             conditions.push({"q":"order","f":"no","o":"DESC"})
             let param = {table:"user", conditions: conditions}
-            console.log(param)
             await this.$axios.post('/admin/select', param).then(res => {
                 console.log("res.data : ", res.data)
                 this.items = res.data
@@ -142,23 +140,24 @@ export default {
             this.selectUser()
         },
         closePopup(type) {
+            this.selectedUser = null
             if (type == 'user') {
                 this.userPopup = !this.userPopup
             }
+            this.selectUser()
         },
         sendTempPw(item) {
             console.log("sendTempPw : ", item)
         },
         editUser() {
+            this.selectedUser = null
             this.userPopup = !this.userPopup
-            this.selectedUser = {
-                is_manager: 1
-            }
         },
         clickRow(value) {
+            console.log("clickRow : ", value)
             if (value != null || value != undefined) {
                 this.selectedUser = value
-                
+                this.userPopup = !this.userPopup
             }
         },
         showProgressQuestion(item) {
@@ -205,7 +204,5 @@ export default {
 .filter_btn_float_right {
     float:right
 }
-.custom-dialog.v-dialog:not(.v-dialog--fullscreen) {
-  max-height: 100%;
-}
+
 </style>

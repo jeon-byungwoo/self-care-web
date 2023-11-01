@@ -3,23 +3,40 @@
         <v-app-bar flat >
             <v-card-title class="ma-0 pa-0">자가진단 {{inquiryObj.no == null ? '등록' : '수정'}}</v-card-title>
         </v-app-bar>
-        <v-container class="main_container ma-0 pa-5">
+        <v-container class="inquiry_main_container ma-0 pa-5">
             <v-row class="ma-0 pa-0 align-center my-2" >
-                <v-col cols="12" sm="9" md="9" class="ma-0 pa-0">
+                <v-col cols="12" sm="10" md="10" class="ma-0 pa-0">
                     <h3>타이틀</h3>
                 </v-col>
-                <v-col cols="12" sm="3" md="3" class="ma-0 pa-0 ">
+                <v-col cols="12" sm="2" md="2" class="ma-0 pa-0 ">
+                    <v-row class="ma-0 pa-0 align-center ">
                     <h3>대표 이미지</h3>
+                    <v-spacer />
+                        <v-file-input
+                            ref="multi_image_input"
+                            class="ma-0 pa-0"
+                            accept="image/*"
+                            v-model="profileImage"
+                            hide-spin-buttons 
+                            hide-input 
+                            hide-details
+                            @change="fileInfo"
+                            rounded
+                            dense
+                            prepend-icon="mdi-plus"
+                        >
+                        </v-file-input>
+                    </v-row>
                 </v-col>
             </v-row>
             <v-row class="ma-0 pa-0 align-start my-2" >
-                <v-col cols="12" sm="9" md="9" class="ma-0 pa-0">
+                <v-col cols="12" sm="10" md="10" class="ma-0 pa-0">
                     <v-text-field 
                         dense
                         hide-details
                         outlined
                         placeholder="타이틀"
-                        class="basic-text-field mr-8"
+                        class="mr-8"
                         v-model="inquiryObj.title"
                     >
                     </v-text-field>
@@ -35,35 +52,26 @@
                         </v-select>
                     </v-col>
                 </v-col>
-                <v-col cols="12" sm="3" md="3" class="ma-0 pa-0 ">
-                    <div
+                <v-col cols="12" sm="2" md="2" class="ma-0 pa-0 ">
+                    <!-- <div
                         class="inquiry_image"
                         :style="inquiryObj.image != null ? {backgroundImage: 'url('+profileImageUrl(inquiryObj.image)+')'} : ''"
                     >
                         <v-row class="ma-0 pa-0 ">
-                            <v-file-input
-                                ref="multi_image_input"
-                                class="ma-0 pa-2"
-                                id="imageUp"
-                                accept="image/*"
-                                v-model="profileImage"
-                                hide-spin-buttons 
-                                hide-input 
-                                hide-details
-                                @change="fileInfo"
-                                dark
-                                rounded
-                                dense
-                                prepend-icon="mdi-paperclip"
-                                :center-affix="true"
-                                style="width:44px; height: 44px; backgroundColor:gray;"
-                            >
-                            </v-file-input>
-                            <v-btn icon large depressed @click="deleteInquiryImage(index)" style="backgroundColor:gray;" dark v-if="inquiryObj.i_r != null">
+                            <v-btn class="elevation-2" icon depressed @click="deleteInquiryImage(index)" style="backgroundColor:gray;" dark v-if="inquiryObj.image != null">
                                 <v-icon>mdi-trash-can-outline</v-icon>
                             </v-btn>
                         </v-row>
-                    </div>
+                    </div> -->
+                    <v-img 
+                        class="inquiry_image"
+                        contain
+                        :src="inquiryObj.image != null ? profileImageUrl(inquiryObj.image) : ''"
+                    >
+                        <v-btn class="elevation-2" icon depressed @click="deleteInquiryImage(index)" style="backgroundColor:gray;" dark v-if="inquiryObj.image != null">
+                            <v-icon>mdi-trash-can-outline</v-icon>
+                        </v-btn>
+                    </v-img>
                 </v-col>
             </v-row>
             <v-row class="ma-0 pa-0 align-end my-2">
@@ -162,7 +170,7 @@
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody v-if="surveyList.length == 0" class="header_line">
+                            <tbody v-if="surveyList?.length == 0" class="header_line">
                                 <tr>
                                     <th colspan="8" class="pa-0 text-center">
                                         설문 항목이 없습니다.
@@ -326,7 +334,7 @@
     </v-card>
 </template>
 <script>
-
+import moment from 'moment'
 import Editor from '@/components/admin/Editor.vue'
 import _ from 'lodash'
 export default {
@@ -406,11 +414,29 @@ export default {
         },
         async selectInquiry() {
             if (this.obj != null) {
-                Object.assign(this.inquiryObj, this.obj)
-                this.$refs.editor.setContents(this.inquiryObj.content, 'test')
-                this.$refs.explanationEditor.setContents(this.inquiryObj.survey_comment, 'test')
-                this.profileImage = this.inquiryObj.image
-                this.surveyList = this.inquiryObj.survey
+                let conditions = []
+                conditions.push({"q":"=","f":"no","v":this.obj.no})
+                conditions.push({"q":"order","f":"no","o":"ASC"})
+                let param = {table:"test", conditions: conditions}
+                await this.$axios.post('/admin/select', param).then(res => {
+                    console.log(res.data)
+                    if (res.data.length > 0) {
+                        res.data.filter(item => {
+                            if (item.image != null && item.image != undefined) item.image = JSON.parse(item.image)[0]
+                            if (item.survey != null && item.survey != undefined) item.survey = JSON.parse(item.survey)
+                            item.cd = moment(item.cd).format('YYYY-MM-DD')
+                        })
+                        this.inquiryObj = res.data[0]
+                        this.$refs.editor.setContents(this.inquiryObj.content, 'test')
+                        this.$refs.explanationEditor.setContents(this.inquiryObj.survey_comment, 'test')
+                        if (this.inquiryObj.image?.length > 0)
+                            this.profileImage = this.inquiryObj.image[0]
+                        
+                        this.surveyList = this.inquiryObj.survey
+                    }
+                }).catch(err => {
+                    console.log("err : ", err)
+                })
             }
         },
         async clickDone() {
@@ -431,8 +457,9 @@ export default {
             this.inquiryObj.image = URL.createObjectURL(this.profileImage)
         },
         profileImageUrl(url) {
+            console.log(this.hostUrl + url)
             if(url.includes('http')) return url
-            else return this.hostUrl+url
+            else return `${this.hostUrl}${url}`
         },
         deleteInquiryImage(index) {
             console.log(index, "삭제")
@@ -447,6 +474,7 @@ export default {
                 content:this.content,
                 survey:JSON.stringify(this.surveyList),
                 survey_comment:this.explanationContent,
+                alive:1,
                 table: 'test',
             }
             
@@ -461,6 +489,7 @@ export default {
                     if (!this.validateVariableExist(this.profileImage)) {
                         this.updateImage(this.profileImage, 'image')
                     }
+                    alert('저장되었습니다.')
                 }
             }).catch(err => {
                 console.log("insert err : ", err)
@@ -474,6 +503,7 @@ export default {
                 content:this.content,
                 survey:JSON.stringify(this.surveyList),
                 survey_comment:this.explanationContent,
+                alive: this.inquiryObj.alive,
                 table: 'test',
                 conditions:[{q:"=",f:"no",v:this.inquiryObj.no}]
             }
@@ -483,10 +513,10 @@ export default {
             }
             console.log(param)
             this.$axios.post('/admin/update', param).then(res => {
-                console.log(res.data)
                 if (!this.validateVariableExist(this.profileImage)) {
                     this.updateImage(this.profileImage, 'image')
                 }
+                alert('저장되었습니다.')
             }).catch(err => {
                 console.log("update err : ", err)
             })
@@ -517,11 +547,22 @@ export default {
             } else {
                 formData.append('files', obj)
             }
-
             await this.$axios.post('/admin/updateMultipart', formData, {
                 headers: {'Content-Type': 'multipart/form-data'}
             }).then(res => {
                 console.log("multipart response : ", res);
+                if (res.data.length > 0) {
+                    res.data.filter(item => {
+                        if (item.image != null && item.image != undefined) item.image = JSON.parse(item.image)[0]
+                        if (item.survey != null && item.survey != undefined) item.survey = JSON.parse(item.survey)
+                        item.cd = moment(item.cd).format('YYYY-MM-DD')
+                    })
+                    this.inquiryObj = _.cloneDeep(res.data[0])
+                    if (this.inquiryObj.image?.length > 0)
+                        this.profileImage = this.inquiryObj.image[0]
+                    this.surveyList = this.inquiryObj.survey
+                }
+                // this.inquiryObj = _.cloneDeep(res.data[0])
             }).catch(err => {
                 console.log("multipart error : ", err);
             })
@@ -538,87 +579,45 @@ export default {
 }
 </script>
 <style lang="scss">
-.main_container {
+.inquiry_main_container {
     overflow-y: auto;
     height: 74vh !important;
     min-height: 74vh !important;
     max-height: 74vh !important;
     margin: 0px;
     max-width: none;
+    .inquiry_image {
+        width: 160px !important;
+        height: 200px !important;
+        background-size: contain;
+        background-position: center;
+        border: 1px solid #ccc !important;
+        overflow: initial;
+        flex:none;
+        margin: 0px 16px 0px 0px;
+    }
+    .inquiry_detail {
+        /* height: 200px; */
+        width: 1360px;
+        .tiptap {
+            height: fit-content !important;
+            min-height: 200px !important;
+            max-height: 200px !important;
+            padding: 16px;
+            overflow: auto;
+        }
+    }
+    .selection_text_field {
+        max-width: 68px;
+    }
+    .header_line {
+        border-top: 1px solid #ccc;
+        border-bottom: 1px solid #ccc;
+        border-left: 0.5px solid #ccc;
+        border-right: 0.5px solid #ccc;
+    }
 }
-.inquiry_image_row {
-    flex-direction: row; 
-    display:flex;
-    align-items: center;
-}
-.inquiry_row {
-    flex-direction: row; 
-    display:flex;
-    align-items: flex-end;
-    margin-top: 16px;
-    margin-bottom: 16px;
-    width: 100%;
-}
-.inquiry_title_row {
-    flex-direction: row; 
-    display:inline-flex;
-    align-items: center;
-    height: 54px;
-}
-.inquiry_main_iamge_title {
-    width: 160px;
-}
-.inquiry_image {
-    width: 160px !important;
-    height: 200px !important;
-    background-size: cover;
-    background-position: center;
-    border: 1px solid #ccc !important;
-    overflow: initial;
-    flex:none;
-    margin: 0px 16px 0px 0px;
-}
-.inquiry_title_component {
-    flex-direction: column;
-    align-items: center;
-}
-div.scroll-container {
-    overflow-y: hidden;
-    overflow-x: auto;
-    display:flex;
-    flex-wrap: nowrap;
-}
-.inquiry_title_with_contents {
-    flex-direction: column;  
-    display:flex;
-    margin-right: 16px;
-}
-.basic-text-field {
-    margin: 4px 8px 0px 8px;
-    height: 40px;
-}
-.autocomplete_hashtag {
-    margin: 4px 8px 0px 8px;
-    width: 400px; 
-    height: 40px;
-}
-.inquiry_detail {
-    /* height: 200px; */
-    width: 1360px;
-}
-.tiptap {
-    height: fit-content;
-    min-height: 200px;
-    max-height: 200px;
-    padding: 16px;
-}
-.selection_text_field {
-    max-width: 68px;
-}
-.header_line {
-    border-top: 1px solid #ccc;
-    border-bottom: 1px solid #ccc;
-    border-left: 0.5px solid #ccc;
-    border-right: 0.5px solid #ccc;
-}
+
+
+
 </style>

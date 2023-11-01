@@ -49,6 +49,7 @@
                                             color="#2D7DC8"
                                             dark
                                             class="mx-1"
+                                            small
                                         >
                                             {{obj}}
                                         </v-chip>
@@ -211,7 +212,7 @@ export default {
     }
 }
 </script>
-<style scopted>
+<style >
 .mh-100 {
     min-height: 100vh;
     max-height: 100vh;
@@ -223,7 +224,5 @@ export default {
 .card {
     height: 300px;
     width: 300px;
-    /* height: fit-content;
-    width: fit-content; */
 }
 </style>
