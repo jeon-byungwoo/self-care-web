@@ -17,14 +17,14 @@
                             placeholder="구매자명 또는 받는 주소를 검색하세요."
                             outlined
                             cols="12" sm="4" md="4"
-                            @key.enter="searchProduct"
+                            @key.enter="selectOrder"
                         >
                         </v-text-field>
                         <v-btn 
                             dense
                             color="#2D7DC8"
                             dark
-                            @click="searchProduct"
+                            @click="selectOrder"
                             class="ml-4"
                         >
                             검색
@@ -39,6 +39,7 @@
                     dense
                     hide-details
                     outlined
+                    @change="setState(item)"
                 />
             </template>
         </v-data-table>
@@ -60,9 +61,9 @@ export default {
                 {text:"주문자 이메일", value: "b_email", align: "center"},
                 {text:"받는사람", value: "r_name", align: "center"},
                 {text:"받는사람 연락처", value: "r_phone", align: "center"},
-                {text:"주소", value: "r_address", align: "center", width: '10%'},
-                {text:"배송 요청사항", value: "d_demand", align: "center", width: '10%'},
-                {text:"주문상태", value: "status", align: "center"},
+                {text:"주소", value: "r_address", align: "center", width: '15%'},
+                {text:"배송 요청사항", value: "d_demand", align: "center", width: '15%'},
+                {text:"주문상태", value: "status", align: "center", width: '9%'},
                 {text:"결제금액", value: "total_price", align: "center"},
                 {text:"결제수단", value: "payment_info", align: "center"},
                 {text:"주문일시", value: "cd", align: "center"},
@@ -83,9 +84,23 @@ export default {
         this.selectOrder()
     },
     methods: {
+        async setState(item) {
+            console.log("주문 상태 변경 : ", item.status)
+            let param = {
+                no: item.no,
+                status: item.status,
+                table: 'orders',
+                conditions: [{q:"==",f:"no",v:item.no}]
+            }
+            await this.$axios.post('/admin/update', param).then((res) => {
+                console.log('update status : ', res.data)
+            }).catch((err) => {
+                console.log('에러!!', err)
+            }) 
+        },
         async selectOrder() {
             let conditions = []
-            conditions.push({"q":"=","f":"alive","v":1})
+            // conditions.push({"q":"=","f":"alive","v":1})
             if (this.searchedText) {
                 conditions.push({"op":"AND", "q": "like", "f": "b_name", "str": this.searchedText})
                 conditions.push({"op":"OR", "q": "like", "f": "r_address", "str": this.searchedText})
@@ -93,7 +108,7 @@ export default {
             }
             
             conditions.push({"q":"order","f":"no","o":"DESC"})
-            let param = {table:"order", conditions: conditions}
+            let param = {table:"orders", conditions: conditions}
             
             await this.$axios.post('/admin/select', param).then(res => {
                 console.log("res.data : ", res.data)

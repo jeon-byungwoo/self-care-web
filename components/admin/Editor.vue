@@ -79,6 +79,40 @@
 				class="menubar__button"
 				@click="editor.chain().focus().toggleBlockquote().run()"
 			>mdi-format-quote-close</v-icon> -->
+			<v-menu 
+				v-model="colorMenu"
+				:close-on-content-click="false"
+      			location="end"
+			>
+				<template v-slot:activator="{ props }">
+					<v-icon 
+						class="menubar__button" 
+						v-bind="props"
+						@click="colorMenu = !colorMenu"
+						:color="textColor"
+					>mdi-palette</v-icon>
+				</template>
+				<v-card min-width="300">
+					<v-color-picker
+						dot-size="25"
+						mode="hexa"
+						show-swatches
+						swatches-max-height="80"
+						v-model="color"
+					>
+					</v-color-picker>
+					<v-footer class="justify-end">
+						<v-btn text @click="colorMenu = !colorMenu">CANCEL</v-btn>
+						<v-btn text @click="updateColor">SAVE</v-btn>
+					</v-footer>
+				</v-card>
+			</v-menu>
+			<!-- <input
+				type="color"
+				@input="editor.chain().focus().setColor($event.target.value).run()"
+				v-model="editor.getAttributes('textStyle').color"
+			> -->
+
 			<v-icon
 				class="menubar__button"
 				@click="editor.chain().focus().setHorizontalRule().run()"
@@ -140,6 +174,8 @@ import StarterKit from '@tiptap/starter-kit'
 import Image from '@tiptap/extension-image'
 import Underline from '@tiptap/extension-underline'
 import Blockquote from '@tiptap/extension-blockquote'
+import { Color } from '@tiptap/extension-color'
+import TextStyle from '@tiptap/extension-text-style'
 
 export default {
 	components: {EditorContent},
@@ -156,12 +192,20 @@ export default {
 				alt: null,
 			},
 			hostUrl: process.env.BASE_URL,
+			color:null,
+			colorMenu: false,
+			textColor: null,
 		}
 	},
 	mounted() {
 		this.setEditor()
 	},
 	methods: {
+		updateColor() {
+			this.textColor = this.color.hexa
+			this.editor.chain().focus().setColor(this.textColor).run()
+			this.colorMenu = !this.colorMenu
+		},
 		setEditor() {
 			this.editor = new Editor({
 				content: this.content,
@@ -169,7 +213,9 @@ export default {
 					StarterKit,
 					Image,
 					Underline,
-					Blockquote
+					Blockquote,
+					Color,
+					TextStyle
 				],
 			})
 			this.editor.on('update', this.onUpdate)
@@ -203,10 +249,7 @@ export default {
 			
 			this.editor.commands.setContent(this.content)
 			
-			this.imgObj.src = null
-			this.imgObj.alt = null
-			this.selectedImg = null
-			this.fileSelectPopup = !this.fileSelectPopup
+			this.cancelClick()
 		},
 		cancelClick() {
 			this.imgObj.src = null
@@ -231,14 +274,13 @@ export default {
 			this.imgObj.alt = this.selectedImg.name
 		},
 		onUpdate ({ editor }) {
-			// const json = editor.getJSON()
 			const text = editor.getHTML()
 			this.content = text
 		}
 	}
 }
 </script>
-<style scopted>
+<style >
 .main_editor {
 	width: 100%;
 	height: 600px;

@@ -3,8 +3,9 @@
         :headers="headers"
         :items="itemList"
         class="elevation-1"
-        style="width:100%;"
         @click:row="editItem"
+        disable-sort
+        item-key="no"
     >
     <template v-slot:top>
         <v-toolbar flat>
@@ -13,30 +14,100 @@
             <v-spacer></v-spacer>
             <v-dialog v-model="dialog" max-width="1000px" style="overflow:hidden;">
                 <v-card style="overflow:hidden;">
-                    <v-card-title>
-                        <span class="text-h5">{{ formTitle }}</span>
-                    </v-card-title>
-                    <v-row>
-                        <v-col>
-                            <v-card-text>
-                                <v-row cols="12" sm="6" md="4">
-                                    <v-col>
-                                        <v-autocomplete
-                                        v-model="editedItem.status"
-                                        label="접수상황"
-                                        :items="['접수', '대응 완료', '보류']"
-                                        ></v-autocomplete>
-                                    </v-col>
-                                </v-row>
-                            </v-card-text>
-                        </v-col>
-                    </v-row>
-                    <v-card-actions>
-                        <v-spacer></v-spacer>
-                        <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
-                        <v-btn v-if="editedIndex != -1" color="blue darken-1" text @click="dialogDelete = true">Delete</v-btn>
-                        <v-btn color="blue darken-1" text @click="save">Save</v-btn>
-                    </v-card-actions>
+                    <v-app-bar flat>
+                        <v-card-title>
+                            {{ formTitle }}
+                        </v-card-title>
+                    </v-app-bar>
+                    <v-col>
+                        <v-row class="ma-0 pa-0">
+                            <v-col cols="12" sm="6" md="4">
+                                <v-autocomplete
+                                    v-model="editedItem.status"
+                                    label="접수상황"
+                                    :items="['접수', '대응 완료', '보류']"
+                                    hide-details
+                                    outlined
+                                    dense
+                                ></v-autocomplete>
+                            </v-col>
+                            <v-col cols="12" sm="6" md="4">
+                                <v-btn
+                                    dense
+                                >답변 제출(메일 전송)</v-btn>
+                            </v-col>
+                        </v-row> 
+                        <v-row class="ma-0 pa-0">
+                            <v-col cols="12" sm="6" md="4">
+                                <v-text-field 
+                                    v-model="editedItem.u_name"
+                                    label="이름"
+                                    hide-details
+                                    outlined
+                                    dense
+                                    disabled
+                                >
+                                </v-text-field>
+                            </v-col>
+                            <v-col cols="12" sm="6" md="4">
+                                <v-text-field 
+                                    v-model="editedItem.cd"
+                                    label="생성일"
+                                    hide-details
+                                    outlined
+                                    dense
+                                    disabled
+                                >
+                                </v-text-field>
+                            </v-col>
+                        </v-row>
+                        <v-row class="ma-0 pa-0">
+                            <v-col cols="12" sm="6" md="6">
+                                <v-text-field 
+                                    v-model="editedItem.u_email"
+                                    label="이메일"
+                                    hide-details
+                                    outlined
+                                    dense
+                                    disabled
+                                >
+                                </v-text-field>
+                            </v-col>
+                            <v-col cols="12" sm="6" md="6">
+                                <v-text-field 
+                                    v-model="editedItem.u_phone"
+                                    label="전화번호"
+                                    hide-details
+                                    outlined
+                                    dense
+                                    disabled
+                                >
+                                </v-text-field>
+                            </v-col>
+                        </v-row>
+                        <v-row class="ma-0 pa-0">
+                            <v-col cols="12" sm="12" md="12">
+                                <v-textarea 
+                                    v-model="editedItem.content"
+                                    label="문의 내용"
+                                    hide-details
+                                    outlined
+                                    dense
+                                    disabled
+                                    no-resize
+                                >
+                                </v-textarea>
+                            </v-col>
+                        </v-row>
+                    </v-col>
+                    <v-footer class="ma-0 pa-2 justify-end">
+                    <!-- <v-card-actions>
+                        <v-spacer></v-spacer> -->
+                        <v-btn v-if="editedIndex != -1" color="error" @click="dialogDelete = true">삭제</v-btn>
+                        <v-btn class="ml-2" color="warning" @click="close">취소</v-btn>
+                        <v-btn class="ml-2" color="success" @click="save">저장</v-btn>
+                    <!-- </v-card-actions> -->
+                    </v-footer>
                 </v-card>
             </v-dialog>
             <v-dialog v-model="dialogDelete" max-width="500px">
@@ -73,15 +144,15 @@ export default {
             dialog: false,
             dialogDelete: false,
             headers: [
-                { text: "문의번호", align: "start", value: "no" },
-                { text: "유저번호", value: "u_no" },
-                { text: "이름", value: "u_name" },
-                { text: "이메일", value: "u_email" },
-                { text: "전화번호", value: "u_phone" },
-                { text: "문의내용", value: "content" },
-                { text: "상태", value: "status" },
-                { text: "생성일", value: "cd" },
-                { text: "편집일", value: "ed" },
+                { text: "문의번호", value: "no", align: "center", width: "4%"},
+                { text: "유저번호", value: "u_no", align: "center", width: "4%"},
+                { text: "이름", value: "u_name", align: "center", width: "8%"},
+                { text: "이메일", value: "u_email", align: "center", width: "16%"},
+                { text: "전화번호", value: "u_phone", align: "center", width: "10%"},
+                { text: "문의내용", value: "content", align: "center", width: "32%"},
+                { text: "상태", value: "status", align: "center", width: "6%"},
+                { text: "생성일", value: "cd", align: "center", width: "10%"},
+                { text: "편집일", value: "ed", align: "center", width: "10%"},
             ],
             itemList: [],
         };
@@ -100,7 +171,7 @@ export default {
         },
     },
     mounted() {
-        document.body.setAttribute('data-app', true)
+        // document.body.setAttribute('data-app', true)
         this.selecItem()//처음 데이터 조회
     },
     methods: {

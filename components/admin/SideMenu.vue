@@ -11,6 +11,7 @@
         :src="bg"
         absolute
         dark
+        app
     >
         <vuescroll :ops="this.$store.state.vueScrollOpt">
             <v-list dense nav class="py-0">
@@ -20,10 +21,10 @@
                     </v-list-item-avatar>
 
                     <v-list-item-content>
-                        <!-- <v-list-item-title>{{this.$store.state.userModule.userInfo.name}}</v-list-item-title>
-                        <v-list-item-subtitle>{{this.$store.state.userModule.userInfo.email}}</v-list-item-subtitle> -->
-                        <v-list-item-title>name</v-list-item-title>
-                        <v-list-item-subtitle>email</v-list-item-subtitle>
+                        <v-list-item-title>{{this.$store.state.userModule.userInfo.name}}</v-list-item-title>
+                        <v-list-item-subtitle>{{this.$store.state.userModule.userInfo.email}}</v-list-item-subtitle>
+                        <!-- <v-list-item-title>name</v-list-item-title>
+                        <v-list-item-subtitle>email</v-list-item-subtitle> -->
                     </v-list-item-content>
                 </v-list-item>
 
@@ -84,12 +85,13 @@ export default {
                 { no: 7, category: 30, name: '공지사항 관리', icon: 'mdi-alpha-c-circle', path: "/admin/BoardManage" },
                 { no: 8, category: 30, name: '자가진단 관리', icon: 'mdi-alpha-c-circle', path: "/admin/SelfInquiry" },
                 { no: 9, category: 30, name: '건강설문 해석 관리', icon: 'mdi-alpha-c-circle', path: "/admin/ExplanationManage" },
-                { no: 10, category: 40, name: '이용약관 관리', icon: 'mdi-alpha-c-circle-outline', path: "/admin/policy" },
-                { no: 11, category: 40, name: '개인정보 처리방침 관리', icon: 'mdi-alpha-c-circle-outline', path: "/admin/personalPolicy" },
-                { no: 12, category: 40, name: '자주묻는 질문 관리', icon: 'mdi-alpha-c-circle-outline', path: "/admin/curations" },
-                { no: 13, category: 40, name: '1:1문의 관리', icon: 'mdi-alpha-c-circle-outline', path: "/admin/curations" },
-                { no: 14, category: 50, name: '회원통계', icon: 'mdi-alpha-c-circle-outline', path: "/admin/curations" },
-                { no: 15, category: 50, name: '판매통계', icon: 'mdi-alpha-c-circle-outline', path: "/admin/curations" },
+                { no: 10, category: 30, name: '배너 관리', icon: 'mdi-alpha-c-circle', path: "/admin/banner" },
+                { no: 11, category: 40, name: '이용약관 관리', icon: 'mdi-alpha-c-circle-outline', path: "/admin/policy" },
+                { no: 12, category: 40, name: '개인정보 처리방침 관리', icon: 'mdi-alpha-c-circle-outline', path: "/admin/personalPolicy" },
+                { no: 13, category: 40, name: '자주묻는 질문 관리', icon: 'mdi-alpha-c-circle-outline', path: "/admin/qna" },
+                { no: 14, category: 40, name: '1:1문의 관리', icon: 'mdi-alpha-c-circle-outline', path: "/admin/inquiry" },
+                { no: 15, category: 50, name: '회원통계', icon: 'mdi-alpha-c-circle-outline', path: "/admin/UserStatistics" },
+                { no: 16, category: 50, name: '판매통계', icon: 'mdi-alpha-c-circle-outline', path: "/admin/curations" },
             ],
             color: this.$vuetify.theme.themes.light.basicColor,
             colors: [
@@ -130,12 +132,13 @@ export default {
                 { no: 7, category: 30, name: '공지사항 관리', icon: 'mdi-alpha-c-circle', path: "/admin/BoardManage" },
                 { no: 8, category: 30, name: '자가진단 관리', icon: 'mdi-alpha-c-circle', path: "/admin/SelfInquiry" },
                 { no: 9, category: 30, name: '건강설문 해석 관리', icon: 'mdi-alpha-c-circle', path: "/admin/ExplanationManage" },
-                { no: 10, category: 40, name: '이용약관 관리', icon: 'mdi-alpha-c-circle-outline', path: "/admin/Policy" },
-                { no: 11, category: 40, name: '개인정보 처리방침 관리', icon: 'mdi-alpha-c-circle-outline', path: "/admin/PersonalPolicy" },
-                { no: 12, category: 40, name: '자주묻는 질문 관리', icon: 'mdi-alpha-c-circle-outline', path: "/admin/curations" },
-                { no: 13, category: 40, name: '1:1문의 관리', icon: 'mdi-alpha-c-circle-outline', path: "/admin/curations" },
-                { no: 14, category: 50, name: '회원통계', icon: 'mdi-alpha-c-circle-outline', path: "/admin/curations" },
-                { no: 15, category: 50, name: '판매통계', icon: 'mdi-alpha-c-circle-outline', path: "/admin/curations" },
+                { no: 10, category: 30, name: '배너 관리', icon: 'mdi-alpha-c-circle', path: "/admin/banner" },
+                { no: 11, category: 40, name: '이용약관 관리', icon: 'mdi-alpha-c-circle-outline', path: "/admin/policy" },
+                { no: 12, category: 40, name: '개인정보 처리방침 관리', icon: 'mdi-alpha-c-circle-outline', path: "/admin/personalPolicy" },
+                { no: 13, category: 40, name: '자주묻는 질문 관리', icon: 'mdi-alpha-c-circle-outline', path: "/admin/qna" },
+                { no: 14, category: 40, name: '1:1문의 관리', icon: 'mdi-alpha-c-circle-outline', path: "/admin/inquiry" },
+                { no: 15, category: 50, name: '회원통계', icon: 'mdi-alpha-c-circle-outline', path: "/admin/UserStatistics" },
+                { no: 16, category: 50, name: '판매통계', icon: 'mdi-alpha-c-circle-outline', path: "/admin/curations" },
             ]
             this.menuDataList.forEach((item)=>{
                 if(item.category==10){ this.categories[0].menuDataList.push(item) }
@@ -149,6 +152,7 @@ export default {
         async logout() {
             /// 로그아웃 기능 적용
             this.$store.dispatch('userModule/logout')
+            this.$router.replace({ name: 'index' })
         }
     }
 }

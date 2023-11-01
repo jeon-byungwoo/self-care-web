@@ -5,7 +5,7 @@ let USERMODULE = {
     state: () => ({
         userInfo: {},
         login: false,
-        table: "table test"
+        table: ''
     }),
     mutations: {
         loginRegist (state, param) {

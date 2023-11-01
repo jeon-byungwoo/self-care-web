@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div >
         <v-data-table 
             :headers="headers"
             :items="items"
@@ -44,7 +44,6 @@
                     class="product_main_image"
                     :src="imgRequire(item.i_r[0])"
                 />
-                <!-- {{item.i_r.length}} -->
             </template>
             <template v-slot:[`item.hashtag`]="{item}">
                 <v-row class="ma-0 pa-0">

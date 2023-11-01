@@ -39,6 +39,7 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
+    { src: '~/plugins/persistedState.client.js' },
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -53,7 +54,7 @@ export default {
   ],
 
   server: {
-    port: 8080,
+    // port: 8080,
     // port: 443,
     // host: '192.168.0.14'
     // host: '211.37.179.90'

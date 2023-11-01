@@ -5,10 +5,27 @@
         </v-app-bar>
         <v-container class="main_container ma-0 pa-5">
             <v-row class="ma-0 pa-0 align-center my-2" >
-                <v-col cols="12" sm="3" md="3" class="ma-0 pa-0 ">
-                    <h3>대표 이미지</h3>
+                <v-col cols="12" sm="2" md="2" class="ma-0 pa-0 ">
+                    <v-row class="ma-0 pa-0 align-center ">
+                        <h3>대표 이미지</h3>
+                        <v-spacer />
+                        <v-file-input
+                            ref="multi_image_input"
+                            class="ma-0 pa-0"
+                            accept="image/*"
+                            v-model="profileImage"
+                            hide-spin-buttons 
+                            hide-input 
+                            hide-details
+                            @change="fileInfo"
+                            rounded
+                            dense
+                            prepend-icon="mdi-plus"
+                        >
+                        </v-file-input>
+                    </v-row>
                 </v-col>
-                <v-col cols="12" sm="9" md="9" class="ma-0 pa-0">
+                <v-col cols="12" sm="10" md="10" class="ma-0 pa-0">
                     <v-row class="ma-0 pa-0 align-center ">
                         <h5 class="mr-3">제품 이미지</h5>
                         <v-file-input
@@ -46,37 +63,20 @@
                 </v-col>
             </v-row>
             <v-row class="ma-0 pa-0 align-center my-2" >
-                <v-col cols="12" sm="3" md="3" class="ma-0 pa-0 ">
+                <v-col cols="12" sm="2" md="2" class="ma-0 pa-0 ">
                     <div
                         class="product_image"
                         :style="productObj.i_r != null ? {backgroundImage: 'url('+profileImageUrl(productObj.i_r)+')'} : ''"
+                        @click="showImageDetail"
                     >
                         <v-row class="ma-0 pa-0 ">
-                            <v-file-input
-                                ref="multi_image_input"
-                                class="ma-0 pa-2"
-                                id="imageUp"
-                                accept="image/*"
-                                v-model="profileImage"
-                                hide-spin-buttons 
-                                hide-input 
-                                hide-details
-                                @change="fileInfo"
-                                dark
-                                rounded
-                                dense
-                                prepend-icon="mdi-paperclip"
-                                :center-affix="true"
-                                style="width:44px; height: 44px; backgroundColor:gray;"
-                            >
-                            </v-file-input>
-                            <v-btn icon large depressed @click="deleteProductImage(index)" style="backgroundColor:gray;" dark v-if="productObj.i_r != null">
+                            <v-btn class="elevation-2" icon depressed @click="deleteProductImage(index)" style="backgroundColor:gray;" dark v-if="productObj.i_r != null && profileImage != null">
                                 <v-icon>mdi-trash-can-outline</v-icon>
                             </v-btn>
                         </v-row>
                     </div>
                 </v-col>
-                <v-col cols="12" sm="9" md="9" class="ma-0 pa-0">
+                <v-col cols="12" sm="10" md="10" class="ma-0 pa-0">
                     <div
                         class="scroll-container"
                     >
@@ -85,8 +85,9 @@
                             :key="index"
                             class="product_image"
                             :style="obj != null ? {backgroundImage: 'url('+obj+')'} : ''"
+                            @click="showImageDetails(index)"
                         >
-                            <v-btn icon large depressed @click="deleteProductImage(index)" style="backgroundColor:gray;" dark>
+                            <v-btn class="elevation-2" icon depressed @click.stop="deleteProductImage(index)" style="backgroundColor:gray;" dark>
                                 <v-icon>mdi-trash-can-outline</v-icon>
                             </v-btn>
                         </div>
@@ -120,7 +121,6 @@
                         hide-details
                         outlined
                         placeholder="상품명"
-                        class="basic-text-field"
                         v-model="productObj.name"
                     >
                     </v-text-field>
@@ -310,14 +310,19 @@
             <v-btn color="warning" @click="clickCancel">취소</v-btn>
             <v-btn class="ml-2" color="success" @click="clickDone">저장</v-btn>
         </v-footer>
+        <v-dialog v-model="showDetailPopup" class="elevation-0" style="overflow:none;">
+            <ImageDetail ref="imageDetail" :items="imageList" :currentIndex="currentIndex" @close-detail="closeDetail"/>
+        </v-dialog>
     </v-card>
 </template>
 <script>
 
 import Editor from '@/components/admin/Editor.vue'
+import moment from 'moment'
 import _ from 'lodash'
+import ImageDetail from '@/components/admin/ImageDetail.vue'
 export default {
-    components: { Editor },
+    components: { Editor, ImageDetail },
     props: ['obj'],
     data() {
         return {
@@ -364,33 +369,76 @@ export default {
                 {text:"미해당", value: 0},
             ],
             questionsObj: [
-                {text:"면역 - 양호 x", value:"면역 - 양호 x"},
-                {text:"면역 - 경계 x", value:"면역 - 경계 x"},
+                {text:"면역", value:"면역"},
+                {text:"순환", value:"순환"},
+                {text:"소화", value:"소화"},
+                {text:"장관", value:"장관"},
+                {text:"뇌신경", value:"뇌신경"},
+                {text:"호르몬", value:"호르몬"},
+                {text:"호흡", value:"호흡"},
+                {text:"비뇨", value:"비뇨"},
+                {text:"골격", value:"골격"},
+                {text:"피부,모발", value:"피부모발"},
             ],
             content: '',
             hostUrl: process.env.BASE_URL,
+            imageList: [],
+            currentIndex: 0,
+            showDetailPopup: false,
         }
     },
     mounted() {
         this.selectProduct()  
     },
     methods: {
+        closeDetail() {
+            this.showDetailPopup = !this.showDetailPopup
+            this.imageList = []
+            this.currentIndex = 0
+        },
+        showImageDetail() {
+            this.currentIndex = 0
+            this.imageList.push(this.productObj.i_r)
+            this.showDetailPopup = !this.showDetailPopup
+        },
+        showImageDetails(index) {
+            this.currentIndex = index
+            this.imageList = this.productObj.i_list
+            this.showDetailPopup = !this.showDetailPopup
+        },
         async selectProduct() {
             if (this.obj != null) {
-                Object.assign(this.productObj, this.obj)
-                this.$refs.editor.setContents(this.productObj.content, 'product')
-                if (this.productObj.i_r.length > 0) {
-                    this.profileImage = this.productObj.i_r[0]
-                }
-                if (this.productObj.i_list.length > 0) {
-                    // this.files = this.productObj.i_list
-                    for (const i of this.productObj.i_list) {
-                        let url = this.imgRequire(i)
-                        let image = await this.convertUrl(url)
-                        this.files.push(image)
-                        this.filesUrls.push(url)
+                let conditions = []
+                conditions.push({"q":"=","f":"no","v":this.obj.no})
+                conditions.push({"q":"order","f":"no","o":"ASC"})
+                let param = {table:"product", conditions: conditions}
+                await this.$axios.post('/admin/select', param).then(async res => {
+                    console.log(res.data)
+                    if (res.data.length > 0) {
+                        res.data.filter(item => {
+                            if (item.i_r != null && item.i_r != undefined) item.i_r = JSON.parse(item.i_r)
+                            if (item.i_list != null && item.i_list != undefined) item.i_list = JSON.parse(item.i_list)
+                            if (item.hashtag != null && item.hashtag != undefined && item.hashtag != '') item.hashtag = JSON.parse(item.hashtag)
+                            item.cd = moment(item.cd).format('YYYY-MM-DD')
+                        })
+                        this.productObj = res.data[0]
+                        this.$refs.editor.setContents(this.productObj.content, 'product')
+                        if (this.productObj.i_r?.length > 0) {
+                            this.profileImage = this.productObj.i_r[0]
+                        }
+                        if (this.productObj.i_list?.length > 0) {
+                            for (const i of this.productObj.i_list) {
+                                let url = this.imgRequire(i)
+                                let image = await this.convertUrl(url)
+                                this.files.push(image)
+                                this.filesUrls.push(url)
+                            }
+                            this.prevFiles = this.files
+                        }
                     }
-                }
+                }).catch(err => {
+                    console.log("err : ", err)
+                })
             }
         },
         async clickDone() {
@@ -485,6 +533,7 @@ export default {
                     if (!this.validateVariableExist(this.files)) {
                         this.updateImage(this.files, 'i_list')
                     }
+                    alert('저장되었습니다.')
                 }
             }).catch(err => {
                 console.log("insert err : ", err)
@@ -521,6 +570,7 @@ export default {
                 if (!this.validateVariableExist(this.files)) {
                     this.updateImage(this.files, 'i_list')
                 }
+                alert('저장되었습니다.')
             }).catch(err => {
                 console.log("update err : ", err)
             })
@@ -569,28 +619,7 @@ export default {
     max-height: 74vh !important;
     margin: 0px;
     max-width: none;
-}
-.product_image_row {
-    flex-direction: row; 
-    display:flex;
-    align-items: center;
-}
-.product_row {
-    flex-direction: row; 
-    display:flex;
-    align-items: flex-end;
-    margin-top: 16px;
-    margin-bottom: 16px;
-    width: 100%;
-}
-.product_title_row {
-    flex-direction: row; 
-    display:inline-flex;
-    align-items: center;
-    height: 54px;
-}
-.product_main_iamge_title {
-    width: 160px;
+    
 }
 .product_image {
     width: 160px !important;
@@ -602,38 +631,20 @@ export default {
     flex:none;
     margin: 0px 16px 0px 0px;
 }
-.product_title_component {
-    flex-direction: column;
-    align-items: center;
-}
 div.scroll-container {
     overflow-y: hidden;
     overflow-x: auto;
     display:flex;
     flex-wrap: nowrap;
 }
-.product_title_with_contents {
-    flex-direction: column;  
-    display:flex;
-    margin-right: 16px;
-}
-.basic-text-field {
-    margin: 4px 8px 0px 8px;
-    height: 40px;
-}
-.autocomplete_hashtag {
-    margin: 4px 8px 0px 8px;
-    width: 400px; 
-    height: 40px;
-}
 .product_detail {
     /* height: 200px; */
     width: 1000px;
 }
-.tiptap {
-    overflow: auto;
-    height: fit-content;
-    min-height: 300px;
+div::v-deep .tiptap {
+    overflow: auto ;
+    min-height: 300px ;
+    max-height: 300px ;
     padding: 16px;
 }
 </style>

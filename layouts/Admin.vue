@@ -1,7 +1,7 @@
 <template>
-    <v-app >
+    <v-app v-show="$store.state.userModule.login" style="flex-direction: column;">
       <div >
-        <SideMenu />
+        <SideMenu clss="main_sidebar"/>
       </div>
       <div class="main_view">
         <Nuxt />
@@ -18,11 +18,33 @@ export default {
   data() {
     return {}
   },
+  watch: {
+    $route: {
+        immediate: true,
+            handler(to, from) {
+                if (!this.$store.state.userModule.login) {
+                    return this.$router.push({path: '/admin/login'});
+                }
+            }
+        }
+    },
+    mounted() {
+    }
 }
 </script>
 <style >
-.main_sidebar { width: 56px; height: 100vh; }
+.main_sidebar { 
+    width: 56px; 
+    height: 100%; 
+    position: fixed;
+    left: 0;
+    top: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
 .main_view { 
+    height: 100vh;
+    overflow-y: auto;
     margin-left: 56px;
 }
 </style>

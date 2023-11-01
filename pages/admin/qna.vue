@@ -3,7 +3,6 @@
         :headers="headers"
         :items="itemList"
         class="elevation-1"
-        style="width:100%;"
         @click:row="editItem"
     >
     <template v-slot:top>
@@ -16,54 +15,78 @@
                 <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on">질문 추가</v-btn>
                 </template>
                 <v-card style="overflow:hidden;">
-                    <v-card-title>
-                        <span class="text-h5">{{ formTitle }}</span>
-                    </v-card-title>
-                    <v-row>
-                        <v-col>
-                            <v-card-text>
-                                <v-row cols="12" sm="6" md="4">
-                                    <v-col>
-                                        <v-text-field
-                                        v-model="editedItem.title"
-                                        label="질문제목"
-                                        ></v-text-field>
-                                    </v-col>
-                                </v-row>
-                                <v-row cols="12" sm="6" md="4">
-                                    <v-col>
-                                        <v-textarea
-                                        v-model="editedItem.content"
-                                        label="질문내용"
-                                        ></v-textarea>
-                                    </v-col>
-                                </v-row>
-                                <v-row cols="12" sm="6" md="4">
-                                    <v-col>
-                                        <v-textarea
-                                        v-model="editedItem.reply"
-                                        label="답변"
-                                        ></v-textarea>
-                                    </v-col>
-                                </v-row>
-                                <v-row cols="12" sm="6" md="4">
-                                    <v-col>
-                                        <v-autocomplete
-                                        v-model="editedItem.priority"
-                                        label="우선순위"
-                                        :items="[1,2,3,4,5,6,7,8,9,10]"
-                                        ></v-autocomplete>
-                                    </v-col>
-                                </v-row>
-                            </v-card-text>
-                        </v-col>
-                    </v-row>
-                    <v-card-actions>
-                        <v-spacer></v-spacer>
-                        <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
-                        <v-btn v-if="editedIndex != -1" color="blue darken-1" text @click="dialogDelete = true">Delete</v-btn>
-                        <v-btn color="blue darken-1" text @click="save">Save</v-btn>
-                    </v-card-actions>
+                    <v-app-bar flat>
+                        <v-card-title>
+                        <!-- <span class="text-h5"> -->
+                            자주 묻는 질문 {{ formTitle }}
+                        <!-- </span> -->
+                        </v-card-title>
+                    </v-app-bar>
+                    <v-col>
+                        <v-row class="ma-0 pa-0">
+                            <v-col cols="12" sm="6" md="4">
+                                <v-text-field
+                                    v-model="editedItem.title"
+                                    label="질문제목"
+                                    hide-details
+                                    outlined
+                                    dense
+                                ></v-text-field>
+                            </v-col>
+                        </v-row>
+                        <v-row class="ma-0 pa-0">
+                            <v-col cols="12" sm="6" md="6">
+                                <v-autocomplete
+                                    v-model="editedItem.priority"
+                                    label="우선순위"
+                                    :items="[1,2,3,4,5,6,7,8,9,10]"
+                                    hide-details
+                                    outlined
+                                    dense
+                                ></v-autocomplete>
+                            </v-col>
+                            <v-col cols="12" sm="6" md="6">
+                                <v-select
+                                    v-model="editedItem.index"
+                                    label="구분"
+                                    :items="typeObjs"
+                                    hide-details
+                                    outlined
+                                    dense
+                                ></v-select>
+                            </v-col>
+                        </v-row>
+                        <v-row class="ma-0 pa-0">
+                            <v-col cols="12" sm="12" md="12">
+                                <v-textarea
+                                    v-model="editedItem.content"
+                                    label="질문내용"
+                                    hide-details
+                                    outlined
+                                    dense
+                                ></v-textarea>
+                            </v-col>
+                        </v-row>
+                        <v-row class="ma-0 pa-0">
+                            <v-col cols="12" sm="12" md="12">
+                                <v-textarea
+                                    v-model="editedItem.reply"
+                                    label="답변"
+                                    hide-details
+                                    outlined
+                                    dense
+                                ></v-textarea>
+                            </v-col>
+                        </v-row>
+                    </v-col>
+                    <v-footer class="ma-0 pa-2 justify-end">
+                    <!-- <v-card-actions>
+                        <v-spacer></v-spacer> -->
+                        <v-btn v-if="editedIndex != -1" color="error" @click="dialogDelete = true">삭제</v-btn>
+                        <v-btn class="ml-2" color="warning" @click="close">취소</v-btn>
+                        <v-btn class="ml-2" color="success" @click="save">저장</v-btn>
+                    <!-- </v-card-actions> -->
+                    </v-footer>
                 </v-card>
             </v-dialog>
             <v-dialog v-model="dialogDelete" max-width="500px">
@@ -110,11 +133,18 @@ export default {
                 { text: "편집일", value: "ed" , width:'8%'},
             ],
             itemList: [],
+            typeObjs : [
+                {text: "상품", value: "상품"},
+                {text: "서비스", value: "서비스"},
+                {text: "배송", value: "배송"},
+                {text: "교환/반품", value: "교환/반품"},
+                {text: "상담", value: "상담"},
+            ],
         };
     },
     computed: {
         formTitle () {
-            return this.editedIndex === -1 ? 'New Q&A' : 'Edit Q&A'
+            return this.editedIndex === -1 ? '등록' : '수정'
         },
     },
     watch: {
@@ -126,7 +156,7 @@ export default {
         },
     },
     mounted() {
-        document.body.setAttribute('data-app', true)
+        // document.body.setAttribute('data-app', true)
         this.selecItem()//처음 데이터 조회
     },
     methods: {
