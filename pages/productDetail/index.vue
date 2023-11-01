@@ -5,6 +5,8 @@
       <div class="body">
         <div class="product-img-buy-group">
           <div class="product-img-group">
+
+
             <div class="product-img-swipe-area">
               <img
                 class="product-img-swipe-left-arrow"
@@ -13,7 +15,7 @@
               <div class="product-img-swipe-main-img-area">
                 <img
                   class="product-img-swipe-main-img"
-                  src="@/assets/image/img_medicine_test.png"
+                  :src="`${curImage}`"
                 />
               </div>
               <img
@@ -21,35 +23,35 @@
                 src="@/assets/image/ic_product_swipe_next.png"
               />
             </div>
-            <div class="product-img-list-group">
+            <div class="product-img-list-group" v-if="product.i_list!=null">
               <div
                 class="product-img-list-item"
-                v-for="(item, i) in imgList"
+                v-for="(item, i) in JSON.parse(product.i_list)"
                 :key="i"
               >
-                <img :src="item.url" class="product-img-list-img" />
+                <img :src="`${hostUrl+item}`" class="product-img-list-img" @click="onSelectImage(`${hostUrl+item}`)"/>
               </div>
             </div>
           </div>
           <div class="product-buy-group">
-            <div class="product-name">종합 비타민</div>
+            <div class="product-name">{{product.name}}</div>
             <div class="black-line"></div>
             <div class="product-price-sale-area">
               <div class="product-price-sale-basic-price">
-                <s>12,300</s>
+                <s>{{product.p_discount}}</s>
                 <div class="product-price-sale-basic-price-won"><s>원</s></div>
               </div>
 
               <div class="product-price-sale-sale-price">
-                12,300
+                {{product.p_sell}}
                 <div class="product-price-sale-basic-price-won">원</div>
               </div>
-              <div class="product-price-sale-percent">10%</div>
+              <div class="product-price-sale-percent">{{product.p_discount_per}}%</div>
             </div>
             <div class="product-subcribe-price">
               <div class="product-subcribe-price-text">구독가</div>
               <div class="product-subcribe-price-price">
-                4,250,000
+                {{product.p_subscribe}}
                 <div class="product-subcribe-price-won">원</div>
               </div>
             </div>
@@ -59,49 +61,49 @@
                 src="@/assets/image/ic_star.png"
               />
               <div class="product-rating-review-regular-text">
-                4.8&nbsp;(후기&nbsp;
-                <div class="product-rating-review-bold-text">11</div>
+                {{product.rating}}&nbsp;(후기&nbsp;
+                <div class="product-rating-review-bold-text">{{product.review_cnt}}</div>
                 )
               </div>
             </div>
             <div class="product-info-delivery-area">
               <div class="product-info-delivery-info-area">
-                <div class="product-info-delivery-info-title">
+                <!-- <div class="product-info-delivery-info-title">
                   제품소개 공간
                 </div>
                 <div class="product-info-delivery-info-contents">
                   칼슘 마그네슘 비타민D는 북대서양 해저에서 수확한 해조류를
                   사용한 영국산 해조분말에 비타민D와 마그네슘을 포함하여 우수한
                   품질관리를 통해 만들었습니다.
-                </div>
+                </div> -->
               </div>
               <div class="product-info-delivery-info-area">
                 <div class="product-info-delivery-info-title">
-                  배송비 정보 공간
+                  배송비
                 </div>
                 <div class="product-info-delivery-price-area">
                   <div class="product-info-delivery-price">
-                    3000
+                    {{product.delivery_fee}}
                     <div class="product-info-delivery-price-won">원</div>
                   </div>
                   <div class="product-info-delivery-price-additional">
-                    제주지역은 10000원 추가 등 배송정보
+                    {{product.delivery_memo}}
                   </div>
                 </div>
               </div>
             </div>
             <div class="product-unit-area">
               <div class="product-unit-plus-minus-area">
-                <div class="product-unit-plus-minus">
+                <div class="product-unit-plus-minus" @click="onMinus()">
                   <img
                     class="product-unit-minus-img"
                     src="@/assets/image/ic_minus.png"
                   />
                 </div>
                 <div class="row-line"></div>
-                <div class="product-unit-plus-minus-text">1</div>
+                <div class="product-unit-plus-minus-text">{{productCnt}}</div>
                 <div class="row-line"></div>
-                <div class="product-unit-plus-minus">
+                <div class="product-unit-plus-minus" @click="onPlus()">
                   <img
                     class="product-unit-plus-img"
                     src="@/assets/image/ic_plus.png"
@@ -110,7 +112,7 @@
               </div>
               <div style="flex: 1"></div>
               <div class="product-unit-price">
-                4,250,000
+                {{calPrice}}
                 <div class="product-unit-price-won">원</div>
               </div>
             </div>
@@ -188,11 +190,8 @@
         <div class="product-detail-rep-image-group">
           <div class="product-detail-rep-image-title">제품 설명</div>
           <div class="black-line"></div>
-          <div class="product-detail-rep-image-area">
-            <img
-              class="product-detail-rep-image"
-              src="@/assets/image/img_medicine_test.png"
-            />
+          <div class="product-detail-rep-image-area" v-html="product.content">
+            
           </div>
         </div>
       </div>
@@ -210,6 +209,7 @@ export default {
   },
   data() {
     return {
+      hostUrl: process.env.BASE_URL,
       navigationStatus: false,
       imgList: [
         { url: require('@/assets/image/img_medicine_test.png') },
@@ -221,16 +221,67 @@ export default {
         { name: '김민우', rating: 5, url: '', contents: '' },
         { name: '우민김', rating: 3.6, url: '', contents: '' },
       ],
+      product:{
+
+      },
+      curImage:null,
+      calPrice:0,
+      productCnt:1,
     }
   },
+  mounted() {
+    this.selectItem()
+  },
   methods: {
+    onPlus(){
+      this.productCnt++
+      this.calPrice = this.productCnt*this.product.p_sell
+    },
+    onMinus(){
+      if(this.productCnt>0){
+      this.productCnt--
+      this.calPrice = this.productCnt*this.product.p_sell
+      }
+    },
+    onSelectImage(src){
+      this.curImage = src
+    },
     buyClick() {
-      this.$router.push({ name: 'cart' })
+      this.$router.push({name: 'cart', query: { itemCnt:this.productCnt, ...this.product}});
+
     },
     onChildUpdate(newValue) {
       console.log('index', newValue)
       this.navigationStatus = newValue
     },
+    async selectItem(){
+
+      console.log(this.$route.query.no)
+      let no = this.$route.query.no
+      let conditions = [{ q: '=', f: 'no', v: no }]
+      let formBody = {
+        table: 'product',
+        conditions: conditions,
+      }
+      try {
+        await this.$axios
+          .post('/api/select', formBody)
+          .then((res) => {
+            console.log('조회된 데이터:: ', (res.data))
+            if (res.data.length > 0) {
+                this.product = res.data[0]
+                this.curImage = this.hostUrl+JSON.parse(this.product.i_list)[0]
+                this.calPrice = this.product.p_sell
+            }
+
+          })
+          .catch(function (error) {
+            console.log('에러!!', error)
+          })
+      } catch (err) {
+        console.log('err!! : ' + err)
+      }
+    }
   },
 }
 </script>
@@ -560,11 +611,12 @@ export default {
         margin-bottom: 11px;
       }
       .product-detail-rep-image-area {
-        margin-top: 40px;
-        border: 1px solid #ddd;
-        .product-detail-rep-image {
-          width: 100%;
-        }
+        max-width:1000px;
+        margin: auto;
+        margin-top: 20px;
+      }
+      .product-detail-rep-image-area ::v-deep img {
+        max-width:1000px;
       }
     }
   }
@@ -904,11 +956,12 @@ export default {
           margin-bottom: 11px;
         }
         .product-detail-rep-image-area {
-          margin-top: 20px;
-          border: 1px solid #ddd;
-          .product-detail-rep-image {
-            width: 100%;
-          }
+            max-width:1000px;
+            margin: auto;
+            margin-top: 20px;
+        }
+        .product-detail-rep-image-area ::v-deep img {
+          max-width:100%;
         }
       }
     }

@@ -54,59 +54,59 @@
             v-for="(item, index) in productList"
             :key="index"
             class="item-body"
-            @click="productDetailClick"
+            @click="productDetailClick(item)"
           >
             <div class="item-img-group">
               <img
                 class="item-img"
-                src="@/assets/image/img_medicine_test.png"
+                :src="`${hostUrl+JSON.parse(item.i_r)[0]}`"
                 draggable="false"
               />
             </div>
 
-            <div class="item-title">{{ item.title }}</div>
-            <div v-if="item.sale.length > 0" class="item-basic-group">
+            <div class="item-title">{{ item.name }}</div>
+            <div v-if="item.p_discount!= 0" class="item-basic-group">
               <div class="item-basic-price">
-                <s>{{ item.price }}</s>
+                <s>{{ item.p_discount }}</s>
               </div>
               <div class="item-basic-price-won">원</div>
             </div>
 
             <div class="item-total-group">
-              <div v-if="item.sale.length > 0" class="item-sale-group">
+              <div v-if="item.p_discount_per!= 0" class="item-sale-group">
                 <div class="item-sale">
-                  {{ item.sale }}
+                  {{ item.p_discount_per }}
                 </div>
                 <div class="item-sale-percent">%</div>
               </div>
 
-              <div class="item-total-price-group">
-                <div class="item-total-price">{{ item.price }}</div>
+              <div v-if="item.p_sell!= 0" class="item-total-price-group">
+                <div class="item-total-price">{{ item.p_sell }}</div>
                 <div class="item-total-price-won">원</div>
               </div>
             </div>
-            <div v-if="item.rating.length > 0" class="item-rating-review-group">
+            <div v-if="item.rating!= 0" class="item-rating-review-group">
               <img
                 class="item-rating-img"
                 src="@/assets/image/ic_star.png"
                 draggable="false"
               />
               <div class="item-rating-review">
-                {{ item.rating + ' 후기 ' + item.reviewCnt }}
+                {{ item.rating + ' 후기 ' + item.review_cnt }}
               </div>
             </div>
 
             <div class="item-tag-group">
               <div
-                v-for="(item1, index1) in item.tags"
+                v-for="(h, index1) in JSON.parse(item.hashtag)"
                 :key="index1"
                 class="item-tag"
               >
-                <div class="item-tag-text">{{ item1 }}</div>
+                <div class="item-tag-text">{{ h }}</div>
               </div>
             </div>
 
-            <div v-if="item.rating.length == 0" class="item-new-product">
+            <div v-if="item.rating == 0" class="item-new-product">
               새로운 상품
             </div>
           </div>
@@ -124,19 +124,10 @@ export default {
   components: {
     Header,
   },
-  methods: {
-    productDetailClick() {
-      console.log('click')
-      this.$router.push({ name: 'productDetail' })
-    },
-    onChildUpdate(newValue) {
-      console.log('index', newValue)
-      this.navigationStatus = newValue
-    },
-  },
   data() {
     return {
       tabStatus: 1, //1 전체보기, 2 라이프, 3 영양성분, 4 후기
+      hostUrl: process.env.BASE_URL,
       navigationStatus: false,
       categories: [
         {
@@ -193,146 +184,50 @@ export default {
         },
       ],
       productList: [
-        {
-          uri: '',
-          tags: ['# 제품 태그1', '태그2'],
-          title: '비타민1',
-          price: '50,000',
-          sale: '10',
-          rating: '',
-          reviewCnt: '',
-        },
-        {
-          uri: '',
-          tags: [],
-          title: '비타민2',
-          price: '40,000',
-          sale: '',
-          rating: '',
-          reviewCnt: '',
-        },
-        {
-          uri: '',
-          tags: ['태그1', '태그2'],
-          title: '비타민3',
-          price: '32,000',
-          sale: '',
-          rating: '4.4',
-          reviewCnt: '6',
-        },
-        {
-          uri: '',
-          tags: ['태그1'],
-          title: '비타민4',
-          price: '2,100',
-          sale: '15',
-          rating: '4.6',
-          reviewCnt: '7',
-        },
-        {
-          uri: '',
-          tags: [],
-          title: '비타민5',
-          price: '2,000',
-          sale: '',
-          rating: '4.8',
-          reviewCnt: '8',
-        },
-        {
-          uri: '',
-          tags: ['# 제품 태그1', '태그2'],
-          title: '비타민1',
-          price: '50,000',
-          sale: '10',
-          rating: '',
-          reviewCnt: '',
-        },
-        {
-          uri: '',
-          tags: [],
-          title: '비타민2',
-          price: '40,000',
-          sale: '',
-          rating: '',
-          reviewCnt: '',
-        },
-        {
-          uri: '',
-          tags: ['태그1', '태그2'],
-          title: '비타민3',
-          price: '32,000',
-          sale: '',
-          rating: '4.4',
-          reviewCnt: '6',
-        },
-        {
-          uri: '',
-          tags: ['태그1'],
-          title: '비타민4',
-          price: '2,100',
-          sale: '15',
-          rating: '4.6',
-          reviewCnt: '7',
-        },
-        {
-          uri: '',
-          tags: [],
-          title: '비타민5',
-          price: '2,000',
-          sale: '',
-          rating: '4.8',
-          reviewCnt: '8',
-        },
-        {
-          uri: '',
-          tags: ['# 제품 태그1', '태그2'],
-          title: '비타민1',
-          price: '50,000',
-          sale: '10',
-          rating: '',
-          reviewCnt: '',
-        },
-        {
-          uri: '',
-          tags: [],
-          title: '비타민2',
-          price: '40,000',
-          sale: '',
-          rating: '',
-          reviewCnt: '',
-        },
-        {
-          uri: '',
-          tags: ['태그1', '태그2'],
-          title: '비타민3',
-          price: '32,000',
-          sale: '',
-          rating: '4.4',
-          reviewCnt: '6',
-        },
-        {
-          uri: '',
-          tags: ['태그1'],
-          title: '비타민4',
-          price: '2,100',
-          sale: '15',
-          rating: '4.6',
-          reviewCnt: '7',
-        },
-        {
-          uri: '',
-          tags: [],
-          title: '비타민5',
-          price: '2,000',
-          sale: '',
-          rating: '4.8',
-          reviewCnt: '8',
-        },
       ],
     }
   },
+  mounted() {
+    this.selectItem()
+  },
+  methods: {
+
+    productDetailClick(item) {
+      console.log('click')
+      //this.$router.push({ name: 'productDetail' })
+        this.$router.push({name: 'productDetail', query: {no: item.no}})
+    },
+    onChildUpdate(newValue) {
+      console.log('index', newValue)
+      this.navigationStatus = newValue
+    },
+    async selectItem(){
+        let conditions = [{ q: '=', f: '1', v: 1 }]
+        let formBody = {
+        table: 'product',
+        conditions: conditions,
+      }
+      try {
+        await this.$axios
+          .post('/api/select', formBody)
+          .then((res) => {
+            console.log('조회된 데이터:: ', (res.data))
+            if (res.data.length > 0) {
+                this.productList = res.data
+                
+            } 
+          })
+          .catch(function (error) {
+            console.log('에러!!', error)
+          })
+      } catch (err) {
+        console.log('err!! : ' + err)
+      }
+    }
+  }
 }
 </script>
+
 
 <style lang="scss" scoped>
 .main {
@@ -380,7 +275,7 @@ export default {
         width: 100%;
         display: flex;
         flex-direction: row;
-        padding: 50px 0px 30px 0px;
+        padding: 10px 0px 10px 0px;
         background-color: #fff;
         .selected-tab-btn-area {
           height: 50px;
@@ -413,7 +308,7 @@ export default {
         display: flex;
         gap: 13px;
         background-color: #fff;
-        padding-bottom: 40px;
+        padding-bottom: 10px;
         .category-area {
           display: flex;
           flex-direction: column;
@@ -611,7 +506,7 @@ export default {
         position: sticky;
         top: 76px;
         z-index: 10;
-        padding: 20px 0px;
+        padding: 10px 0px;
         background-color: #fff;
         margin-top: 0px;
 

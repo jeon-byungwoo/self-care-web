@@ -11,28 +11,10 @@
         class="hooper"
       >
         <slide v-for="(item, i) in bannerList" :key="i">
-          <img class="rolling-banner" :src="item.image" />
+          <div class="rolling-banner" :style="{'background-image':'url('+item.image+')'}" @click="onClickBanner(item)"></div>
+          <div class="rolling-banner-m" :style="{'background-image': 'url('+item.m_image+')'}" @click="onClickBanner(item)"></div>
         </slide>
-        <!-- <hooper-navigation slot="hooper-addons"></hooper-navigation>
-        <hooper-pagination slot="hooper-addons"></hooper-pagination> -->
-        <!-- <hooper-progress slot="hooper-addons"></hooper-progress> -->
       </hooper>
-
-      <!-- <div class="arrow-group">
-        <img
-          class="prev-img"
-          src="@/assets/image/btn_prev.png"
-          @click="prevClick"
-          draggable="false"
-        />
-        <div class="arrow-empty"></div>
-        <img
-          class="next-img"
-          src="@/assets/image/btn_next.png"
-          @click="nextClick"
-          draggable="false"
-        />
-      </div> -->
     </div>
   </div>
 </template>
@@ -59,12 +41,17 @@ export default {
   data() {
     return {
       bannerList: [],
+      hostUrl: process.env.BASE_URL,
     }
   },
   mounted() {
     this.getBannerList()
   },
   methods: {
+    onClickBanner(item){
+        window.location.href = item.link
+        
+    },
     prevClick() {
       this.$refs.test.slidePrev()
     },
@@ -84,12 +71,20 @@ export default {
             console.log(res.data.length)
             if (res.data.length > 0) {
               for (let i = 0; i < res.data.length; i++) {
+                let linkTo = ''
+                if(res.data[i].type=='전화'){
+                    linkTo='tel:'+res.data[i].content
+                }else if(res.data[i].type=='링크'){
+                    linkTo=res.data[i].content
+                }
                 let bannerObj = {
                   no: res.data[i].no,
                   image: process.env.BASE_URL + res.data[i].image,
+                  m_image: process.env.BASE_URL + res.data[i].m_image,
                   type: res.data[i].type,
                   priority: res.data[i].priority,
                   content: res.data[i].content,
+                  link:linkTo
                 }
                 this.bannerList.push(bannerObj)
               }
@@ -118,8 +113,14 @@ export default {
       height: 100%;
     }
     .rolling-banner {
+      background-position: center;
+      background-size: cover;
+      display: block;
       width: 100%;
       height: 100%;
+    }
+    .rolling-banner-m {
+      display: none;
     }
     .arrow-group {
       width: 100%;
@@ -231,8 +232,15 @@ export default {
         height: 100%;
       }
       .rolling-banner {
+        display: none;
+      }
+      .rolling-banner-m {
+        background-position: center;
+        background-size: cover;
+        display: block;
         width: 100%;
         height: auto;
+        min-height: 300px;
       }
     }
   }

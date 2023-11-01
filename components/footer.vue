@@ -38,34 +38,14 @@
             <div class="right-btn" @click="sendData(2)">제휴/입점 문의</div>
           </div>
         </div>
-
-        <!-- <div class="middle">
-          <div class="left">
-            <div class="left-text">
-              (주)셀프케어 | 사업자번호: 111-22-3333333 | 대표: 홍길동
-            </div>
-            <div class="left-text">
-              개인정보취급담당부서: 고객경험관리팀 | 개인정보관리책임자:
-              홍길동<br />통신판매업신고: 제 2020-서울강남-000009 호 |
-              유통판매업신고: 제 2023-00000001 호<br />건강기능식품판매업신고:
-              제 2023-0000001 호
-            </div>
-            <div class="left-text">서울특별시 강남구 봉은사로 1길 (OO빌딩)</div>
-            <div class="left-text">제휴문의: self-care@gmail.com</div>
-          </div>
-          <div class="right">
-            <div class="right-title">문의 : 031) 123-4567</div>
-            <div class="right-content">평일 오전9시-오후6시</div>
-          </div>
-        </div> -->
         <div class="bottom-group">
           <div class="left-group">
             <div class="first-line-group">
-              <div class="regular-text">(주)셀프케어&nbsp;</div>
+              <div class="regular-text">주식회사 브레인캠퍼스&nbsp;</div>
               <div class="bold-text">사업자번호</div>
-              <div class="regular-text">&nbsp;: 111-22-3333333&nbsp;</div>
+              <div class="regular-text">&nbsp;: 554-87-01088&nbsp;</div>
               <div class="bold-text">대표</div>
-              <div class="regular-text">&nbsp;: 홍길동&nbsp;</div>
+              <div class="regular-text">&nbsp;: 전병우&nbsp;</div>
             </div>
             <div class="second-line-group">
               <div class="bold-text-flex">
@@ -77,48 +57,48 @@
 
               <div class="bold-text-flex">
                 개인정보관리책임자
-                <div class="regular-text">&nbsp;: 홍길동&nbsp;&nbsp;</div>
+                <div class="regular-text">&nbsp;: 전병우&nbsp;&nbsp;</div>
               </div>
 
               <div class="bold-text-flex">
                 통신판매업신고
                 <div class="regular-text">
-                  &nbsp;: 제 2020-서울강남-000009 호&nbsp;
+                  &nbsp;: 제 2018 인천부평 0851호 |&nbsp;
                 </div>
               </div>
             </div>
             <div class="third-line-group">
-              <div class="bold-text-flex">
-                유통판매업신고
+              <!-- <div class="bold-text-flex">
+                의료기기판매업신고
                 <div class="regular-text">
                   &nbsp;: 제 2023-00000001 호&nbsp;&nbsp;
                 </div>
-              </div>
+              </div> -->
 
               <div class="bold-text-flex">
                 건강기능식품판매업신고
                 <div class="regular-text">
-                  &nbsp;: 제 2023-00000001 호&nbsp;&nbsp;
+                  &nbsp;: 제 2018-0107318 호&nbsp;&nbsp;
                 </div>
               </div>
             </div>
             <div class="fourth-line-group">
               <div class="regular-text">
-                서울특별시 강남구 봉은사로 1길 (OO빌딩)
+                인천광역시 부평구 체육관로40 1103호(신영프라자)
               </div>
             </div>
             <div class="fifth-line-group">
               <div class="bold-text">제휴문의</div>
               <div class="regular-text">
-                &nbsp;: self-care@gmail.com&nbsp;&nbsp;
+                &nbsp;: jbw7080@naver.com&nbsp;&nbsp;
               </div>
             </div>
           </div>
           <div style="flex: 1"></div>
           <div class="right-group">
             <div class="right-header-text">문의</div>
-            <div class="right-middle-text">031.123.4567</div>
-            <div class="right-bottom-text">평일 오전9시-오후6시</div>
+            <div class="right-middle-text">1544-1942</div>
+            <div class="right-bottom-text">평일 오전10시-오후6시</div>
             <div class="right-button-group">
               <div class="right-button-text" @click="sendData(2)">
                 제휴/입점 문의

@@ -14,56 +14,56 @@
       <div class="title-group">
         <div class="title">셀프케어 선정 인기 제품</div>
         <div class="product-detail-group">
-          <div class="product-detail" @click="$router.push({ name: 'store' })">
-            제품 전체보기 >
+          <div class="product-detail" @click="$router.push( { name: 'store' } )">
+            제품 전체보기 
           </div>
         </div>
       </div>
       <div class="item-group">
-        <div v-for="(item, index) in itemList" :key="index" class="item-body">
+        <div v-for="(item, index) in itemList" :key="index" class="item-body" @click="$router.push({ name: 'productDetail', query: {no: item.no} })">
           <div class="item-img-group">
             <img
               class="item-img"
-              src="@/assets/image/img_medicine_test.png"
+              :src="(`${hostUrl+JSON.parse(item.i_r)[0]}`)"
               draggable="false"
             />
           </div>
 
           <div class="item-title">{{ item.title }}</div>
-          <div v-if="item.sale.length > 0" class="item-basic-group">
+          <div v-if="item.p_discount!= 0" class="item-basic-group">
             <div class="item-basic-price">
-              <s>{{ item.price }}</s>
+              <s>{{ item.p_discount }}</s>
             </div>
             <div class="item-basic-price-won">원</div>
           </div>
 
           <div class="item-total-group">
-            <div v-if="item.sale.length > 0" class="item-sale-group">
+            <div v-if="item.p_discount_per!= 0" class="item-sale-group">
               <div class="item-sale">
-                {{ item.sale }}
+                {{ item.p_discount_per }}
               </div>
               <div class="item-sale-percent">%</div>
             </div>
 
             <div class="item-total-price-group">
-              <div class="item-total-price">{{ item.price }}</div>
+              <div class="item-total-price">{{ item.p_sell }}</div>
               <div class="item-total-price-won">원</div>
             </div>
           </div>
-          <div v-if="item.rating.length > 0" class="item-rating-review-group">
+          <div v-if="item.rating!= 0" class="item-rating-review-group">
             <img
               class="item-rating-img"
               src="@/assets/image/ic_star.png"
               draggable="false"
             />
             <div class="item-rating-review">
-              {{ item.rating + ' 후기 ' + item.reviewCnt }}
+              {{ item.rating + ' 후기 ' + item.review_cnt }}
             </div>
           </div>
 
           <div class="item-tag-group">
             <div
-              v-for="(item1, index1) in item.tags"
+              v-for="(item1, index1) in JSON.parse(item.hashtag)"
               :key="index1"
               class="item-tag"
             >
@@ -71,7 +71,7 @@
             </div>
           </div>
 
-          <div v-if="item.rating.length == 0" class="item-new-product">
+          <div v-if="item.rating == 0" class="item-new-product">
             새로운 상품
           </div>
         </div>
@@ -149,6 +149,7 @@ import navigationDialogVue from '~/components/navigationDialog.vue'
 export default {
   name: 'IndexPage',
   layout: 'default',
+  hostUrl: process.env.BASE_URL,
   components: {
     Footer,
     Header,
@@ -173,11 +174,15 @@ export default {
       console.log(status)
       //status 1 - 브랜드 스토리, 2 - 제휴/입점 문의, 3 - 이용약관, 4 - 개인정보, 5 - 고객센터
       if (status == 1) {
+        this.$router.push({name: 'brandStory'})
       } else if (status == 2) {
         this.coalitionDialogStatus = true
       } else if (status == 3) {
+        this.$router.push({name: 'terms'})
       } else if (status == 4) {
+        this.$router.push({name: 'policy'})
       } else if (status == 5) {
+        this.$router.push({name: 'serviceCenter'})
       }
     },
     select(tableName, conditions, listObject) {
@@ -212,101 +217,55 @@ export default {
       console.log('index', newValue)
       this.navigationStatus = newValue
     },
+    
+    productDetailClick(item) {
+      console.log('click')
+      //this.$router.push({ name: 'productDetail' })
+        this.$router.push({name: 'productDetail', query: {no: item.no}});
+    },
+    async selectItem(){
+      let conditions = [{ q: '=', f: '1', v: 1 },{ q: 'page', limit: '8', offset: 0 }]
+      let formBody = {
+        table: 'product',
+        conditions: conditions,
+      }
+      try {
+        await this.$axios
+          .post('/api/select', formBody)
+          .then((res) => {
+            console.log('조회된 데이터:: ', (res.data))
+            if (res.data.length > 0) {
+                this.itemList = res.data
+                
+            } 
+          })
+          .catch(function (error) {
+            console.log('에러!!', error)
+          })
+      } catch (err) {
+        console.log('err!! : ' + err)
+      }
+    }
   },
   mounted() {
+    this.hostUrl = process.env.BASE_URL
+    console.log(this.hostUrl, process.env.BASE_URL)
     if (typeof window !== undefined) {
       this.userInfo =
         localStorage != undefined
           ? JSON.parse(localStorage.getItem('userInfo'))
           : undefined
-      // Header.fetchData()
-      // console.log(Header.data)
     }
-    // var conditions = [
-    //   { op: 'and', f: 'user_info.user_no', q: '=', v: '1' },
-    //   { op: 'and', f: 'user_info.alive_flag', q: '=', v: '1' },
-    // ]
-    // let listObject = []
-    // var conditions1 = [
-    //   { op: 'and', f: 'first_checkup.user_no', q: '=', v: 'user_info.user_no' },
-    //   { op: 'and', f: 'first_checkup.alive_flag', q: '!=', v: 1 },
-    // ]
-    // listObject.push(this.select1('first_checkup', conditions1))
-    // listObject.push(this.select1('second_checkup', conditions1))
-    // // listObject.push(this.join('country', conditions))
-    // // var q = this.select(this.select1('city', conditions), conditions)
-    // var q = this.select('user', conditions, listObject)
-    // console.log(q)
-    // try {
-    //   this.$axios
-    //     .post('/api/select', q)
-    //     .then((res) => {
-    //       console.log('인서트 결과값:: ', JSON.stringify(res.data))
-    //       if (res.data.result == true) {
-    //         // this.$router.push("/roomPrev");
-    //       }
-    //     })
-    //     .catch(function (error) {
-    //       console.log('에러!!', err)
-    //     })
-    // } catch (err) {
-    //   console.log('err!! : ' + err)
-    // }
-  },
+    this.selectItem()
 
+  },
   data() {
     return {
       userInfo: '',
       coalitionDialogStatus: false,
       navigationStatus: false,
       scrollStatus: true,
-      itemList: [
-        {
-          uri: '',
-          tags: ['# 제품 태그1', '태그2'],
-          title: '비타민1',
-          price: '50,000',
-          sale: '10',
-          rating: '',
-          reviewCnt: '',
-        },
-        {
-          uri: '',
-          tags: [],
-          title: '비타민2',
-          price: '40,000',
-          sale: '',
-          rating: '',
-          reviewCnt: '',
-        },
-        {
-          uri: '',
-          tags: ['태그1', '태그2'],
-          title: '비타민3',
-          price: '32,000',
-          sale: '',
-          rating: '4.4',
-          reviewCnt: '6',
-        },
-        {
-          uri: '',
-          tags: ['태그1'],
-          title: '비타민4',
-          price: '2,100',
-          sale: '15',
-          rating: '4.6',
-          reviewCnt: '7',
-        },
-        {
-          uri: '',
-          tags: [],
-          title: '비타민5',
-          price: '2,000',
-          sale: '',
-          rating: '4.8',
-          reviewCnt: '8',
-        },
-      ],
+      itemList: [],
       magazineList: [
         {
           magazineTitle: 'TOP 10 Australian beaches',

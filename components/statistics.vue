@@ -4,21 +4,20 @@
       <div class="statics-group">
         <div class="statics-header-group">
           <div class="statics-header-title-text">기준 건강 설문 통계</div>
-          <div class="statics-header-select-box-group">
-            <div class="statics-header-select-box-text">나이</div>
-            <img
-              class="statics-header-select-box-img"
-              src="@/assets/image/ic_down_arrow.png"
-              draggable="false"
-            />
+          <div>
+            <select class="round">
+                <option>전체</option>
+                <option>남성</option>
+                <option>여성</option>
+            </select>
           </div>
-          <div class="statics-header-select-box-group">
-            <div class="statics-header-select-box-text">성별</div>
-            <img
-              class="statics-header-select-box-img"
-              src="@/assets/image/ic_down_arrow.png"
-              draggable="false"
-            />
+          <div style="margin-left:10px;">
+            <select class="round">
+                <option>전체</option>
+                <option>10대 미만</option>
+                <option>20대</option>
+                <option>30대</option>
+            </select>
           </div>
         </div>
         <div>
@@ -207,11 +206,7 @@ export default {
     }
     .statics-header-select-box-group {
       margin-left: 10px;
-      border-width: 1px;
-      border-color: #dddddd;
-      border-style: solid;
-      border-radius: 20px;
-      width: 90px;
+      width: 110px;
       height: 40px;
       display: flex;
       align-items: center;
@@ -227,6 +222,38 @@ export default {
       width: 13.52px;
       height: 8.28px;
       margin-left: 17px;
+    }
+    select {
+    /* styling */
+    border: thin solid #fff;
+    border-radius: 100px 100px 100px 100px;
+    border-color: #dddddd;
+    display: inline-block;
+    line-height: 1.5em;
+    padding: 0.1em 2.5em 0.1em 1em;
+    /* reset */
+    margin: 0;      
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    }
+    /* arrows */
+    select.round {
+    background-image:
+        linear-gradient(45deg, transparent 50%, rgb(0, 85, 155) 50%),
+        linear-gradient(135deg, rgb(0, 85, 155) 50%, transparent 50%),
+        radial-gradient(#fff 70%, transparent 72%);
+    background-position:
+        calc(100% - 20px) calc(1em - 5px),
+        calc(100% - 15px) calc(1em - 5px),
+        calc(100% - .5em) .5em;
+    background-size:
+        5px 5px,
+        5px 5px,
+        1em 1em;
+    background-repeat: no-repeat;
     }
   }
   .big-data-group {
@@ -316,11 +343,7 @@ export default {
       }
       .statics-header-select-box-group {
         margin-left: 5px;
-        border-width: 1px;
-        border-color: #dddddd;
-        border-style: solid;
-        border-radius: 20px;
-        width: 70px;
+        width: 80px;
         height: 30px;
         display: flex;
         align-items: center;
