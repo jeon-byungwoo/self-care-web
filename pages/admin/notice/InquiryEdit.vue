@@ -53,16 +53,6 @@
                     </v-col>
                 </v-col>
                 <v-col cols="12" sm="2" md="2" class="ma-0 pa-0 ">
-                    <!-- <div
-                        class="inquiry_image"
-                        :style="inquiryObj.image != null ? {backgroundImage: 'url('+profileImageUrl(inquiryObj.image)+')'} : ''"
-                    >
-                        <v-row class="ma-0 pa-0 ">
-                            <v-btn class="elevation-2" icon depressed @click="deleteInquiryImage(index)" style="backgroundColor:gray;" dark v-if="inquiryObj.image != null">
-                                <v-icon>mdi-trash-can-outline</v-icon>
-                            </v-btn>
-                        </v-row>
-                    </div> -->
                     <v-img 
                         class="inquiry_image"
                         contain
@@ -419,14 +409,15 @@ export default {
                 conditions.push({"q":"order","f":"no","o":"ASC"})
                 let param = {table:"test", conditions: conditions}
                 await this.$axios.post('/admin/select', param).then(res => {
-                    console.log(res.data)
+                    
                     if (res.data.length > 0) {
                         res.data.filter(item => {
-                            if (item.image != null && item.image != undefined) item.image = JSON.parse(item.image)[0]
+                            if (item.image != null && item.image != undefined) item.image = JSON.parse(item.image)
                             if (item.survey != null && item.survey != undefined) item.survey = JSON.parse(item.survey)
                             item.cd = moment(item.cd).format('YYYY-MM-DD')
                         })
                         this.inquiryObj = res.data[0]
+                        
                         this.$refs.editor.setContents(this.inquiryObj.content, 'test')
                         this.$refs.explanationEditor.setContents(this.inquiryObj.survey_comment, 'test')
                         if (this.inquiryObj.image?.length > 0)
@@ -463,6 +454,8 @@ export default {
         },
         deleteInquiryImage(index) {
             console.log(index, "삭제")
+            this.profileImage = null
+            this.inquiryObj.image = null
         },
         validateVariableExist(value) {
             return (value == null || value == undefined || value == '' || value == '[]')
@@ -483,7 +476,7 @@ export default {
             }
             console.log(param)
             this.$axios.post('/admin/insert', param).then(res => {
-                console.log(res.data)
+                
                 if (res.data.length > 0) {
                     this.inquiryObj.no = res.data[0].no
                     if (!this.validateVariableExist(this.profileImage)) {
@@ -510,6 +503,9 @@ export default {
             
             for (const [key, value] of Object.entries(param)) {    
                 if (this.validateVariableExist(value)) delete param[key]
+            }
+            if (this.profileImage == null) {
+                param.image = null
             }
             console.log(param)
             this.$axios.post('/admin/update', param).then(res => {

@@ -77,6 +77,8 @@ export default {
                 {text: "상품준비중", value: 3},
                 {text: "배송중", value: 4},
                 {text: "배송완료", value: 5},
+                {text: "결제도중취소", value: 6},
+                {text: "결제완료", value: 7},
             ]
         }
     },

@@ -210,6 +210,9 @@ export default {
                 
             }
         }
+        if(this.totalPrice >=  50000){
+            this.d_fee = 0
+        }
     },
     selected (e) {
         this.totalPrice = 0
@@ -231,7 +234,9 @@ export default {
                 
             }
         }
-        //this.$forceUpdate()
+        if(this.totalPrice >=  50000){
+            this.d_fee = 0
+        }
     },
     moveToStore(){
         this.$router.push({name: 'store'})
@@ -265,7 +270,9 @@ export default {
                         
                     }
                 }
-
+                if(this.totalPrice >=  50000){
+                    this.d_fee = 0
+                }
 
             } 
           })

@@ -100,9 +100,10 @@ export default {
             content: '',
             hostUrl: process.env.BASE_URL,
             stateObj: [
-                {text: "공지사항", value: 1},
-                {text: "언론보도", value: 2},
-            ],
+                {text: "소식", value: 1},
+                {text: "공지사항", value: 2},
+                {text: "언론보도", value: 3},
+            ]
         }
     },
     mounted() {
@@ -162,6 +163,7 @@ export default {
                 console.log(res.data)
                 if (res.data.length > 0) {
                     this.boardObj.no = res.data[0].no
+                    this.clickCancel()
                     alert('저장되었습니다.')
                 }
             }).catch(err => {
@@ -185,6 +187,7 @@ export default {
             console.log(param)
             this.$axios.post('/admin/update', param).then(res => {
                 console.log(res.data)
+                this.clickCancel()
                 alert('저장되었습니다.')
             }).catch(err => {
                 console.log("update err : ", err)

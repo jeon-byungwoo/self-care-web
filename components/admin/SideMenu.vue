@@ -81,7 +81,6 @@ export default {
                 { no: 3, category: 20, name: '주문 정보 관리', icon: 'mdi-account-cash', path:"/admin/orderManage" },
                 { no: 4, category: 20, name: '고객 후기 관리', icon: 'mdi-account-cash', path:"/admin/reviewManage" },
                 { no: 5, category: 30, name: '매거진 관리', icon: 'mdi-alpha-c-circle', path: "/admin/MagazineManage" },
-                { no: 6, category: 30, name: '이벤트 관리', icon: 'mdi-alpha-c-circle', path: "/admin/contents" },
                 { no: 7, category: 30, name: '공지사항 관리', icon: 'mdi-alpha-c-circle', path: "/admin/BoardManage" },
                 { no: 8, category: 30, name: '자가진단 관리', icon: 'mdi-alpha-c-circle', path: "/admin/SelfInquiry" },
                 { no: 9, category: 30, name: '건강설문 해석 관리', icon: 'mdi-alpha-c-circle', path: "/admin/ExplanationManage" },
@@ -91,7 +90,7 @@ export default {
                 { no: 13, category: 40, name: '자주묻는 질문 관리', icon: 'mdi-alpha-c-circle-outline', path: "/admin/qna" },
                 { no: 14, category: 40, name: '1:1문의 관리', icon: 'mdi-alpha-c-circle-outline', path: "/admin/inquiry" },
                 { no: 15, category: 50, name: '회원통계', icon: 'mdi-alpha-c-circle-outline', path: "/admin/UserStatistics" },
-                { no: 16, category: 50, name: '판매통계', icon: 'mdi-alpha-c-circle-outline', path: "/admin/curations" },
+                { no: 16, category: 50, name: '판매통계', icon: 'mdi-alpha-c-circle-outline', path: "/admin/UserStatistics" },
             ],
             color: this.$vuetify.theme.themes.light.basicColor,
             colors: [
@@ -128,7 +127,6 @@ export default {
                 { no: 3, category: 20, name: '주문 정보 관리', icon: 'mdi-account-cash', path:"/admin/OrderManage" },
                 { no: 4, category: 20, name: '고객 후기 관리', icon: 'mdi-account-cash', path:"/admin/ReviewManage" },
                 { no: 5, category: 30, name: '매거진 관리', icon: 'mdi-alpha-c-circle', path: "/admin/MagazineManage" },
-                { no: 6, category: 30, name: '이벤트 관리', icon: 'mdi-alpha-c-circle', path: "/admin/contents" },
                 { no: 7, category: 30, name: '공지사항 관리', icon: 'mdi-alpha-c-circle', path: "/admin/BoardManage" },
                 { no: 8, category: 30, name: '자가진단 관리', icon: 'mdi-alpha-c-circle', path: "/admin/SelfInquiry" },
                 { no: 9, category: 30, name: '건강설문 해석 관리', icon: 'mdi-alpha-c-circle', path: "/admin/ExplanationManage" },
@@ -138,7 +136,7 @@ export default {
                 { no: 13, category: 40, name: '자주묻는 질문 관리', icon: 'mdi-alpha-c-circle-outline', path: "/admin/qna" },
                 { no: 14, category: 40, name: '1:1문의 관리', icon: 'mdi-alpha-c-circle-outline', path: "/admin/inquiry" },
                 { no: 15, category: 50, name: '회원통계', icon: 'mdi-alpha-c-circle-outline', path: "/admin/UserStatistics" },
-                { no: 16, category: 50, name: '판매통계', icon: 'mdi-alpha-c-circle-outline', path: "/admin/curations" },
+                { no: 16, category: 50, name: '판매통계', icon: 'mdi-alpha-c-circle-outline', path: "/admin/UserStatistics" },
             ]
             this.menuDataList.forEach((item)=>{
                 if(item.category==10){ this.categories[0].menuDataList.push(item) }

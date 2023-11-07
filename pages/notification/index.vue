@@ -7,40 +7,40 @@
         <div class="tab-group">
           <div
             :class="tabStatus == 1 ? 'selected-tab-btn-area' : 'tab-btn-area'"
-            @click="tabStatus = 1"
+            @click="tabStatusChange(1)"
           >
             전체보기
           </div>
           <div
             :class="tabStatus == 2 ? 'selected-tab-btn-area' : 'tab-btn-area'"
-            @click="tabStatus = 2"
+            @click="tabStatusChange(2)"
           >
             셀프케어 소식
           </div>
           <div
             :class="tabStatus == 3 ? 'selected-tab-btn-area' : 'tab-btn-area'"
-            @click="tabStatus = 3"
+            @click="tabStatusChange(3)"
           >
             공지 사항
           </div>
           <div
             :class="tabStatus == 4 ? 'selected-tab-btn-area' : 'tab-btn-area'"
-            @click="tabStatus = 4"
+            @click="tabStatusChange(4)"
           >
             언론 보도
           </div>
         </div>
 
-        <div v-if="tabStatus == 1">
           <div class="consulting-list-group">
             <div class="consulting-list">
               <div
                 v-for="(item, i) in filterList"
                 :key="i"
                 class="consulting-list-item"
+                @click="onClickRowItem(item.no)"
               >
                 <div class="consulting-title">{{ item.title }}</div>
-                <div class="consulting-date">{{ item.date }}</div>
+                <div class="consulting-date">{{ item.cd }}</div>
               </div>
             </div>
             <div class="paging-group">
@@ -85,7 +85,6 @@
               </div>
             </div>
           </div>
-        </div>
       </div>
     </div>
   </div>
@@ -93,6 +92,7 @@
 
 <script>
 import Header from '../../components/header.vue'
+import Moment from 'moment'
 export default {
   layout: 'default',
   name: 'IndexPage',
@@ -128,29 +128,70 @@ export default {
   },
   mounted() {
     //나의 AI 건강설문 결과
-    this.listSlice()
-    this.totalPage = Math.ceil(this.listData.length / this.showLimit)
+    this.selectItem()
 
-    if (this.totalPage > 10) {
-      this.pagingNum = 10
-    } else {
-      this.pagingNum = this.totalPage
-    }
-
-    if (this.totalPage > 10) {
-      if (this.totalPage - this.currentPageNum > 10) {
-        this.blockNum = this.currentPageNum
-      } else {
-        this.blockNum = this.totalPage - 9
-      }
-    } else {
-      this.blockNum = 1
-    }
   },
   methods: {
+    tabStatusChange(tabVal){
+        console.log('rrre')
+        this.tabStatus = tabVal
+        this.selectItem()
+    },
     onChildUpdate(newValue) {
       console.log('index', newValue)
       this.navigationStatus = newValue
+    },
+    onClickRowItem(no){
+        this.$router.push({name: 'notificationDetail', query: {no: no}})
+    },
+    async selectItem(){
+        this.listData = []
+        this.filterList = []
+        let conditions = [{ q: '=', f: 'alive', v: 1 },{ q: 'order', f: 'cd', o: 'desc' }]
+        if(this.tabStatus!=1){
+            //1=소식 2=공지사항 3=언론보도
+            if(this.tabStatus==2) conditions.push({ op:'AND', q: '=', f: 'category', v: 1 })
+            if(this.tabStatus==3) conditions.push({ op:'AND', q: '=', f: 'category', v: 2 })
+            if(this.tabStatus==4) conditions.push({ op:'AND', q: '=', f: 'category', v: 3 })
+        }
+        let formBody = {
+        table: 'board',
+        conditions: conditions,
+      }
+      try {
+        await this.$axios
+          .post('/api/select', formBody)
+          .then((res) => {
+            console.log('조회된 데이터:: ', (res.data))
+            if (res.data.length > 0) {
+                this.listData = res.data
+                for(let i of this.listData){
+                    i.cd = Moment(i.cd).format('YYYY년MM월DD일')
+                }
+                this.listSlice()
+                this.totalPage = Math.ceil(this.listData.length / this.showLimit)
+                if (this.totalPage > 10) {
+                    this.pagingNum = 10
+                } else {
+                    this.pagingNum = this.totalPage
+                }
+                if (this.totalPage > 10) {
+                if (this.totalPage - this.currentPageNum > 10) {
+                    this.blockNum = this.currentPageNum
+                } else {
+                    this.blockNum = this.totalPage - 9
+                }
+                } else {
+                this.blockNum = 1
+                }
+            } 
+          })
+          .catch(function (error) {
+            console.log('에러!!', error)
+          })
+      } catch (err) {
+        console.log('err!! : ' + err)
+      }
     },
     listSlice() {
       //showLimit 만큼 보여주기

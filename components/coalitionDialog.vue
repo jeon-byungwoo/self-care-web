@@ -13,25 +13,28 @@
         </div>
 
         <div class="remains-area">
-          <div class="coalition-area">
-            <select>
-              <option>제휴문의</option>
-              <option>입점문의</option>
-            </select>
-            <img class="right-arrow" src="@/assets/image/ic_down_arrow.png" />
+          <div class="top-wrap">
+            <div class="coalition-area">
+                <select v-model="category">
+                <option>제휴문의</option>
+                <option>입점문의</option>
+                <option>기타</option>
+                </select>
+                <img class="right-arrow" src="@/assets/image/ic_down_arrow.png" />
+            </div>
+            <input v-model="email" class="email-area" placeholder="이메일 (필수)" />
           </div>
-
           <div class="company-phone-area">
-            <input
+            <input v-model="name"
               class="company-phone"
               placeholder="업체명/담당자 혹은 이름을 입력하세요."
             />
-            <input class="company-phone" placeholder="연락처" />
+            <input v-model="phone" class="company-phone" placeholder="연락처" />
           </div>
 
           <div class="pw-area">
             <textarea
-              v-model="nowPw"
+              v-model="content"
               class="pw"
               type="text"
               placeholder="문의하실 내용을 작성하세요."
@@ -39,7 +42,7 @@
           </div>
 
           <div class="first-check-box">
-            <input type="checkbox" id="myCheck" />
+            <input type="checkbox" v-model="isChecked" id="myCheck" />
             <label for="myCheck">개인정보 수집에 동의 합니다.</label>
           </div>
 
@@ -58,18 +61,67 @@ export default {
   name: 'howToView',
   data() {
     return {
-      nowPw: '',
-      newPw: '',
-      confirmPw: '',
+      category: '제휴문의',
+      email: '',
+      name: '',
+      phone: '',
+      content: '',
+      isChecked:false,
     }
   },
   methods: {
     closeAction() {
       this.$emit('closeAction', true)
     },
-    sendData() {
-      this.$emit('sendData', this.nowPw, this.newPw, this.confirmPw)
-      //   console.log(this.nowPw, this.newPw, this.confirmPw)
+    async sendData() {
+        //save proc
+
+        if(this.isChecked){
+
+            if(this.email==''){
+                alert('이메일 값은 필수입니다.')
+            }else{
+
+
+                let obj = {
+                    table: 'inquiry',
+                    u_email: this.email,
+                    content: this.content,
+                    category: this.category,
+                    u_phone:this.phone,
+                    status:"접수"
+                }
+                console.log(JSON.parse(localStorage.getItem('userInfo')))
+                if(JSON.parse(localStorage.getItem('userInfo'))!=null){
+                    obj['u_name'] = JSON.parse(localStorage.getItem('userInfo')).name
+                    obj['u_no'] = JSON.parse(localStorage.getItem('userInfo')).no
+                }else{
+                    obj['u_name'] = "비회원"
+                }
+
+                try {
+                await this.$axios
+                    .post('/api/insert', obj)
+                    .then((res) => {
+                    console.log('인서트 결과값:: ', JSON.stringify(res.data))
+                    console.log(res.data.length)
+                    if (res.data.length > 0) {
+                        alert('문의가 접수되었습니다. 이메일로 문의에 대한 답변을 전달드리겠습니다.')
+                        this.$emit('closeAction', true)
+                    }
+                    })
+                    .catch(function (error) {
+                    console.log('에러!!', err)
+                    })
+                } catch (err) {
+                console.log('err!! : ' + err)
+                }
+            }
+
+        }else{
+            alert('개인정보 수집에 동의 해 주세요.')
+        }
+
     },
   },
 }
@@ -129,6 +181,10 @@ export default {
     border-bottom-left-radius: 30px;
     border-bottom-right-radius: 30px;
 
+    .top-wrap{
+        display: flex;
+        flex-direction: row;
+    }
     .coalition-area {
       width: 309px;
       height: 60px;
@@ -136,6 +192,7 @@ export default {
       background-color: #fff;
       display: flex;
       align-items: center;
+      flex-direction: row;
       position: relative;
       select {
         width: 100%;
@@ -161,6 +218,14 @@ export default {
         -o-transform: rotate(270deg);
         transform: rotate(270deg);
       }
+    }
+    .email-area{
+        border: 1px solid #ddd;
+        background-color: #fff;
+        flex: 1;
+        height: 60px;
+        padding: 20px;
+        margin-left: 20px;
     }
     .company-phone-area {
       display: flex;

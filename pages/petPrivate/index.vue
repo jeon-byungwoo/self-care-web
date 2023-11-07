@@ -23,17 +23,23 @@
         <div class="scroll-header-group">
           <div class="tab-group">
             <div class="select-area">
-              <select>
-                <option>강아지</option>
-                <option>고양이</option>
+              <select v-model="selectedItem" @change="onSelectCategory()" >
+                <option 
+                v-for="(item, index) in categoryList"
+                :key="index" 
+                >{{item.text}}</option>
               </select>
               <img class="right-arrow" src="@/assets/image/ic_down_arrow.png" />
             </div>
 
             <div class="select-area">
               <select>
-                <option>사료</option>
-                <option>간식</option>
+                <option 
+                v-for="(item, index) in selectedCategoryDetailList"
+                :key="index" 
+                >{{
+                    item.text
+                    }}</option>
               </select>
               <img class="right-arrow" src="@/assets/image/ic_down_arrow.png" />
             </div>
@@ -123,7 +129,25 @@ export default {
     petInsuranceDialog,
     petReceiptDialog,
   },
+  mounted() {
+    this.selectedCategoryDetailList = this.categoryDetailList
+  },
+
   methods: {
+    onSelectCategory(){
+        if(this.selectedItem=='전체'){
+            this.selectedCategoryDetailList = this.categoryDetailList
+        }else{
+            this.selectedCategoryDetailList = []
+            for(let i of this.categoryDetailList){
+                if(this.selectedItem==i.category){
+                    this.selectedCategoryDetailList.push(i)
+                }
+            }
+            
+        }
+        console.log(this.selectedItem)
+    },
     detailClick() {
       console.log('click')
       this.$router.push({ name: 'magazineDetail' })
@@ -158,142 +182,38 @@ export default {
       petInsuranceDialogStatus: false,
       petReceiptDialogStatus: false,
       navigationStatus: false,
+      categoryList:[
+        {text:'전체'},
+        {text:'강아지'},
+        {text:'고양이'},
+        {text:'반려동물용품'},
+        {text:'기타반려동물'}
+      ],
+      categoryDetailList:[
+        {category: '강아지',text:'강아지사료'},
+        {category: '강아지',text:'강아지간식'},
+        {category: '강아지',text:'강아지영양제'},
+        {category: '강아지',text:'강아지위생용품'},
+        {category: '강아지',text:'강아지미용/패션용품'},
+        {category: '고양이',text:'고양이사료'},
+        {category: '고양이',text:'고양이간식'},
+        {category: '고양이',text:'고양이영양제'},
+        {category: '고양이',text:'고양이위생용품'},
+        {category: '고양이',text:'고양이미용/패션용품'},
+        {category: '반려동물용품',text:'반려동물영양제'},
+        {category: '반려동물용품',text:'장난감/훈련용품'},
+        {category: '반려동물용품',text:'식기/급수기'},
+        {category: '반려동물용품',text:'하우스/안전용품'},
+        {category: '반려동물용품',text:'외출용품'},
+        {category: '반려동물용품',text:'기타반려동물용품'},
+        {category: '기타반려동물',text:'햄스터/토끼용품'},
+        {category: '기타반려동물',text:'조류용품'},
+        {category: '기타반려동물',text:'관상어용품'},
+        {category: '기타반려동물',text:'곤충용품'},
+        ],
+        selectedItem:'전체',
+        selectedCategoryDetailList:[],
       productList: [
-        {
-          uri: '',
-          tags: ['# 제품 태그1', '태그2'],
-          title: '비타민1',
-          price: '50,000',
-          sale: '10',
-          rating: '',
-          reviewCnt: '',
-        },
-        {
-          uri: '',
-          tags: [],
-          title: '비타민2',
-          price: '40,000',
-          sale: '',
-          rating: '',
-          reviewCnt: '',
-        },
-        {
-          uri: '',
-          tags: ['태그1', '태그2'],
-          title: '비타민3',
-          price: '32,000',
-          sale: '',
-          rating: '4.4',
-          reviewCnt: '6',
-        },
-        {
-          uri: '',
-          tags: ['태그1'],
-          title: '비타민4',
-          price: '2,100',
-          sale: '15',
-          rating: '4.6',
-          reviewCnt: '7',
-        },
-        {
-          uri: '',
-          tags: [],
-          title: '비타민5',
-          price: '2,000',
-          sale: '',
-          rating: '4.8',
-          reviewCnt: '8',
-        },
-        {
-          uri: '',
-          tags: ['# 제품 태그1', '태그2'],
-          title: '비타민1',
-          price: '50,000',
-          sale: '10',
-          rating: '',
-          reviewCnt: '',
-        },
-        {
-          uri: '',
-          tags: [],
-          title: '비타민2',
-          price: '40,000',
-          sale: '',
-          rating: '',
-          reviewCnt: '',
-        },
-        {
-          uri: '',
-          tags: ['태그1', '태그2'],
-          title: '비타민3',
-          price: '32,000',
-          sale: '',
-          rating: '4.4',
-          reviewCnt: '6',
-        },
-        {
-          uri: '',
-          tags: ['태그1'],
-          title: '비타민4',
-          price: '2,100',
-          sale: '15',
-          rating: '4.6',
-          reviewCnt: '7',
-        },
-        {
-          uri: '',
-          tags: [],
-          title: '비타민5',
-          price: '2,000',
-          sale: '',
-          rating: '4.8',
-          reviewCnt: '8',
-        },
-        {
-          uri: '',
-          tags: ['# 제품 태그1', '태그2'],
-          title: '비타민1',
-          price: '50,000',
-          sale: '10',
-          rating: '',
-          reviewCnt: '',
-        },
-        {
-          uri: '',
-          tags: [],
-          title: '비타민2',
-          price: '40,000',
-          sale: '',
-          rating: '',
-          reviewCnt: '',
-        },
-        {
-          uri: '',
-          tags: ['태그1', '태그2'],
-          title: '비타민3',
-          price: '32,000',
-          sale: '',
-          rating: '4.4',
-          reviewCnt: '6',
-        },
-        {
-          uri: '',
-          tags: ['태그1'],
-          title: '비타민4',
-          price: '2,100',
-          sale: '15',
-          rating: '4.6',
-          reviewCnt: '7',
-        },
-        {
-          uri: '',
-          tags: [],
-          title: '비타민5',
-          price: '2,000',
-          sale: '',
-          rating: '4.8',
-          reviewCnt: '8',
-        },
       ],
     }
   },

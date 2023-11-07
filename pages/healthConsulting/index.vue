@@ -239,7 +239,7 @@
           <div v-if="stepNum == 0" class="step1-body">
             <div class="title-area">
               <div class="bold-title">고객님</div>
-              <div class="regular-title">을 어떻게 불러 드릴까요?</div>
+              <div class="regular-title">의 정보를 입력 해주세요.</div>
             </div>
             <div class="info-text">
               서비스 제공 시 고객님의 본인 확인을 위한 정보입니다.
@@ -248,7 +248,7 @@
               <input
                 v-model="name"
                 class="input"
-                placeholder="이름 13자 이내 입력"
+                placeholder="성함을 입력해주세요."
               />
             </div>
             <div class="radio-area">

@@ -31,16 +31,15 @@
             </v-row>
             <v-row class="ma-0 pa-0 align-start my-4" >
                 <v-col cols="12" sm="2" md="2" class="ma-0 pa-0 ">
-                    <div
+                    <v-img 
                         class="magazine_image"
-                        :style="magazineObj.image != null ? {backgroundImage: 'url('+profileImageUrl(magazineObj.image)+')'} : ''"
+                        contain
+                        :src="magazineObj.image != null ? profileImageUrl(magazineObj.image) : ''"
                     >
-                        <v-row class="ma-0 pa-0 ">
-                            <v-btn class="elevation-2" icon depressed @click="deleteMagazineImage(index)" style="backgroundColor:gray;" dark v-if="magazineObj.image != null">
-                                <v-icon>mdi-trash-can-outline</v-icon>
-                            </v-btn>
-                        </v-row>
-                    </div>
+                        <v-btn class="elevation-2" icon depressed @click="deleteMagazineImage(index)" style="backgroundColor:gray;" dark v-if="magazineObj.image != null">
+                            <v-icon>mdi-trash-can-outline</v-icon>
+                        </v-btn>
+                    </v-img>
                 </v-col>
                 <v-col cols="12" sm="10" md="10" class="ma-0 pa-0">
                     <v-col cols="12" sm="3" md="3" class="ma-0 pa-0">
@@ -53,6 +52,26 @@
                         >
                         </v-text-field>
                     </v-col>
+                    <v-col cols="12" sm="3" md="3" class="ma-0 pa-0">
+                    <v-btn-toggle 
+                        mandatory
+                        v-model="magazineObj.category"
+                        dense
+                    >
+                        <v-btn
+                            v-for="(obj, index) in stateObj"
+                            :key="index"
+                            color="#2D7DC8"
+                            :value="obj.value"
+                            :outlined="magazineObj.category != obj.value"
+                            class="mx-3 px-3 elevation-1"
+                            style="border-radius:30px;"
+                            :style="magazineObj.category != obj.value ? 'color:#000;' : 'color:#fff;'"
+                        >
+                            {{obj.text}}
+                        </v-btn>
+                    </v-btn-toggle>
+                </v-col>
                     <h4 class="my-2">해시태그</h4>
                     <v-autocomplete
                         chips
@@ -128,7 +147,12 @@ export default {
             profileImage: null,
             content: '',
             hostUrl: process.env.BASE_URL,
-            hashtags: []
+            hashtags: [],
+            stateObj: [
+                {text: "라이프", value: 1},
+                {text: "영양성분", value: 2},
+                {text: "후기", value: 3},
+            ]
         }
     },
     mounted() {
@@ -158,7 +182,9 @@ export default {
                         })
                         this.magazineObj = res.data[0]
                         this.$refs.editor.setContents(this.magazineObj.content, 'magazine')
-                        this.profileImage = this.magazineObj.image
+                        if (this.magazineObj.image?.length > 0)
+                            this.profileImage = this.magazineObj.image[0]
+                        console.log(this.profileImage)
                         this.hashtags = this.magazineObj.hashtag
                     }
                 }).catch(err => {
@@ -188,6 +214,8 @@ export default {
         },
         deleteMagazineImage(index) {
             console.log(index, "삭제")
+            this.profileImage = null
+            this.magazineObj.image = null
         },
         validateVariableExist(value) {
             return (value == null || value == undefined || value == '' || value == '[]')
@@ -231,9 +259,7 @@ export default {
             for (const [key, value] of Object.entries(param)) {    
                 if (this.validateVariableExist(value)) delete param[key]
             }
-            console.log(param)
             this.$axios.post('/admin/update', param).then(res => {
-                console.log(res.data)
                 if (!this.validateVariableExist(this.profileImage)) {
                     this.updateImage(this.profileImage, 'image')
                 }
@@ -272,7 +298,15 @@ export default {
             await this.$axios.post('/admin/updateMultipart', formData, {
                 headers: {'Content-Type': 'multipart/form-data'}
             }).then(res => {
-                console.log("multipart response : ", res);
+                if (res.data.length > 0) {
+                    res.data.filter(item => {
+                        if (item.image != null && item.image != undefined) item.image = JSON.parse(item.image)
+                        item.cd = moment(item.cd).format('YYYY-MM-DD')
+                    })
+                    this.magazineObj = _.cloneDeep(res.data[0])
+                    if (this.magazineObj.image?.length > 0)
+                        this.profileImage = this.magazineObj.image[0]
+                }
             }).catch(err => {
                 console.log("multipart error : ", err);
             })

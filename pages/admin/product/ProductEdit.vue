@@ -64,33 +64,31 @@
             </v-row>
             <v-row class="ma-0 pa-0 align-center my-2" >
                 <v-col cols="12" sm="2" md="2" class="ma-0 pa-0 ">
-                    <div
+                    <v-img 
                         class="product_image"
-                        :style="productObj.i_r != null ? {backgroundImage: 'url('+profileImageUrl(productObj.i_r)+')'} : ''"
-                        @click="showImageDetail"
+                        contain
+                        :src="productObj.i_r != null ? profileImageUrl(productObj.i_r) : ''"
                     >
-                        <v-row class="ma-0 pa-0 ">
-                            <v-btn class="elevation-2" icon depressed @click="deleteProductImage(index)" style="backgroundColor:gray;" dark v-if="productObj.i_r != null && profileImage != null">
-                                <v-icon>mdi-trash-can-outline</v-icon>
-                            </v-btn>
-                        </v-row>
-                    </div>
+                        <v-btn class="elevation-2" icon depressed @click="deleteProductImage(index)" style="backgroundColor:gray;" dark v-if="productObj.i_r != null">
+                            <v-icon>mdi-trash-can-outline</v-icon>
+                        </v-btn>
+                    </v-img>
                 </v-col>
                 <v-col cols="12" sm="10" md="10" class="ma-0 pa-0">
                     <div
                         class="scroll-container"
                     >
-                        <div
+                        <v-img 
                             v-for="(obj, index) in filesUrls"
                             :key="index"
                             class="product_image"
-                            :style="obj != null ? {backgroundImage: 'url('+obj+')'} : ''"
+                            :src="obj != null ? obj : ''"
                             @click="showImageDetails(index)"
                         >
                             <v-btn class="elevation-2" icon depressed @click.stop="deleteProductImage(index)" style="backgroundColor:gray;" dark>
                                 <v-icon>mdi-trash-can-outline</v-icon>
                             </v-btn>
-                        </div>
+                        </v-img>
                     </div>
                 </v-col>
             </v-row>

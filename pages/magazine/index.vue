@@ -14,25 +14,25 @@
           <div class="tab-group">
             <div
               :class="tabStatus == 1 ? 'selected-tab-btn-area' : 'tab-btn-area'"
-              @click="tabStatus = 1"
+              @click="onClickTab(1)"
             >
               전체보기
             </div>
             <div
               :class="tabStatus == 2 ? 'selected-tab-btn-area' : 'tab-btn-area'"
-              @click="tabStatus = 2"
+              @click="onClickTab(2)"
             >
               라이프
             </div>
             <div
               :class="tabStatus == 3 ? 'selected-tab-btn-area' : 'tab-btn-area'"
-              @click="tabStatus = 3"
+              @click="onClickTab(3)"
             >
               영양성분
             </div>
             <div
               :class="tabStatus == 4 ? 'selected-tab-btn-area' : 'tab-btn-area'"
-              @click="tabStatus = 4"
+              @click="onClickTab(4)"
             >
               후기
             </div>
@@ -46,14 +46,12 @@
               :key="index"
               class="magazine-item"
             >
-              <div class="magazine-item-image-group">
-                <img
-                  class="magazine-item-image"
-                  src="@/assets/image/img_magazine_test.png"
-                  draggable="false"
-                />
+              <div class="magazine-item-image-group"
+                style="background-size:cover;"
+                :style="`backgroundImage:url('${hostUrl+JSON.parse(item.image)[0]}')`"
+              >
+
                 <div class="magazine-item-magazine-title">
-                  {{ item.magazineTitle }}
                 </div>
               </div>
 
@@ -61,18 +59,14 @@
                 <div class="magazine-item-bottom-title">
                   {{ item.title }}
                 </div>
-                <div class="magazine-item-bottom-description">
-                  {{ item.description }}
+                <div class="magazine-item-bottom-description" v-html="item.content">
                 </div>
                 <div style="flex: 1"></div>
                 <div class="magazine-item-bottom-share-explore-group">
-                  <div class="magazine-item-bottom-share">SHARE</div>
-                  <div class="magazine-item-bottom-explore">EXPLORE</div>
+                  <div class="magazine-detail-btn" @click="onClickItem(item.no)">더보기</div>
                 </div>
               </div>
-              <div class="magazine-detail-btn-area">
-                <div class="magazine-detail-btn">더보기</div>
-              </div>
+
             </div>
           </div>
         </div>
@@ -89,7 +83,47 @@ export default {
   components: {
     Header,
   },
+  mounted() {
+    this.hostUrl = process.env.BASE_URL
+    this.selectItem()
+  },
   methods: {
+    onClickItem(no){
+        console.log(no)
+        this.$router.push({name: 'magazineDetail', query: {no: no}})
+    },
+    onClickTab(idx){
+        this.tabStatus = idx
+        this.selectItem()
+    },
+    async selectItem(){
+        let conditions = [{ q: '=', f: 'alive', v: 1 },{ q: 'order', f: 'cd', o: "DESC" }]
+        if(this.tabStatus!=1){
+            //1=라이프 2=영양성분 3=후기
+            if(this.tabStatus==2) conditions.push({ op:'AND', q: '=', f: 'category', v: 1 })
+            if(this.tabStatus==3) conditions.push({ op:'AND', q: '=', f: 'category', v: 2 })
+            if(this.tabStatus==4) conditions.push({ op:'AND', q: '=', f: 'category', v: 3 })
+        }
+        let formBody = {
+        table: 'magazine',
+        conditions: conditions,
+      }
+      try {
+        await this.$axios
+          .post('/api/select', formBody)
+          .then((res) => {
+            console.log('조회된 데이터:: ', (res.data))
+            if (res.data.length > 0) {
+                this.magazineList = res.data
+            } 
+          })
+          .catch(function (error) {
+            console.log('에러!!', error)
+          })
+      } catch (err) {
+        console.log('err!! : ' + err)
+      }
+    },
     detailClick() {
       console.log('click')
       this.$router.push({ name: 'magazineDetail' })
@@ -101,30 +135,10 @@ export default {
   },
   data() {
     return {
-      tabStatus: 1, //1 전체보기, 2 라이프, 3 영양성분, 4 후기
-      navigationStatus: false,
-      magazineList: [
-        {
-          magazineTitle: 'TOP 10 Australian beaches',
-          title: 'Nomber 10',
-          description: 'Whitehaven Beach',
-        },
-        {
-          magazineTitle: 'TOP 5 Australian beaches',
-          title: 'Nomber 10',
-          description: 'Whitsunday Island, Whitsunday Islands',
-        },
-        {
-          magazineTitle: 'TOP 10 Australian beaches',
-          title: 'Nomber 10',
-          description: 'Whitehaven Beach',
-        },
-        {
-          magazineTitle: 'TOP 5 Australian beaches',
-          title: 'Nomber 10',
-          description: 'Whitsunday Island, Whitsunday Islands',
-        },
-      ],
+        hostUrl: process.env.BASE_URL,
+        tabStatus: 1, //1 전체보기, 2 라이프, 3 영양성분, 4 후기
+        navigationStatus: false,
+        magazineList: [],
     }
   },
 }
@@ -158,7 +172,19 @@ export default {
       font-family: 'score2';
     }
   }
-
+    .magazine-detail-btn {
+        border: 1px solid #ddd;
+        background-color: #fff;
+        width: 300px;
+        height: 72px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #333;
+        font-size: 18px;
+        font-family: 'score5';
+        cursor: pointer;
+    }
   .scroll-group {
     position: relative;
     width: 100%;
@@ -225,24 +251,12 @@ export default {
         display: flex;
         align-items: center;
         justify-content: center;
-        .magazine-detail-btn {
-          border: 1px solid #ddd;
-          background-color: #fff;
-          width: 300px;
-          height: 72px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: #333;
-          font-size: 18px;
-          font-family: 'score5';
-          cursor: pointer;
-        }
+        
       }
 
       .magazine-item {
         width: 47%;
-        height: 477px;
+        height: 500px;
       }
       .magazine-item-image-group {
         width: 100%;
@@ -275,6 +289,10 @@ export default {
         padding: 20px 40px 26px 40px;
         display: flex;
         flex-direction: column;
+        white-space: nowrap ;
+        word-break: normal;
+        overflow: hidden ;
+        text-overflow: ellipsis;
       }
 
       .magazine-item-bottom-title {
@@ -284,14 +302,18 @@ export default {
       }
 
       .magazine-item-bottom-description {
+        width:100%;
         font-size: 16px;
         font-family: 'score2';
         color: #333333;
         margin-top: 14px;
+        overflow: hidden;
       }
 
       .magazine-item-bottom-share-explore-group {
         display: flex;
+        align-content: center;
+        justify-content: center;
         .magazine-item-bottom-share {
           font-size: 16px;
           font-family: Arial;
@@ -339,7 +361,19 @@ export default {
         font-family: 'score2';
       }
     }
-
+    .magazine-detail-btn {
+    border: 1px solid #ddd;
+    background-color: #fff;
+    width: 100%;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #333;
+    font-size: 18px;
+    font-family: 'score5';
+    cursor: pointer;
+    }
     .scroll-group {
       position: relative;
       width: 100%;
@@ -410,7 +444,7 @@ export default {
             margin-top: 0px;
             .magazine-item-image-group {
               width: 100%;
-              height: auto;
+              min-height: 300px;
               .magazine-item-image {
                 width: 100%;
                 height: auto;
@@ -439,7 +473,6 @@ export default {
               padding: 16px 36px;
               display: flex;
               flex-direction: column;
-              margin-top: -25px;
             }
 
             .magazine-item-bottom-title {
@@ -457,6 +490,8 @@ export default {
 
             .magazine-item-bottom-share-explore-group {
               display: flex;
+              align-content: center;
+              justify-content: center;
               .magazine-item-bottom-share {
                 font-size: 16px;
                 font-family: Arial;
@@ -476,19 +511,7 @@ export default {
               display: flex;
               align-items: center;
               justify-content: center;
-              .magazine-detail-btn {
-                border: 1px solid #ddd;
-                background-color: #fff;
-                width: 100%;
-                height: 60px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: #333;
-                font-size: 18px;
-                font-family: 'score5';
-                cursor: pointer;
-              }
+
             }
           }
         }

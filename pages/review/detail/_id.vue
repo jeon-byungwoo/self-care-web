@@ -12,39 +12,37 @@
           <div class="review-detail-left-content">
             <div class="review-detail-top-name-area">
               <div class="reiview-detail-top-user-name">
-                {{ name }}
+                {{ reviewList[0].u_name }}
               </div>
-              <div class="review-detail-date">{{ date }}</div>
+              <div v-if="reviewList[0].cd!=null" class="review-detail-date">{{ reviewList[0].cd }}</div>
             </div>
-            <div class="rating-area">
-              <img
-                v-for="(item1, i1) in 5"
-                :key="i1"
-                class="rating-img"
-                :src="
-                  score >= i1 + 1
-                    ? require('@/assets/image/ic_star.png')
-                    : require('@/assets/image/ic_gray_star.png')
-                "
-              />
-            </div>
-            <img class="rep-image" :src="repPath" />
-            <div class="contents">{{ contents }}</div>
+            <v-rating
+                v-model="reviewList[0].score"
+                half-increments
+                readonly
+                :color="'#FFC329'"
+                :background-color="'#FFC329'"
+                :length="5"
+                :size="32"
+            >
+            </v-rating>
+            <img v-if="reviewList[0].i_list!=null&&reviewList[0].i_list.length>0" class="rep-image" :src="hostUrl+JSON.parse(reviewList[0].i_list)[0]" />
+            <div class="contents">{{ reviewList[0].content }}</div>
           </div>
           <div class="line"></div>
           <div class="review-detail-right-content">
-            <div class="review-detail-right-title">김민우님의 맞춤 영양제</div>
+            <div class="review-detail-right-title">구매한 영양제</div>
             <div
-              v-for="(item, i) in medicineList"
+              v-for="(item, i) in productList"
               :key="i"
               class="review-detail-medicine-list-item"
             >
-              <img class="medicine-list-item-rep-image" :src="item.repPath" />
+              <img @click="onClickProduct()" class="medicine-list-item-rep-image"  :style="`backgroundImage:url('${hostUrl+JSON.parse(item.i_list)[0]}')`"/>
               <div class="medicine-list-item-name-tags-area">
                 <div class="medicine-list-item-name">{{ item.name }}</div>
                 <div class="medicine-list-item-tags-area">
                   <div
-                    v-for="(item1, i1) in item.tags"
+                    v-for="(item1, i1) in JSON.parse(item.hashtag)"
                     :key="i1"
                     class="medicine-list-item-tags"
                   >
@@ -68,6 +66,7 @@
 
 <script>
 import Header from '../../../components/header.vue'
+import Moment from 'moment'
 export default {
   components: {
     Header,
@@ -83,30 +82,94 @@ export default {
       contents:
         '첫 가입시 주는 쿠폰으로 구독을 시작....첫 가입시 주는 쿠폰으로 구독을 시작....첫 가입시 주는 쿠폰으로 구독을 시작....첫 가입시 주는 쿠폰으로 구독을 시작....첫 가입시 주는 쿠폰으로 구독을 시작....첫 가입시 주는 쿠폰으로 구독을 시작....첫 가입시 주는 쿠폰으로 구독을 시작....첫 가입시 주는 쿠폰으로 구독을 시작....첫 가입시 주는 쿠폰으로 구독을 시작....첫 가입시 주는 쿠폰으로 구독을 시작....첫 가입시 주는 쿠폰으로 구독을 시작....첫 가입시 주는 쿠폰으로 구독을 시작....첫 가입시 주는 쿠폰으로 구독을 시작....첫 가입시 주는 쿠폰으로 구독을 시작....첫 가입시 주는 쿠폰으로 구독을 시작....첫 가입시 주는 쿠폰으로 구독을 시작....첫 가입시 주는 쿠폰으로 구독을 시작....첫 가입시 주는 쿠폰으로 구독을 시작....첫 가입시 주는 쿠폰으로 구독을 시작....첫 가입시 주는 쿠폰으로 구독을 시작....첫 가입시 주는 쿠폰으로 구독을 시작....첫 가입시 주는 쿠폰으로 구독을 시작....첫 가입시 주는 쿠폰으로 구독을 시작....첫 가입시 주는 쿠폰으로 구독을 시작....첫 가입시 주는 쿠폰으로 구독을 시작....첫 가입시 주는 쿠폰으로 구독을 시작....',
       date: '2023.09.26',
-      medicineList: [
+      hostUrl:process.env.BASE_URL,
+      reviewList:[
         {
-          repPath: require('@/assets/image/img_medicine_test.png'),
-          name: '제품이름',
-          tags: ['#제품태그1', '#제품태그2'],
-        },
-        {
-          repPath: require('@/assets/image/img_medicine_test.png'),
-          name: '제품이름',
-          tags: ['#제품태그1', '#제품태그2'],
-        },
-        {
-          repPath: require('@/assets/image/img_medicine_test.png'),
-          name: '제품이름',
-          tags: ['#제품태그1', '#제품태그2'],
-        },
+            cd:'',
+            u_name:'',
+            score:4,
+            i_list:[],
+            content:''
+        }
       ],
+      productList:[]
     }
   },
+  mounted() {
+    this.hostUrl = process.env.BASE_URL
+    this.selectItem()
+  },
   methods: {
+    onClickProduct(){
+        this.$router.push({name: 'productDetail', query: {no: this.productList[0].no}})
+    },
     onChildUpdate(newValue) {
       console.log('index', newValue)
       this.navigationStatus = newValue
     },
+    maskingName(strName){
+        if (strName.length > 2) {
+            var originName = strName.split('');
+            originName.forEach(function(name, i) {
+            if (i === 0 || i === originName.length - 1) return;
+            originName[i] = '*';
+            });
+            var joinName = originName.join();
+            return joinName.replace(/,/g, '');
+        } else {
+            var pattern = /.$/; // 정규식
+            return strName.replace(pattern, '*');
+        }
+    },
+    async selectItem(){
+        let conditions = [{ q: '=', f: 'no', v: this.$route.params.id }]
+        let formBody = {
+        table: 'review',
+        conditions: conditions,
+      }
+      try {
+        await this.$axios
+          .post('/api/select', formBody)
+          .then((res) => {
+            console.log('조회된 데이터:: ', (res.data))
+            if (res.data.length > 0) {
+                this.reviewList = res.data
+                this.reviewList[0].u_name = this.maskingName(this.reviewList[0].u_name)
+                this.reviewList[0].cd = Moment(this.reviewList[0].cd).format('YYYY년MM월DD일 HH:mm')
+                this.productList = this.selectProductItem(this.reviewList[0].p_no)
+
+            } 
+          })
+          .catch(function (error) {
+            console.log('에러!!', error)
+          })
+      } catch (err) {
+        console.log('err!! : ' + err)
+      }
+    },
+    async selectProductItem(no){
+        let conditions = [{ q: '=', f: 'no', v: no }]
+        let formBody = {
+        table: 'product',
+        conditions: conditions,
+      }
+      try {
+        await this.$axios
+          .post('/api/select', formBody)
+          .then((res) => {
+            console.log('조회된 데이터:: ', (res.data))
+            if (res.data.length > 0) {
+                this.productList = res.data
+            } 
+          })
+          .catch(function (error) {
+            console.log('에러!!', error)
+          })
+      } catch (err) {
+        console.log('err!! : ' + err)
+      }
+    },
+
   },
 }
 </script>
@@ -210,6 +273,7 @@ export default {
           font-family: 'score6';
         }
         .review-detail-medicine-list-item {
+        cursor: pointer;
           width: 100%;
           margin-top: 30px;
           margin-left: 10px;
@@ -217,6 +281,8 @@ export default {
           .medicine-list-item-rep-image {
             width: 100px;
             height: 100px;
+            background-size: contain;
+            background-position: center;
           }
           .medicine-list-item-name-tags-area {
             display: flex;

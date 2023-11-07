@@ -105,28 +105,19 @@
           :key="index"
           class="magazine-item"
         >
-          <div class="magazine-item-image-group">
-            <img
-              class="magazine-item-image"
-              src="@/assets/image/img_magazine_test.png"
-              draggable="false"
-            />
-            <div class="magazine-item-magazine-title">
-              {{ item.magazineTitle }}
-            </div>
+          <div class="magazine-item-image-group" :style="`backgroundImage:url('${hostUrl+JSON.parse(item.image)[0]}')`">
+            
           </div>
 
           <div class="magazine-item-bottom-group">
             <div class="magazine-item-bottom-title">
               {{ item.title }}
             </div>
-            <div class="magazine-item-bottom-description">
-              {{ item.description }}
+            <div class="magazine-item-bottom-description" v-html="item.content">
             </div>
             <div style="flex: 1"></div>
             <div class="magazine-item-bottom-share-explore-group">
-              <div class="magazine-item-bottom-share">SHARE</div>
-              <div class="magazine-item-bottom-explore">EXPLORE</div>
+              <div class="magazine-detail-btn" @click="onClickMagazine(item.no)">더보기</div>
             </div>
           </div>
         </div>
@@ -240,7 +231,33 @@ export default {
       } catch (err) {
         console.log('err!! : ' + err)
       }
-    }
+    },
+    onClickMagazine(no){
+        this.$router.push({name: 'magazineDetail', query: {no: no}})
+    },
+    async selectMagazine(){
+        let conditions = [{ q: '=', f: 'alive', v: 1 },{ q: 'page', limit: '3', offset: 0 },{ q: 'order', f: 'cd', o: "DESC" }]
+        let formBody = {
+        table: 'magazine',
+        conditions: conditions,
+      }
+      try {
+        await this.$axios
+          .post('/api/select', formBody)
+          .then((res) => {
+            console.log('조회된 데이터:: ', (res.data))
+            if (res.data.length > 0) {
+                this.magazineList = res.data
+                console.log(this.magazineList)
+            } 
+          })
+          .catch(function (error) {
+            console.log('에러!!', error)
+          })
+      } catch (err) {
+        console.log('err!! : ' + err)
+      }
+    },
   },
   mounted() {
     this.hostUrl = process.env.BASE_URL
@@ -251,7 +268,7 @@ export default {
           : undefined
     }
     this.selectItem()
-
+    this.selectMagazine()
   },
   data() {
     return {
@@ -261,16 +278,7 @@ export default {
       scrollStatus: true,
       itemList: [],
       magazineList: [
-        {
-          magazineTitle: 'TOP 10 Australian beaches',
-          title: 'Nomber 10',
-          description: 'Whitehaven Beach',
-        },
-        {
-          magazineTitle: 'TOP 5 Australian beaches',
-          title: 'Nomber 10',
-          description: 'Whitsunday Island, Whitsunday Islands',
-        },
+        
       ],
     }
   },
@@ -278,6 +286,21 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
+.magazine-detail-btn {
+    border: 1px solid #ddd;
+    background-color: #fff;
+    width: 300px;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #333;
+    font-size: 18px;
+    font-family: 'score5';
+    cursor: pointer;
+}
+
 .components-group {
   width: 100%;
   .header-margin {
@@ -474,6 +497,7 @@ export default {
     margin-top: 20px;
     display: flex;
     gap: 60px;
+    
   }
   .magazine-item {
     width: 58%;
@@ -482,6 +506,8 @@ export default {
   .magazine-item-image-group {
     width: 100%;
     height: 300px;
+    background-size: cover;
+    background-position: center;
     .magazine-item-image {
       width: 100%;
       border-top-right-radius: 12px;
@@ -511,6 +537,7 @@ export default {
     padding: 20px 40px 26px 40px;
     display: flex;
     flex-direction: column;
+
   }
 
   .magazine-item-bottom-title {
@@ -524,6 +551,11 @@ export default {
     font-family: 'score2';
     color: #333333;
     margin-top: 14px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* number of lines to show */
+    line-clamp: 2; 
+    -webkit-box-orient: vertical;
   }
 
   .magazine-item-bottom-share-explore-group {

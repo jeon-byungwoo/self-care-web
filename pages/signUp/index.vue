@@ -259,8 +259,6 @@ export default {
           await this.$axios
             .post('/api/insert', obj)
             .then((res) => {
-              console.log('인서트 결과값:: ', JSON.stringify(res.data))
-              console.log(res.data.length)
               if (res.data.length > 0) {
                 localStorage.removeItem('userInfo')
                 let userInfo = {
@@ -378,13 +376,12 @@ export default {
           email: this.email,
           pw: this.pw,
           type: this.type,
+          point: 3000
         }
         try {
           await this.$axios
             .post('/api/insert', obj)
             .then((res) => {
-              console.log('인서트 결과값:: ', JSON.stringify(res.data))
-              console.log(res.data.length)
               if (res.data.length > 0) {
                 localStorage.removeItem('userInfo')
                 let userInfo = {
@@ -397,6 +394,7 @@ export default {
                   phone: res.data[0].phone,
                   email: res.data[0].email,
                   status: res.data[0].status,
+                  
                 }
                 localStorage.setItem('loginStatus', true)
                 localStorage.setItem('userInfo', JSON.stringify(userInfo))

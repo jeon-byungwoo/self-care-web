@@ -295,8 +295,8 @@ export default {
                             data.m_image = JSON.parse(data.m_image)
                             this.profileImageM = data.m_image[0]
                         }
-                        data.cd = Moment(data.cd).format('YYYY-MM-DD hh:mm')
-                        data.ed = Moment(data.ed).format('YYYY-MM-DD hh:mm')
+                        data.cd = Moment(data.cd).format('YYYY-MM-DD HH:mm')
+                        data.ed = Moment(data.ed).format('YYYY-MM-DD HH:mm')
                     })
                 }
             }).catch((err) => {

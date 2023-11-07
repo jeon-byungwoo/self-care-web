@@ -22,7 +22,7 @@
                 </v-row>
             </template>
             <template v-slot:[`item.category`]="{item}">
-                {{item.category == 1 ? '공지사항' : '언론보도'}}
+                {{item.category == 1 ? '소식' : item.category==2 ? '공지사항' : '언론보도'}}
             </template>
         </v-data-table>
         <v-dialog
@@ -58,8 +58,9 @@ export default {
             boardPopup: false,
             selectedBoard: null,
             stateObj: [
-                {text: "공지사항", value: 1},
-                {text: "언론보도", value: 2},
+                {text: "소식", value: 1},
+                {text: "공지사항", value: 2},
+                {text: "언론보도", value: 3},
             ]
         }
     },

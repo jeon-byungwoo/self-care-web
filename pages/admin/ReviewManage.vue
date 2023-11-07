@@ -112,13 +112,6 @@ export default {
             searchedText: null,
             reviewPopup: false,
             selectedReview: null,
-            orderStateObj: [
-                {text: "주문대기", value: 1},
-                {text: "주문취소", value: 2},
-                {text: "상품준비중", value: 3},
-                {text: "배송중", value: 4},
-                {text: "배송완료", value: 5},
-            ]
         }
     },
     mounted() {

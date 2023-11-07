@@ -18,27 +18,25 @@
           >
             <div class="review-list-item-top-name-area">
               <div class="reiview-list-item-top-user-name">
-                {{ item.name }}
+                {{ item.u_name }}
               </div>
               <div class="reiview-list-item-top-medicine-name">
-                {{ item.medicineName }}
+                {{ item.p_name }}
               </div>
             </div>
-            <div class="rating-area">
-              <img
-                v-for="(item1, i1) in 5"
-                :key="i1"
-                class="rating-img"
-                :src="
-                  item1.score >= i1 + 1
-                    ? require('@/assets/image/ic_star.png')
-                    : require('@/assets/image/ic_gray_star.png')
-                "
-              />
-            </div>
-            <img class="rep-image" :src="item.repPath" />
-            <div class="contents">{{ item.contents }}</div>
-            <div class="detail-btn" @click="detailClick">더보기</div>
+            <v-rating
+                v-model="item.score"
+                half-increments
+                readonly
+                :color="'#FFC329'"
+                :background-color="'#FFC329'"
+                :length="5"
+                :size="32"
+            >
+            </v-rating>
+            <div v-if="item.i_list!=null" class="rep-image" :style="`backgroundImage:url('${hostUrl+JSON.parse(item.i_list)[0]}')`" ></div>
+            <div class="contents">{{ item.content }}</div>
+            <div class="detail-btn" @click="detailClick(item.no)">더보기</div>
           </div>
         </div>
       </div>
@@ -54,70 +52,66 @@ export default {
   components: {
     Header,
   },
-  methods: {
-    detailClick() {
-      this.$router.push({ name: 'review-detail-id', params: { id: 3 } })
+  data() {
+    return {
+      navigationStatus: false,
+      reviewList: [],
+      hostUrl:process.env.BASE_URL
+    }
+  },
+
+  mounted() {
+    this.hostUrl = process.env.BASE_URL
+    this.selectItem()
+  },
+  methods:{
+    detailClick(no) {
+      this.$router.push({ name: 'review-detail-id', params: { id: no } })
     },
     onChildUpdate(newValue) {
       console.log('index', newValue)
       this.navigationStatus = newValue
     },
-  },
-  data() {
-    return {
-      navigationStatus: false,
-      reviewList: [
-        {
-          no: '0',
-          name: '김민우',
-          medicineName: 'test',
-          score: '3',
-          repPath: require('@/assets/image/img_medicine_test.png'),
-          contents: '첫 가입시 주는 쿠폰으로 구독을 시작....',
-        },
-        {
-          no: '0',
-          name: '김민우',
-          medicineName: 'test',
-          score: '3',
-          repPath: require('@/assets/image/img_rolling_first.png'),
-          contents: '첫 가입시 주는 쿠폰으로 구독을 시작....',
-        },
-        {
-          no: '0',
-          name: '김민우',
-          medicineName: 'test',
-          score: '3',
-          repPath: require('@/assets/image/img_pet_bg.png'),
-          contents: '첫 가입시 주는 쿠폰으로 구독을 시작....',
-        },
-        {
-          no: '0',
-          name: '김민우',
-          medicineName: 'test',
-          score: '3',
-          repPath: require('@/assets/image/img_medicine_test.png'),
-          contents: '첫 가입시 주는 쿠폰으로 구독을 시작....',
-        },
-        {
-          no: '0',
-          name: '김민우',
-          medicineName: 'test',
-          score: '3',
-          repPath: require('@/assets/image/img_medicine_test.png'),
-          contents: '첫 가입시 주는 쿠폰으로 구독을 시작....',
-        },
-        {
-          no: '0',
-          name: '김민우',
-          medicineName: 'test',
-          score: '3',
-          repPath: require('@/assets/image/img_medicine_test.png'),
-          contents: '첫 가입시 주는 쿠폰으로 구독을 시작....',
-        },
-      ],
-    }
-  },
+    maskingName(strName){
+        if (strName.length > 2) {
+            var originName = strName.split('');
+            originName.forEach(function(name, i) {
+            if (i === 0 || i === originName.length - 1) return;
+            originName[i] = '*';
+            });
+            var joinName = originName.join();
+            return joinName.replace(/,/g, '');
+        } else {
+            var pattern = /.$/; // 정규식
+            return strName.replace(pattern, '*');
+        }
+    },
+    async selectItem(){
+        let conditions = [{ q: '>', f: 'score', v: 3 },{ q: 'order', f: 'cd', o: "DESC" }]
+        let formBody = {
+        table: 'review',
+        conditions: conditions,
+      }
+      try {
+        await this.$axios
+          .post('/api/select', formBody)
+          .then((res) => {
+            console.log('조회된 데이터:: ', (res.data))
+            if (res.data.length > 0) {
+                this.reviewList = res.data
+                for(let i of this.reviewList){
+                    i.u_name = this.maskingName(i.u_name)
+                }
+            } 
+          })
+          .catch(function (error) {
+            console.log('에러!!', error)
+          })
+      } catch (err) {
+        console.log('err!! : ' + err)
+      }
+    },
+  }
 }
 </script>
 
@@ -226,6 +220,8 @@ export default {
           width: 100%;
           height: 450px;
           margin-top: 20px;
+          background-size: cover;
+          background-position: center;
         }
         .contents {
           padding: 0px 20px;
@@ -234,6 +230,11 @@ export default {
           color: #333;
           font-size: 16px;
           font-family: 'score2';
+          overflow: hidden;
+          display: -webkit-box;
+          -webkit-line-clamp: 2; /* number of lines to show */
+          line-clamp: 2; 
+          -webkit-box-orient: vertical;
         }
         .detail-btn {
           padding: 40px 20px 0px 20px;

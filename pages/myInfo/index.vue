@@ -39,11 +39,17 @@
             :class="tabStatus == 3 ? 'selected-tab' : 'unselected-tab'"
             @click="tabStatus = 3"
           >
-            구매 내역
+            나의 자가진단
           </div>
           <div
             :class="tabStatus == 4 ? 'selected-tab' : 'unselected-tab'"
             @click="tabStatus = 4"
+          >
+            구매 내역
+          </div>
+          <div
+            :class="tabStatus == 5 ? 'selected-tab' : 'unselected-tab'"
+            @click="tabStatus = 5"
           >
             나의 리뷰
           </div>
@@ -102,196 +108,85 @@
           <div class="consulting-list-group">
             <div class="consulting-list">
               <div
-                v-for="(item, i) in filterConsultingList"
+                v-for="(item, i) in healthCheckList"
                 :key="i"
                 class="consulting-list-item"
               >
                 <div class="consulting-title">{{ item.title }}</div>
-                <div class="consulting-date">{{ item.date }}</div>
-              </div>
-            </div>
-            <div class="paging-group">
-              <div class="rectangle-area" @click="consultingPagingPrev(2)">
-                <img
-                  class="two-arrow"
-                  src="@/assets/image/ic_paging_two_arrow.png"
-                />
-              </div>
-              <div class="rectangle-area" @click="consultingPagingPrev(1)">
-                <img
-                  class="one-arrow"
-                  src="@/assets/image/ic_paging_one_arrow.png"
-                />
-              </div>
-              <div class="paging-num-area">
-                <div
-                  :class="
-                    i1 + consultingBlockNum == consultingCurrentPageNum
-                      ? 'select-paging-num'
-                      : 'paging-num'
-                  "
-                  v-for="(item1, i1) in consultingPagingNum"
-                  :key="i1"
-                  @click="consultingPagingNumClick(i1 + consultingBlockNum)"
-                >
-                  {{ i1 + consultingBlockNum }}
-                </div>
-              </div>
-              <div class="rectangle-area" @click="consultingPagingNext(1)">
-                <img
-                  class="rotate-one-arrow"
-                  src="@/assets/image/ic_paging_one_arrow.png"
-                />
-              </div>
-
-              <div class="rectangle-area" @click="consultingPagingNext(2)">
-                <img
-                  class="rotate-two-arrow"
-                  src="@/assets/image/ic_paging_two_arrow.png"
-                />
+                <div class="consulting-date">{{ item.cd }}</div>
               </div>
             </div>
           </div>
         </div>
-
-        <!-- 구매 내역 -->
+        <!-- 나의 자가진단 결과 -->
         <div v-if="tabStatus == 3">
           <div class="consulting-list-group">
             <div class="consulting-list">
               <div
-                v-for="(item, i) in filterPaymentList"
+                v-for="(item, i) in testList"
+                :key="i"
+                class="consulting-list-item"
+              >
+                <div class="consulting-title">{{ item.test_name }}</div>
+                <div class="consulting-date">{{ item.cd }}</div>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+        <!-- 구매 내역 -->
+        <div v-if="tabStatus == 4">
+          <div class="consulting-list-group">
+            <div class="consulting-list">
+              <div
+                v-for="(item, i) in buyList"
                 :key="i"
                 class="consulting-list-item"
                 @click="$router.push({ name: 'paymentHistoryDetail' })"
               >
                 <div class="consulting-title">{{ item.title }}</div>
-                <div class="consulting-date">{{ item.date }}</div>
-              </div>
-            </div>
-            <div class="paging-group">
-              <div class="rectangle-area" @click="paymentPagingPrev(2)">
-                <img
-                  class="two-arrow"
-                  src="@/assets/image/ic_paging_two_arrow.png"
-                />
-              </div>
-              <div class="rectangle-area" @click="paymentPagingPrev(1)">
-                <img
-                  class="one-arrow"
-                  src="@/assets/image/ic_paging_one_arrow.png"
-                />
-              </div>
-              <div class="paging-num-area">
-                <div
-                  :class="
-                    i1 + paymentBlockNum == paymentCurrentPageNum
-                      ? 'select-paging-num'
-                      : 'paging-num'
-                  "
-                  v-for="(item1, i1) in paymentPagingNum"
-                  :key="i1"
-                  @click="paymentPagingNumClick(i1 + paymentBlockNum)"
-                >
-                  {{ i1 + paymentBlockNum }}
-                </div>
-              </div>
-              <div class="rectangle-area" @click="paymentPagingNext(1)">
-                <img
-                  class="rotate-one-arrow"
-                  src="@/assets/image/ic_paging_one_arrow.png"
-                />
-              </div>
-
-              <div class="rectangle-area" @click="paymentPagingNext(2)">
-                <img
-                  class="rotate-two-arrow"
-                  src="@/assets/image/ic_paging_two_arrow.png"
-                />
+                <div class="consulting-date">{{ item.cd }}</div>
               </div>
             </div>
           </div>
         </div>
 
         <!-- 나의 리뷰 -->
-        <div v-if="tabStatus == 4">
+        <div v-if="tabStatus == 5">
           <div class="review-group">
             <div class="review-list-item-area">
               <div
-                v-for="(item, i) in filterReviewList"
+                v-for="(item, i) in reviewList"
                 :key="i"
                 class="review-list-item"
               >
                 <div class="rep-img-area">
                   <img
-                    :class="item.url.length == 0 ? 'rep-no-img' : 'rep-img'"
+                    :class="item.i_list == null ? 'rep-no-img' : 'rep-img'"
                     :src="
-                      item.url.length == 0
+                      item.i_list== null
                         ? require('@/assets/image/img_review_no_picture.png')
-                        : item.url
+                        : hostUrl+item.i_list[0]
                     "
                   />
                 </div>
                 <div class="mobile-area">
                   <div class="title-contents-area">
-                    <div class="title">{{ item.title }}</div>
-                    <div class="contents">{{ item.date }}</div>
+                    <div class="title">{{ item.content }}</div>
+                    <div class="contents">{{ item.cd }}</div>
                   </div>
                   <div style="flex: 1"></div>
-                  <div class="rating-area">
-                    <img
-                      v-for="(item1, i1) in 5"
-                      :key="i1"
-                      class="rating"
-                      :src="
-                        item.rate > i1
-                          ? require('@/assets/image/ic_star.png')
-                          : require('@/assets/image/ic_gray_star.png')
-                      "
-                    />
-                  </div>
+                  <v-rating
+                    v-model="item.score"
+                    half-increments
+                    readonly
+                    :color="'#FFC329'"
+                    :background-color="'#FFC329'"
+                    :length="5"
+                    :size="32"
+                  >
+                  </v-rating>
                 </div>
-              </div>
-            </div>
-
-            <div class="paging-group">
-              <div class="rectangle-area" @click="reviewPagingPrev(2)">
-                <img
-                  class="two-arrow"
-                  src="@/assets/image/ic_paging_two_arrow.png"
-                />
-              </div>
-              <div class="rectangle-area" @click="reviewPagingPrev(1)">
-                <img
-                  class="one-arrow"
-                  src="@/assets/image/ic_paging_one_arrow.png"
-                />
-              </div>
-              <div class="paging-num-area">
-                <div
-                  :class="
-                    i1 + reviewBlockNum == reviewCurrentPageNum
-                      ? 'select-paging-num'
-                      : 'paging-num'
-                  "
-                  v-for="(item1, i1) in reviewPagingNum"
-                  :key="i1"
-                  @click="reviewPagingNumClick(i1 + reviewBlockNum)"
-                >
-                  {{ i1 + reviewBlockNum }}
-                </div>
-              </div>
-              <div class="rectangle-area" @click="reviewPagingNext(1)">
-                <img
-                  class="rotate-one-arrow"
-                  src="@/assets/image/ic_paging_one_arrow.png"
-                />
-              </div>
-
-              <div class="rectangle-area" @click="reviewPagingNext(2)">
-                <img
-                  class="rotate-two-arrow"
-                  src="@/assets/image/ic_paging_two_arrow.png"
-                />
               </div>
             </div>
           </div>
@@ -306,6 +201,8 @@ import Header from '../../components/header.vue'
 import PwChangeDialog from '../../components/passwordChangeDialog.vue'
 import messageOneBtnDialog from '~/components/messageOneBtnDialog.vue'
 import messageTwoBtnDialog from '~/components/messageTwoBtnDialog.vue'
+import Moment from 'moment'
+
 export default {
   layout: 'default',
   name: 'IndexPage',
@@ -326,7 +223,7 @@ export default {
       userInfo: '',
       phone: '',
       navigationStatus: false,
-      tabStatus: 1, //1 기본정보, 2 나의 AI 건강설문 결과, 3 구매내역, 4 나의 리뷰
+      tabStatus: 1, //1 기본정보, 2 나의 AI 건강설문 결과, 3 테스트, 4 구매내역, 5 나의 리뷰
       pwChangedialogStatus: false,
       messageOneBtnDialogStatus: false,
       messageTwoBtnDialogStatus: false,
@@ -391,90 +288,18 @@ export default {
       reviewTotalPage: 0,
       reviewShowLimit: 5,
       reviewBlockNum: 0,
-      reviewList: [
-        {
-          title: 'probiotics1',
-          date: '23-09-21',
-          url: require('@/assets/image/img_medicine_test.png'),
-          rate: 1.2,
-        },
-        {
-          title: 'probiotics2',
-          date: '23-09-21',
-          url: require('@/assets/image/img_medicine_test.png'),
-          rate: 2.2,
-        },
-        {
-          title: 'probiotics3',
-          date: '23-09-21',
-          url: require('@/assets/image/img_medicine_test.png'),
-          rate: 3,
-        },
-        {
-          title: 'probiotics4',
-          date: '23-09-21',
-          url: '',
-          rate: 5,
-        },
-        {
-          title: 'probiotics5',
-          date: '23-09-21',
-          url: require('@/assets/image/img_medicine_test.png'),
-          rate: 4,
-        },
-        {
-          title: 'probiotics6',
-          date: '23-09-21',
-          url: '',
-          rate: 4.2,
-        },
-        {
-          title: 'probiotics7',
-          date: '23-09-21',
-          url: '',
-          rate: 1.2,
-        },
-        {
-          title: 'probiotics8',
-          date: '23-09-21',
-          url: '',
-          rate: 1.2,
-        },
-        {
-          title: 'probiotics9',
-          date: '23-09-21',
-          url: '',
-          rate: 1.2,
-        },
-        {
-          title: 'probiotics10',
-          date: '23-09-21',
-          url: '',
-          rate: 1.2,
-        },
-        {
-          title: 'probiotics11',
-          date: '23-09-21',
-          url: '',
-          rate: 1.2,
-        },
-        {
-          title: 'probiotics12',
-          date: '23-09-21',
-          url: '',
-          rate: 1.2,
-        },
-        {
-          title: 'probiotics13',
-          date: '23-09-21',
-          url: '',
-          rate: 1.2,
-        },
-      ],
       filterReviewList: [],
+      userInfo:[],
+      buyList:[],
+      healthCheckList:[],
+      testList:[],
+      reviewList:[],
+      hostUrl:null,
     }
   },
   mounted() {
+
+    this.hostUrl = process.env.BASE_URL
     if (typeof window !== undefined) {
       this.userInfo =
         localStorage != undefined
@@ -488,72 +313,116 @@ export default {
           this.loginType = 1
       }
     }
-
-    //나의 AI 건강설문 결과
-    this.consultingListSlice()
-    this.consultingTotalPage = Math.ceil(
-      this.consultingList.length / this.showLimit
-    )
-
-    if (this.consultingTotalPage > 10) {
-      this.consultingPagingNum = 10
-    } else {
-      this.consultingPagingNum = this.consultingTotalPage
-    }
-
-    if (this.consultingTotalPage > 10) {
-      if (this.consultingTotalPage - this.consultingCurrentPageNum > 10) {
-        this.consultingBlockNum = this.consultingCurrentPageNum
-      } else {
-        this.consultingBlockNum = this.consultingTotalPage - 9
-      }
-    } else {
-      this.consultingBlockNum = 1
-    }
-
-    //구매 내역
-    this.paymentListSlice()
-    this.paymentTotalPage = Math.ceil(this.paymentList.length / this.showLimit)
-
-    if (this.paymentTotalPage > 10) {
-      this.paymentPagingNum = 10
-    } else {
-      this.paymentPagingNum = this.paymentTotalPage
-    }
-
-    if (this.paymentTotalPage > 10) {
-      if (this.paymentTotalPage - this.paymentCurrentPageNum > 10) {
-        this.paymentBlockNum = this.paymentCurrentPageNum
-      } else {
-        this.paymentBlockNum = this.paymentTotalPage - 9
-      }
-    } else {
-      this.paymentBlockNum = 1
-    }
-
-    //나의 리뷰
-    this.reviewListSlice()
-    this.reviewTotalPage = Math.ceil(
-      this.reviewList.length / this.reviewShowLimit
-    )
-
-    if (this.reviewTotalPage > 10) {
-      this.reviewPagingNum = 10
-    } else {
-      this.reviewPagingNum = this.reviewTotalPage
-    }
-
-    if (this.reviewTotalPage > 10) {
-      if (this.reviewTotalPage - this.reviewCurrentPageNum > 10) {
-        this.reviewBlockNum = this.reviewCurrentPageNum
-      } else {
-        this.reviewBlockNum = this.reviewTotalPage - 9
-      }
-    } else {
-      this.reviewBlockNum = 1
-    }
+    this.userInfo = JSON.parse(localStorage.getItem('userInfo'))
+    this.tabStatus = this.$route.query.tab
+    this.selectItem()
   },
   methods: {
+    async selectItem(){
+        let conditions = [{ q: '=', f: 'b_no', v: this.userInfo.no },{ "op":"AND",q: '=', f: 'status', v: 7 },{ q: 'order', f: 'cd', o: 'ASC' }]
+        let orderFormBody = {
+            table: 'orders',
+            conditions: conditions,
+        }
+        try {
+            await this.$axios
+            .post('/api/select', orderFormBody)
+            .then((res) => {
+                console.log('조회된 데이터:: ', (res.data))
+                if (res.data.length > 0) {
+                    this.buyList = res.data
+                    for(let one of this.buyList){
+                        let productList = JSON.parse(one.order_list)
+                        if(productList.length>1){
+                            one['title'] = JSON.parse(productList[0]).product.name + "외 "+(productList.length-1)+"건"
+                        }else{
+                            one['title'] = JSON.parse(productList[0]).product.name
+                        }
+                        one.cd = Moment(one.cd).format('YYYY-MM-DD HH:mm')
+                    }
+                } 
+            })
+            .catch(function (error) {
+                console.log('에러!!', error)
+            })
+        } catch (err) {
+            console.log('err!! : ' + err)
+        }
+        let sConditions = [{ q: '=', f: 'u_no', v: this.userInfo.no },{ q: 'order', f: 'cd', o: 'ASC' }]
+        let surveyFormBody = {
+            table: 'survey_result',
+            conditions: sConditions,
+        }
+        try {
+            await this.$axios
+            .post('/api/select', surveyFormBody)
+            .then((res) => {
+                console.log('조회된 데이터:: ', (res.data))
+                if (res.data.length > 0) {
+                    this.healthCheckList = res.data
+                    for(let one of this.healthCheckList){
+                        one.title = Moment(one.cd).format('YY년MM월DD일')+"의 건강설문 결과"
+                        one.cd = Moment(one.cd).format('YYYY-MM-DD HH:mm')
+                    }
+                } 
+            })
+            .catch(function (error) {
+                console.log('에러!!', error)
+            })
+        } catch (err) {
+            console.log('err!! : ' + err)
+        }
+        let tConditions = [{ q: '=', f: 'u_no', v: this.userInfo.no },{ q: 'order', f: 'cd', o: 'ASC' }]
+        let testFormBody = {
+            table: 'test_result',
+            conditions: tConditions,
+        }
+        try {
+            await this.$axios
+            .post('/api/select', testFormBody)
+            .then((res) => {
+                console.log('조회된 데이터:: ', (res.data))
+                if (res.data.length > 0) {
+                    this.testList = res.data
+                    for(let one of this.testList){
+                        one.cd = Moment(one.cd).format('YYYY-MM-DD HH:mm')
+                    }
+                } 
+            })
+            .catch(function (error) {
+                console.log('에러!!', error)
+            })
+        } catch (err) {
+            console.log('err!! : ' + err)
+        }
+        let rConditions = [{ q: '=', f: 'u_no', v: this.userInfo.no },{ q: 'order', f: 'cd', o: 'ASC' }]
+        let reviewFormBody = {
+            table: 'review',
+            conditions: rConditions,
+        }
+        try {
+            await this.$axios
+            .post('/api/select', reviewFormBody)
+            .then((res) => {
+                console.log('조회된 데이터:: ', (res.data))
+                if (res.data.length > 0) {
+                    this.reviewList = res.data
+                    for(let one of this.reviewList){
+                        
+                        one.i_list = JSON.parse(one.i_list)
+                        console.log(one.i_list)
+                        one.cd = Moment(one.cd).format('YYYY-MM-DD HH:mm')
+                    }
+                } 
+            })
+            .catch(function (error) {
+                console.log('에러!!', error)
+            })
+        } catch (err) {
+            console.log('err!! : ' + err)
+        }
+
+    },
     onChildUpdate(newValue) {
       console.log('index', newValue)
       this.navigationStatus = newValue
@@ -596,266 +465,6 @@ export default {
     pwChangeDialogSendData(nowPw, newPw, confirmPw) {
       this.changePw = newPw
       this.checkPw(nowPw)
-    },
-    consultingListSlice() {
-      //showLimit 만큼 보여주기
-      let result = this.consultingList.filter(
-        (item, index) =>
-          index >= (this.consultingCurrentPageNum - 1) * this.showLimit &&
-          index < this.consultingCurrentPageNum * this.showLimit
-      )
-      this.filterConsultingList = result
-    },
-    paymentListSlice() {
-      let result = this.paymentList.filter(
-        (item, index) =>
-          index >= (this.paymentCurrentPageNum - 1) * this.showLimit &&
-          index < this.paymentCurrentPageNum * this.showLimit
-      )
-      this.filterPaymentList = result
-    },
-    reviewListSlice() {
-      let result = this.reviewList.filter(
-        (item, index) =>
-          index >= (this.reviewCurrentPageNum - 1) * this.reviewShowLimit &&
-          index < this.reviewCurrentPageNum * this.reviewShowLimit
-      )
-      this.filterReviewList = result
-    },
-    consultingPagingNumClick(num) {
-      //페이징 번호 클릭 시 처리
-      if (this.consultingCurrentPageNum < num) {
-        if (this.consultingTotalPage - num >= 10) {
-          if (num + 9 > this.consultingTotalPage) {
-            this.consultingBlockNum = this.consultingTotalPage - 9
-          } else {
-            if (this.consultingTotalPage > 10) {
-              this.consultingBlockNum = num
-            } else {
-              this.consultingBlockNum = 1
-            }
-          }
-        } else {
-          if (this.consultingTotalPage > 10) {
-            this.consultingBlockNum = this.consultingTotalPage - 9
-          } else {
-            this.consultingBlockNum = 1
-          }
-        }
-      } else {
-        if (num - 10 > 1) {
-          if (num + 9 > this.consultingTotalPage) {
-            this.consultingBlockNum = this.consultingTotalPage - 9
-          } else {
-            if (this.consultingTotalPage > 10) {
-              this.consultingBlockNum = num
-            } else {
-              this.consultingBlockNum = 1
-            }
-          }
-        } else {
-          this.consultingBlockNum = 1
-        }
-      }
-
-      this.consultingCurrentPageNum = num
-
-      this.consultingListSlice()
-    },
-    paymentPagingNumClick(num) {
-      if (this.paymentCurrentPageNum < num) {
-        if (this.paymentTotalPage - num >= 10) {
-          if (num + 9 > this.paymentTotalPage) {
-            this.paymentBlockNum = this.paymentTotalPage - 9
-          } else {
-            if (this.paymentTotalPage > 10) {
-              this.paymentBlockNum = num
-            } else {
-              this.paymentBlockNum = 1
-            }
-          }
-        } else {
-          if (this.paymentTotalPage > 10) {
-            this.paymentBlockNum = this.paymentTotalPage - 9
-          } else {
-            this.paymentBlockNum = 1
-          }
-        }
-      } else {
-        if (num - 10 > 1) {
-          if (num + 9 > this.paymentTotalPage) {
-            this.paymentBlockNum = this.paymentTotalPage - 9
-          } else {
-            if (this.paymentTotalPage > 10) {
-              this.paymentBlockNum = num
-            } else {
-              this.paymentBlockNum = 1
-            }
-          }
-        } else {
-          this.paymentBlockNum = 1
-        }
-      }
-
-      this.paymentCurrentPageNum = num
-
-      this.paymentListSlice()
-    },
-
-    reviewPagingNumClick(num) {
-      if (this.reviewCurrentPageNum < num) {
-        if (this.reviewTotalPage - num >= 10) {
-          if (num + 9 > this.reviewTotalPage) {
-            this.reviewBlockNum = this.reviewTotalPage - 9
-          } else {
-            if (this.reviewTotalPage > 10) {
-              this.reviewBlockNum = num
-            } else {
-              this.reviewBlockNum = 1
-            }
-          }
-        } else {
-          if (this.reviewTotalPage > 10) {
-            this.reviewBlockNum = this.reviewTotalPage - 9
-          } else {
-            this.reviewBlockNum = 1
-          }
-        }
-      } else {
-        if (num - 10 > 1) {
-          if (num + 9 > this.reviewTotalPage) {
-            this.reviewBlockNum = this.reviewTotalPage - 9
-          } else {
-            if (this.reviewTotalPage > 10) {
-              this.reviewBlockNum = num
-            } else {
-              this.reviewBlockNum = 1
-            }
-          }
-        } else {
-          this.reviewBlockNum = 1
-        }
-      }
-
-      this.reviewCurrentPageNum = num
-
-      this.reviewListSlice()
-    },
-
-    consultingPagingNext(status) {
-      //status 1 - 한번이동 2 - 끝까지이동
-      if (status == 1) {
-        if (this.consultingCurrentPageNum < this.consultingTotalPage) {
-          if (this.consultingCurrentPageNum == this.consultingBlockNum) {
-            if (this.consultingTotalPage > 10) {
-              if (
-                this.consultingTotalPage - this.consultingCurrentPageNum >
-                10
-              ) {
-                this.consultingBlockNum += 1
-              } else {
-                this.consultingBlockNum = this.consultingTotalPage - 9
-              }
-            }
-          }
-          this.consultingCurrentPageNum += 1
-        }
-      } else {
-        if (this.consultingTotalPage > 10) {
-          this.consultingBlockNum = this.consultingTotalPage - 9
-        }
-        this.consultingCurrentPageNum = this.consultingTotalPage
-      }
-      this.consultingListSlice()
-    },
-    paymentPagingNext(status) {
-      //status 1 - 한번이동 2 - 끝까지이동
-      if (status == 1) {
-        if (this.paymentCurrentPageNum < this.paymentTotalPage) {
-          if (this.paymentCurrentPageNum == this.paymentBlockNum) {
-            if (this.paymentTotalPage > 10) {
-              if (this.paymentTotalPage - this.paymentCurrentPageNum > 10) {
-                this.paymentBlockNum += 1
-              } else {
-                this.paymentBlockNum = this.paymentTotalPage - 9
-              }
-            }
-          }
-          this.paymentCurrentPageNum += 1
-        }
-      } else {
-        if (this.paymentTotalPage > 10) {
-          this.paymentBlockNum = this.paymentTotalPage - 9
-        }
-        this.paymentCurrentPageNum = this.paymentTotalPage
-      }
-      this.paymentListSlice()
-    },
-    reviewPagingNext(status) {
-      //status 1 - 한번이동 2 - 끝까지이동
-      if (status == 1) {
-        if (this.reviewCurrentPageNum < this.reviewTotalPage) {
-          if (this.reviewCurrentPageNum == this.reviewBlockNum) {
-            if (this.reviewTotalPage > 10) {
-              if (this.reviewTotalPage - this.reviewCurrentPageNum > 10) {
-                this.reviewBlockNum += 1
-              } else {
-                this.reviewBlockNum = this.reviewTotalPage - 9
-              }
-            }
-          }
-          this.reviewCurrentPageNum += 1
-        }
-      } else {
-        if (this.reviewTotalPage > 10) {
-          this.reviewBlockNum = this.reviewTotalPage - 9
-        }
-        this.reviewCurrentPageNum = this.reviewTotalPage
-      }
-      this.reviewListSlice()
-    },
-    consultingPagingPrev(status) {
-      //status 1 - 한번이동 2 - 끝까지이동
-      if (status == 1) {
-        if (this.consultingCurrentPageNum > 1) {
-          if (this.consultingCurrentPageNum == this.consultingBlockNum) {
-            this.consultingBlockNum -= 1
-          }
-          this.consultingCurrentPageNum -= 1
-        }
-      } else {
-        this.consultingBlockNum = 1
-        this.consultingCurrentPageNum = 1
-      }
-      this.consultingListSlice()
-    },
-    paymentPagingPrev(status) {
-      if (status == 1) {
-        if (this.paymentCurrentPageNum > 1) {
-          if (this.paymentCurrentPageNum == this.paymentBlockNum) {
-            this.paymentBlockNum -= 1
-          }
-          this.paymentCurrentPageNum -= 1
-        }
-      } else {
-        this.paymentBlockNum = 1
-        this.paymentCurrentPageNum = 1
-      }
-      this.paymentListSlice()
-    },
-    reviewPagingPrev(status) {
-      if (status == 1) {
-        if (this.reviewCurrentPageNum > 1) {
-          if (this.reviewCurrentPageNum == this.reviewBlockNum) {
-            this.reviewBlockNum -= 1
-          }
-          this.reviewCurrentPageNum -= 1
-        }
-      } else {
-        this.reviewBlockNum = 1
-        this.reviewCurrentPageNum = 1
-      }
-      this.reviewListSlice()
     },
     logoutClick() {
       this.messageTwoBtnDialogStatus = false
@@ -1002,6 +611,7 @@ export default {
       font-family: 'score7';
     }
     .tab-group {
+      min-width: 990px;
       margin-top: 70px;
       display: flex;
       * + * {
@@ -1343,6 +953,7 @@ export default {
         font-family: 'score7';
       }
       .tab-group {
+        min-width: 0px;
         width: 100%;
         margin-top: 30px;
         display: flex;

@@ -172,7 +172,7 @@ export default {
       if (this.userInfo == undefined) {
         this.$router.push({ name: 'Login' })
       } else {
-        this.$router.push({ name: 'myInfo' })
+        this.$router.push({ name: 'myInfo', query:{tab: 1} })
       }
     },
     cartClick() {
@@ -296,6 +296,7 @@ export default {
       display: flex;
       flex: 1;
       margin-top: 58px;
+      min-width: 980px;
       .menu-2step-area {
         display: flex;
         flex-direction: row;
@@ -469,6 +470,7 @@ export default {
         justify-content: center;
         background-color: #fff;
         width: 100%;
+        min-width: 100%;
         margin-top: 0px;
         .menu-2step-area {
           display: flex;

@@ -262,39 +262,6 @@ export default {
             acceptmethod:"centerCd(Y)"
         }
         this.onOrderRequest()
-        //주문 하기 (완료 후 저장)
-        // try {
-        //     await this.$axios.get('/pay/payWeb', {params:formBody}).then((res) => {
-        //         if(res.data!=null){
-        //             let data = res.data
-        //             console.log(data)
-        //              const form = document.createElement('form');
-        //                 form.method = 'post';
-        //                 form.acceptCharset = 'UTF-8';
-        //                 form.hidden = true;
-        //                 form.id = 'pay_form';
-
-        //                 for (let o in data) {
-        //                     const input = document.createElement('input');
-        //                     input.name = o;
-        //                     input.value = data[o];
-        //                     input.hidden = true;
-        //                     form.appendChild(input);
-        //                 }
-
-        //                 document.querySelector('#shop-page').appendChild(form);
-        //                 window.INIStdPay.pay('pay_form');
-
-
-        //                 // form.submit();
-
-        //                 //document.querySelector('#shop-page').submit()
-                        
-        //                //this.inicisFormStatus = setInterval(this.checkInicisFormStatus, 1000);
-        //         }
-        //     })
-        //     .catch(function (error) { console.log('에러!!', error) })
-        // } catch (err) { console.log('err!! : ' + err) }
     },
 
     onChildUpdate(newValue) {
@@ -313,11 +280,26 @@ export default {
 
 
     onOrderRequest(){
-        if (this.isMobile()) return this.mobileOrder();
-        else return this.webOrder();
+        if(this.receiptName!=''&&this.receiptPhone!=''&&this.Postcode!=''&&this.roadAddress!=''&&this.receiptDetailAddress!=''){
+            if (this.isMobile()) return this.mobileOrder();
+            else return this.webOrder();
+        }else{
+            alert('받는 사람 정보를 모두 기입해주세요.')
+        }
     },
     newOrder(){
-        let formBody={}
+        let formBody={
+            user_info: this.userInfo,
+            order_info: this.orders,
+            r_name: this.receiptName,
+            r_phone: this.receiptPhone,
+            r_address: this.roadAddress,
+            r_address_detail: this.receiptDetailAddress,
+            d_demand: this.receiptDescript,
+            total_price: (this.dPrice+this.oPrice),
+            delivery_fee: this.dPrice
+        }
+        //새로운 주문 생성 (주문이 성공되기 전 단계에서 주문을 생성함)
         return this.$axios.get('/inicis/new/order', {params:formBody}).then((res) => {
             return res
         })
@@ -326,8 +308,6 @@ export default {
         let info = await this.newOrder()
         const data = info.data.data
         const status = info.data.status
-
-        console.log(status)
         if (status === 'success') {
             this.orderNumber = data;
             try {
@@ -421,10 +401,52 @@ export default {
         }
     },
 
-    fetchOrderInfo(){
+    async fetchOrderInfo(){
         clearInterval(this.inicisFormStatus);
         console.log('fetch')
         //주문된 상품으로 넘길지를 여기서 결정
+        let conditions = [{ q: '=', f: 'o_id', v: this.orderNumber }]
+        let formBody = {
+            table: 'orders',
+            conditions: conditions,
+        }
+        try {
+            await this.$axios
+            .post('/api/select', formBody).then((res) => {
+                console.log('조회된 데이터:: ', (res.data))
+                if (res.data.length > 0) {
+                    let orderPay = res.data[0]
+                    if(orderPay.status==7){
+                        //장바구니 비우기
+
+                        //구매내역 화면으로 넘기기
+                        this.$router.push({path: '/myInfo', query: {tab: 4} })
+                    }else{
+                        let param = {  }
+                        param['no']=orderPay.no
+                        param['table']="orders"
+                        param['status'] = 6
+                        param['conditions'] = [{q:"=",f:"no",v:orderPay.no}]
+                        console.log(param)
+                        this.$axios.post('/admin/update', param).then((res) => {
+                            console.log('업데이트 결과값: ', res.data)
+                        }).catch((err) => {
+                            console.log('에러!!', err)
+                        }) 
+                    }
+                }else{
+                    console.log(res.data.length)
+                }
+            })
+            .catch(function (error) {
+                console.log('에러!!', error)
+            })
+        } catch (err) {
+            console.log('err!! : ' + err)
+        }
+
+
+
 
         //생성된 주문의 결제 정보가 존재한다면 주문 완료 화면으로 이동
 
