@@ -172,7 +172,7 @@ export default {
                     res.data.filter(item => {
                         if (item.image != null && item.image != undefined) item.image = JSON.parse(item.image)
                         if (item.hashtag != null && item.hashtag != undefined && item.hashtag != '') item.hashtag = JSON.parse(item.hashtag)
-                        item.cd = moment(item.cd).format('YYYY-MM-DD')
+                        item.cd = moment(item.cd).format('YYYY-MM-DD hh:mm')
                     })
                     this.items = res.data
                     // this.items.push(...res.data)

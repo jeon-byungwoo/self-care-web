@@ -411,18 +411,16 @@ export default {
                 conditions.push({"q":"order","f":"no","o":"ASC"})
                 let param = {table:"product", conditions: conditions}
                 await this.$axios.post('/admin/select', param).then(async res => {
-                    console.log(res.data)
                     if (res.data.length > 0) {
                         res.data.filter(item => {
-                            if (item.i_r != null && item.i_r != undefined) item.i_r = JSON.parse(item.i_r)
-                            if (item.i_list != null && item.i_list != undefined) item.i_list = JSON.parse(item.i_list)
-                            if (item.hashtag != null && item.hashtag != undefined && item.hashtag != '') item.hashtag = JSON.parse(item.hashtag)
-                            item.cd = moment(item.cd).format('YYYY-MM-DD')
+                            if (!this.validateVariableExist(item.i_r)) item.i_r = JSON.parse(item.i_r)
+                            if (!this.validateVariableExist(item.i_list)) item.i_list = JSON.parse(item.i_list)
+                            if (!this.validateVariableExist(item.hashtag)) item.hashtag = JSON.parse(item.hashtag)
                         })
                         this.productObj = res.data[0]
                         this.$refs.editor.setContents(this.productObj.content, 'product')
                         if (this.productObj.i_r?.length > 0) {
-                            this.profileImage = this.productObj.i_r[0]
+                            this.profileImage = await this.convertUrl(this.profileImageUrl(this.productObj.i_r[0]))
                         }
                         if (this.productObj.i_list?.length > 0) {
                             for (const i of this.productObj.i_list) {
@@ -522,16 +520,17 @@ export default {
             for (const [key, value] of Object.entries(param)) {    
                 if (this.validateVariableExist(value)) delete param[key]
             }
-            this.$axios.post('/admin/insert', param).then(res => {
+            this.$axios.post('/admin/insert', param).then(async res => {
                 if (res.data.length > 0) {
                     this.productObj = _.cloneDeep(res.data[0])
                     if (!this.validateVariableExist(this.profileImage)) {
-                        this.updateImage(this.profileImage, 'i_r')
+                        await this.updateImage(this.profileImage, 'i_r')
                     } 
                     if (!this.validateVariableExist(this.files)) {
-                        this.updateImage(this.files, 'i_list')
+                        await this.updateImage(this.files, 'i_list')
                     }
                     alert('저장되었습니다.')
+                    this.clickCancel()
                 }
             }).catch(err => {
                 console.log("insert err : ", err)
@@ -561,14 +560,15 @@ export default {
                 if (this.validateVariableExist(value)) delete param[key]
             }
 
-            this.$axios.post('/admin/update', param).then(res => {
+            this.$axios.post('/admin/update', param).then(async res => {
                 if (!this.validateVariableExist(this.profileImage)) {
-                    this.updateImage(this.profileImage, 'i_r')
+                    await this.updateImage(this.profileImage, 'i_r')
                 } 
                 if (!this.validateVariableExist(this.files)) {
-                    this.updateImage(this.files, 'i_list')
+                    await this.updateImage(this.files, 'i_list')
                 }
                 alert('저장되었습니다.')
+                this.clickCancel()
             }).catch(err => {
                 console.log("update err : ", err)
             })
@@ -589,7 +589,6 @@ export default {
             await this.$axios.post('/admin/updateMultipart', formData, {
                 headers: {'Content-Type': 'multipart/form-data'}
             }).then(res => {
-                console.log("multipart response : ", res);
             }).catch(err => {
                 console.log("multipart error : ", err);
             })

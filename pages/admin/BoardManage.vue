@@ -76,7 +76,7 @@ export default {
             
             await this.$axios.post('/admin/select', param).then(res => {
                 res.data.filter(item => {
-                    item.cd = moment(item.cd).format('YYYY-MM-DD')
+                    item.cd = moment(item.cd).format('YYYY-MM-DD hh:mm')
                 })
                 this.items = res.data
             }).catch(err => {

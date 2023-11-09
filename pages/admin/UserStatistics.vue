@@ -289,7 +289,7 @@ export default {
                             else {this.ageData[10]++}
                         }
 
-                        user.cd = moment(user.cd).format('YYYY-MM-DD')
+                        user.cd = moment(user.cd).format('YYYY-MM-DD hh:mm')
 
                         this.dateLabelList.forEach((label, index) => {
                             if (label == user.cd) {
@@ -540,7 +540,7 @@ export default {
             var currentDate = moment(startDate);
             var stopDate = moment(stopDate);
             while (currentDate <= stopDate) {
-                dateArray.push( moment(currentDate).format('YYYY-MM-DD') )
+                dateArray.push( moment(currentDate).format('YYYY-MM-DD hh:mm') )
                 currentDate = moment(currentDate).add(1, 'days');
             }
             return dateArray;

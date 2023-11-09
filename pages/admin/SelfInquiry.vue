@@ -74,7 +74,7 @@ export default {
                 res.data.filter(item => {
                     if (item.image != null && item.image != undefined) item.image = JSON.parse(item.image)
                     if (item.survey != null && item.survey != undefined) item.survey = JSON.parse(item.survey)
-                    item.cd = moment(item.cd).format('YYYY-MM-DD')
+                    item.cd = moment(item.cd).format('YYYY-MM-DD hh:mm')
                 })
                 this.items = res.data
             }).catch(err => {

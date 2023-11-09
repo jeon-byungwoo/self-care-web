@@ -124,7 +124,7 @@ export default {
                     if (item.i_r != null && item.i_r != undefined) item.i_r = JSON.parse(item.i_r)
                     if (item.i_list != null && item.i_list != undefined) item.i_list = JSON.parse(item.i_list)
                     if (item.hashtag != null && item.hashtag != undefined && item.hashtag != '') item.hashtag = JSON.parse(item.hashtag)
-                    item.cd = moment(item.cd).format('YYYY-MM-DD')
+                    item.cd = moment(item.cd).format('YYYY-MM-DD hh:mm')
                 })
                 this.items = res.data
             }).catch(err => {

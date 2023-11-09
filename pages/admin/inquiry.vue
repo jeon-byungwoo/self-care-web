@@ -251,7 +251,8 @@ export default {
             param['no']=this.editedItem.no
             param['table']="inquiry"
             param['status'] = this.editedItem.status
-            param['conditions'] = [{q:"==",f:"no",v:this.editedItem.no}]
+            param['conditions'] = [{q:"=",f:"no",v:this.editedItem.no}]
+            console.log("this.updatedItem : ", param)
             await this.$axios.post('/admin/update', param).then((res) => {
                 console.log('업데이트 결과값: ', res.data)
             }).catch((err) => {
@@ -266,7 +267,7 @@ export default {
             param['no']=this.editedItem.no
             param['table']="inquiry"
             param['status'] = "삭제"
-            param['conditions'] = [{q:"==",f:"no",v:this.editedItem.no}]
+            param['conditions'] = [{q:"=",f:"no",v:this.editedItem.no}]
             await this.$axios.post('/admin/update', param).then((res) => {
                 console.log('업데이트 결과값: ', res.data)
             }).catch((err) => {

@@ -9,11 +9,6 @@
                     <h5 >프로필 이미지</h5>
                     <v-row class="ma-0 pa-0 align-center justify-center" >
                         <v-avatar width="150" height="150" style="border: 1px solid #000">
-                            <!-- <div style="width: 150px; height: 150px; background-size: cover; background-position: center; "
-                                v-if="userObj.profile_url != null && userObj.profile_url != undefined"
-                                :style="{backgroundImage: 'url('+profileImageUrl(userObj.profile_url)+')'}"
-                            >
-                            </div> -->
                             <v-img 
                                 :src="userObj.profile_url != null ? profileImageUrl(userObj.profile_url) : ''"
                                 contain
@@ -459,15 +454,15 @@ export default {
                 conditions.push({"q":"=","f":"no","v":this.obj.no})
                 conditions.push({"q":"order","f":"no","o":"ASC"})
                 let param = {table:"user", conditions: conditions}
-                await this.$axios.post('/admin/select', param).then(res => {
-                    console.log(res.data)
+                await this.$axios.post('/admin/select', param).then(async res => {
                     if (res.data.length > 0) {
                         res.data.filter(item => {
-                            if (item.profile_url != null && item.profile_url != undefined) 
+                            if (!this.validateVariableExist(item.profile_url)) 
                                 item.profile_url = JSON.parse(item.profile_url)?.length > 0 ? JSON.parse(item.profile_url)[0] : null
                         })
                         this.userObj = res.data[0]
-                        this.profileImage = this.userObj.profile_url
+                        if (!this.validateVariableExist(this.userObj.profile_url))
+                            this.profileImage = await this.convertUrl(this.profileImageUrl(this.userObj.profile_url))
                         this.pw = this.userObj.pw
                         if (this.userObj.city != null) {
                             this.selectTown(this.userObj.city)
@@ -506,9 +501,6 @@ export default {
                 console.log("err : ", err)
             })
         },
-        setProfile() {
-            console.log("프로필 클릭")
-        },
         clickDone() {
             if (this.userObj.type == '이메일') {
                 if (this.userObj.pw != this.pw) {
@@ -517,6 +509,7 @@ export default {
                         return
                     }
                 }
+                
             }
             if (this.userObj.no != null || this.userObj.no != undefined) {
                 this.update()
@@ -535,7 +528,6 @@ export default {
             this.userObj.profile_url = URL.createObjectURL(this.profileImage)
         },
         profileImageUrl(url) {
-            console.log(this.hostUrl + url)
             if(url.includes('http')) return url
             else return this.hostUrl+url
         },
@@ -580,14 +572,14 @@ export default {
             for (const [key, value] of Object.entries(param)) {    
                 if (this.validateVariableExist(value)) delete param[key]
             }
-            console.log(param)
-            this.$axios.post('/admin/insert', param).then(res => {
+            this.$axios.post('/admin/insert', param).then(async res => {
                 if (res.data.length > 0) {
                     this.userObj = _.cloneDeep(res.data[0])
                     if (!this.validateVariableExist(this.profileImage)) {
-                        this.updateImage(this.profileImage, 'profile_url')
+                        await this.updateImage(this.profileImage, 'profile_url')
                     } 
                     alert('저장되었습니다.')
+                    this.clickCancel()
                 }
             }).catch(err => {
                 console.log("insert err : ", err)
@@ -633,11 +625,13 @@ export default {
             for (const [key, value] of Object.entries(param)) {    
                 if (this.validateVariableExist(value)) delete param[key]
             }
-            this.$axios.post('/admin/update', param).then(res => {
+            this.$axios.post('/admin/update', param).then(async res => {
                 if (!this.validateVariableExist(this.profileImage)) {
-                    this.updateImage(this.profileImage, 'profile_url')
-                }
+                    await this.updateImage(this.profileImage, 'profile_url')
+                } 
                 alert('저장되었습니다.')
+                this.clickCancel()
+                
             }).catch(err => {
                 console.log("update err : ", err)
             })
@@ -658,7 +652,8 @@ export default {
             await this.$axios.post('/admin/updateMultipart', formData, {
                 headers: {'Content-Type': 'multipart/form-data'}
             }).then(res => {
-                console.log("multipart response : ", res);
+                // alert('저장되었습니다.');
+                // this.clickCancel()
             }).catch(err => {
                 console.log("multipart error : ", err);
             })
@@ -679,7 +674,15 @@ export default {
             return this.$axios.post('/admin/select', param).then(res => {
                 return res.data.length > 0
             })
-        }
+        },
+        async convertUrl(url){
+            const response =  await fetch(url);
+            const data =  await response.blob();
+            const ext = await url.split(".").pop();
+            const filename = await url.split("/").pop()
+            const metadata = { type: `image/${ext}` };
+            return new File([data], filename, metadata);
+        },
     }
 }
 </script>

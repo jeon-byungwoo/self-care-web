@@ -408,20 +408,19 @@ export default {
                 conditions.push({"q":"=","f":"no","v":this.obj.no})
                 conditions.push({"q":"order","f":"no","o":"ASC"})
                 let param = {table:"test", conditions: conditions}
-                await this.$axios.post('/admin/select', param).then(res => {
+                await this.$axios.post('/admin/select', param).then(async res => {
                     
                     if (res.data.length > 0) {
                         res.data.filter(item => {
-                            if (item.image != null && item.image != undefined) item.image = JSON.parse(item.image)
-                            if (item.survey != null && item.survey != undefined) item.survey = JSON.parse(item.survey)
-                            item.cd = moment(item.cd).format('YYYY-MM-DD')
+                            if (!this.validateVariableExist(item.image)) item.image = JSON.parse(item.image)
+                            if (!this.validateVariableExist(item.survey)) item.survey = JSON.parse(item.survey)
                         })
                         this.inquiryObj = res.data[0]
                         
                         this.$refs.editor.setContents(this.inquiryObj.content, 'test')
                         this.$refs.explanationEditor.setContents(this.inquiryObj.survey_comment, 'test')
                         if (this.inquiryObj.image?.length > 0)
-                            this.profileImage = this.inquiryObj.image[0]
+                            this.profileImage = await this.convertUrl(this.profileImageUrl(this.inquiryObj.image[0]))
                         
                         this.surveyList = this.inquiryObj.survey
                     }
@@ -448,12 +447,10 @@ export default {
             this.inquiryObj.image = URL.createObjectURL(this.profileImage)
         },
         profileImageUrl(url) {
-            console.log(this.hostUrl + url)
             if(url.includes('http')) return url
             else return `${this.hostUrl}${url}`
         },
         deleteInquiryImage(index) {
-            console.log(index, "삭제")
             this.profileImage = null
             this.inquiryObj.image = null
         },
@@ -474,15 +471,15 @@ export default {
             for (const [key, value] of Object.entries(param)) {    
                 if (this.validateVariableExist(value)) delete param[key]
             }
-            console.log(param)
-            this.$axios.post('/admin/insert', param).then(res => {
+            this.$axios.post('/admin/insert', param).then(async res => {
                 
                 if (res.data.length > 0) {
                     this.inquiryObj.no = res.data[0].no
                     if (!this.validateVariableExist(this.profileImage)) {
-                        this.updateImage(this.profileImage, 'image')
+                        await this.updateImage(this.profileImage, 'image')
                     }
                     alert('저장되었습니다.')
+                    this.clickCancel()
                 }
             }).catch(err => {
                 console.log("insert err : ", err)
@@ -507,12 +504,11 @@ export default {
             if (this.profileImage == null) {
                 param.image = null
             }
-            console.log(param)
-            this.$axios.post('/admin/update', param).then(res => {
+            this.$axios.post('/admin/update', param).then(async res => {
                 if (!this.validateVariableExist(this.profileImage)) {
-                    this.updateImage(this.profileImage, 'image')
-                }
-                alert('저장되었습니다.')
+                    await this.updateImage(this.profileImage, 'image')
+                } 
+                alert('저장되었습니다.'); this.clickCancel()
             }).catch(err => {
                 console.log("update err : ", err)
             })
@@ -545,20 +541,7 @@ export default {
             }
             await this.$axios.post('/admin/updateMultipart', formData, {
                 headers: {'Content-Type': 'multipart/form-data'}
-            }).then(res => {
-                console.log("multipart response : ", res);
-                if (res.data.length > 0) {
-                    res.data.filter(item => {
-                        if (item.image != null && item.image != undefined) item.image = JSON.parse(item.image)[0]
-                        if (item.survey != null && item.survey != undefined) item.survey = JSON.parse(item.survey)
-                        item.cd = moment(item.cd).format('YYYY-MM-DD')
-                    })
-                    this.inquiryObj = _.cloneDeep(res.data[0])
-                    if (this.inquiryObj.image?.length > 0)
-                        this.profileImage = this.inquiryObj.image[0]
-                    this.surveyList = this.inquiryObj.survey
-                }
-                // this.inquiryObj = _.cloneDeep(res.data[0])
+            }).then(async res => {
             }).catch(err => {
                 console.log("multipart error : ", err);
             })

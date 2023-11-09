@@ -119,7 +119,6 @@ export default {
                 conditions.push({"q":"order","f":"no","o":"ASC"})
                 let param = {table:"board", conditions: conditions}
                 await this.$axios.post('/admin/select', param).then(res => {
-                    console.log(res.data)
                     if (res.data.length > 0) {
                         this.boardObj = res.data[0]
                         this.$refs.editor.setContents(this.boardObj.content, 'board')
@@ -184,7 +183,6 @@ export default {
             for (const [key, value] of Object.entries(param)) {    
                 if (this.validateVariableExist(value)) delete param[key]
             }
-            console.log(param)
             this.$axios.post('/admin/update', param).then(res => {
                 console.log(res.data)
                 this.clickCancel()

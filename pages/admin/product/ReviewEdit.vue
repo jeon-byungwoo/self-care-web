@@ -134,11 +134,9 @@ export default {
                 conditions.push({"q":"order","f":"no","o":"ASC"})
                 let param = {table:"review", conditions: conditions}
                 await this.$axios.post('/admin/select', param).then(async res => {
-                    console.log(res.data)
                     if (res.data.length > 0) {
                         res.data.filter(item => {
-                            if (item.i_list != null && item.i_list != undefined) item.i_list = JSON.parse(item.i_list)
-                            item.cd = moment(item.cd).format('YYYY-MM-DD')
+                            if (!this.validateVariableExist(item.i_list)) item.i_list = JSON.parse(item.i_list)
                         })
                         this.reviewObj = res.data[0]
                         if (this.reviewObj.i_list?.length > 0) {
@@ -179,9 +177,6 @@ export default {
         fileAdded() {
             Object.assign(this.currFiles, this.prevFiles)
 
-            console.log(this.currFiles)
-            console.log(this.files)
-            
             if (this.files.length + this.currFiles.length <= 4) {
                 this.files.push(...this.currFiles)
                 this.prevFiles = this.files
@@ -207,7 +202,8 @@ export default {
             this.showDetailPopup = !this.showDetailPopup
         },
         deleteMagazineImage(index) {
-            console.log(index, "삭제")
+            this.profileImage = null
+            this.reviewObjObj.image = null
         },
         validateVariableExist(value) {
             return (value == null || value == undefined || value == '' || value == '[]')
@@ -224,13 +220,13 @@ export default {
             for (const [key, value] of Object.entries(param)) {    
                 if (this.validateVariableExist(value)) delete param[key]
             }
-            console.log(param)
-            this.$axios.post('/admin/update', param).then(res => {
-                console.log(res.data)
+            this.$axios.post('/admin/update', param).then(async res => {
                 if (!this.validateVariableExist(this.files)) {
-                    this.updateImage(this.files, 'i_list')
+                    await this.updateImage(this.files, 'i_list')
                 }
                 alert('저장되었습니다.')
+                this.clickCancel()
+                
             }).catch(err => {
                 console.log("update err : ", err)
             })
@@ -265,7 +261,7 @@ export default {
             await this.$axios.post('/admin/updateMultipart', formData, {
                 headers: {'Content-Type': 'multipart/form-data'}
             }).then(res => {
-                console.log("multipart response : ", res);
+                
             }).catch(err => {
                 console.log("multipart error : ", err);
             })

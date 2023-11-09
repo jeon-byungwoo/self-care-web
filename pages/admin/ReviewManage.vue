@@ -134,7 +134,7 @@ export default {
                 console.log("res.data : ", res.data)
                 res.data.filter(item => {
                     if (item.i_list != null && item.i_list != undefined) item.i_list = JSON.parse(item.i_list)
-                    item.cd = moment(item.cd).format('YYYY-MM-DD')
+                    item.cd = moment(item.cd).format('YYYY-MM-DD hh:mm')
                 })
                 this.items = res.data
                 console.log(this.items)

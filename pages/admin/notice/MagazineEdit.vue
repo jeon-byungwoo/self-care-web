@@ -172,19 +172,16 @@ export default {
                 conditions.push({"q":"=","f":"no","v":this.obj.no})
                 conditions.push({"q":"order","f":"no","o":"ASC"})
                 let param = {table:"magazine", conditions: conditions}
-                await this.$axios.post('/admin/select', param).then(res => {
-                    console.log(res.data)
+                await this.$axios.post('/admin/select', param).then(async res => {
                     if (res.data.length > 0) {
                         res.data.filter(item => {
-                            if (item.image != null && item.image != undefined) item.image = JSON.parse(item.image)
-                            if (item.hashtag != null && item.hashtag != undefined && item.hashtag != '') item.hashtag = JSON.parse(item.hashtag)
-                            item.cd = moment(item.cd).format('YYYY-MM-DD')
+                            if (!this.validateVariableExist(item.image)) item.image = JSON.parse(item.image)
+                            if (!this.validateVariableExist(item.hashtag)) item.hashtag = JSON.parse(item.hashtag)
                         })
                         this.magazineObj = res.data[0]
                         this.$refs.editor.setContents(this.magazineObj.content, 'magazine')
                         if (this.magazineObj.image?.length > 0)
-                            this.profileImage = this.magazineObj.image[0]
-                        console.log(this.profileImage)
+                            this.profileImage = await this.convertUrl(this.profileImageUrl(this.magazineObj.image[0]))
                         this.hashtags = this.magazineObj.hashtag
                     }
                 }).catch(err => {
@@ -213,7 +210,6 @@ export default {
             else return this.hostUrl+url
         },
         deleteMagazineImage(index) {
-            console.log(index, "삭제")
             this.profileImage = null
             this.magazineObj.image = null
         },
@@ -232,15 +228,14 @@ export default {
             for (const [key, value] of Object.entries(param)) {    
                 if (this.validateVariableExist(value)) delete param[key]
             }
-            console.log(param)
-            this.$axios.post('/admin/insert', param).then(res => {
-                console.log(res.data)
+            this.$axios.post('/admin/insert', param).then(async res => {
                 if (res.data.length > 0) {
                     this.magazineObj.no = res.data[0].no
                     if (!this.validateVariableExist(this.profileImage)) {
-                        this.updateImage(this.profileImage, 'image')
-                    }
+                        await this.updateImage(this.profileImage, 'image')
+                    } 
                     alert('저장되었습니다.')
+                    this.clickCancel()
                 }
             }).catch(err => {
                 console.log("insert err : ", err)
@@ -259,11 +254,12 @@ export default {
             for (const [key, value] of Object.entries(param)) {    
                 if (this.validateVariableExist(value)) delete param[key]
             }
-            this.$axios.post('/admin/update', param).then(res => {
+            this.$axios.post('/admin/update', param).then(async res => {
                 if (!this.validateVariableExist(this.profileImage)) {
-                    this.updateImage(this.profileImage, 'image')
-                }
+                    await this.updateImage(this.profileImage, 'image')
+                } 
                 alert('저장되었습니다.')
+                this.clickCancel()
             }).catch(err => {
                 console.log("update err : ", err)
             })
@@ -297,16 +293,9 @@ export default {
 
             await this.$axios.post('/admin/updateMultipart', formData, {
                 headers: {'Content-Type': 'multipart/form-data'}
-            }).then(res => {
-                if (res.data.length > 0) {
-                    res.data.filter(item => {
-                        if (item.image != null && item.image != undefined) item.image = JSON.parse(item.image)
-                        item.cd = moment(item.cd).format('YYYY-MM-DD')
-                    })
-                    this.magazineObj = _.cloneDeep(res.data[0])
-                    if (this.magazineObj.image?.length > 0)
-                        this.profileImage = this.magazineObj.image[0]
-                }
+            }).then(async res => {
+                // alert('저장되었습니다.'); 
+                // this.clickCancel()
             }).catch(err => {
                 console.log("multipart error : ", err);
             })

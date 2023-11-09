@@ -5,6 +5,9 @@
         class="elevation-1"
         @click:row="editItem"
     >
+    <template v-slot:[`item.index`]="{item}">
+        {{typeObjs.filter((obj) => {obj.value == item.index})?.text}}
+    </template>
     <template v-slot:top>
         <v-toolbar flat>
             <v-toolbar-title>자주묻는질문 관리</v-toolbar-title>
@@ -228,6 +231,7 @@ export default {
             param['title'] = this.editedItem.title
             param['content'] = this.editedItem.content
             param['reply'] = this.editedItem.reply
+            param['status'] = '활성'
             await this.$axios.post('/admin/insert', param).then((res) => {
                 console.log('인서트 결과값: ', res.data)
             }).catch((err) => {
@@ -245,7 +249,10 @@ export default {
             param['title'] = this.editedItem.title
             param['content'] = this.editedItem.content
             param['reply'] = this.editedItem.reply
-            param['conditions'] = [{q:"==",f:"no",v:this.editedItem.no}]
+            param['status'] = this.editedItem.status
+            param['index'] = this.editedItem.index
+            param['conditions'] = [{q:"=",f:"no",v:this.editedItem.no}]
+            console.log(param)
             await this.$axios.post('/admin/update', param).then((res) => {
                 console.log('업데이트 결과값: ', res.data)
             }).catch((err) => {
@@ -260,7 +267,7 @@ export default {
             param['no']=this.editedItem.no
             param['table']="qna"
             param['status'] = "삭제"
-            param['conditions'] = [{q:"==",f:"no",v:this.editedItem.no}]
+            param['conditions'] = [{q:"=",f:"no",v:this.editedItem.no}]
             await this.$axios.post('/admin/update', param).then((res) => {
                 console.log('업데이트 결과값: ', res.data)
             }).catch((err) => {

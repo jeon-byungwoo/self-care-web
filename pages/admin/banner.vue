@@ -229,14 +229,24 @@ export default {
             this.showDetailPopup = !this.showDetailPopup
         },
         selectFile() {
-            this.editedItem.image = URL.createObjectURL(this.profileImage)
+            console.log("this.profileImage : ", this.profileImage)
+            if (this.profileImage != null)
+                this.editedItem.image = URL.createObjectURL(this.profileImage)
+            else this.editedItem.image = null
         },
         selectFileM() {
-            this.editedItem.m_image = URL.createObjectURL(this.profileImageM)
+            if (this.profileImageM != null)
+                this.editedItem.m_image = URL.createObjectURL(this.profileImageM)
+            else this.editedItem.m_image = null
         },
-        editItem (item) {
+        async editItem (item) {
             this.editedIndex = this.itemList.indexOf(item)
             this.editedItem = Object.assign({}, item)
+            console.log(item)
+            if (item.image.length > 0) this.profileImage = await this.convertUrl(this.profileImageUrl(item.image[0]))
+            else this.editedItem.image = null
+            if (item.m_image.length > 0) this.profileImageM = await this.convertUrl(this.profileImageUrl(item.m_image[0]))
+            else this.editedItem.m_image = null
             this.dialog = true
         },
         async deleteItemConfirm () {
@@ -250,6 +260,7 @@ export default {
             this.editedIndex = -1
             this.profileImage = null
             this.profileImageM = null
+            console.log("close : ", this.editedItem)
         },
         closeDelete () {
             this.dialog = false
@@ -266,7 +277,6 @@ export default {
                 await this.selecItem()
                 this.close()
             }else {
-                console.log('inserrt')
                 await this.insertItem()
                 await this.selecItem()
                 this.close()
@@ -284,19 +294,20 @@ export default {
                     ]
                 }
             await this.$axios.post('/admin/select', param).then((res) => {
+                
                 if(Object.keys(res.data).length > 0) {
                     this.itemList = res.data
-                    this.itemList.forEach((data)=>{
-                        if (data.image != null && data.image != undefined) {
+                    this.itemList.forEach(async (data)=>{
+                        if (!this.validateVariableExist(data.image)) {
                             data.image = JSON.parse(data.image)
-                            this.profileImage = data.image[0]
                         }
-                        if (data.m_image != null && data.m_image != undefined) {
+                        if (!this.validateVariableExist(data.m_image)) {
                             data.m_image = JSON.parse(data.m_image)
-                            this.profileImageM = data.m_image[0]
                         }
                         data.cd = Moment(data.cd).format('YYYY-MM-DD HH:mm')
                         data.ed = Moment(data.ed).format('YYYY-MM-DD HH:mm')
+
+                        console.log(this.profileImage)
                     })
                 }
             }).catch((err) => {
@@ -315,15 +326,19 @@ export default {
             param['type'] = this.editedItem.type
             param['status'] = '활성'
             // param['image'] = this.editedItem.image
-            await this.$axios.post('/admin/insert', param).then((res) => {
-                console.log('인서트 결과값: ', res.data)
+            if (this.profileImage == null) {param['image'] = JSON.stringify([])}
+            if (this.profileImageM == null) {param['m_image'] = JSON.stringify([])}
+            
+            await this.$axios.post('/admin/insert', param).then(async (res) => {
                 this.editedItem.no = res.data[0].no
                 if (!this.validateVariableExist(this.profileImage)) {
-                    this.updateImage(this.profileImage, 'image')
+                    await this.updateImage(this.profileImage, 'image')
                 }
                 if (!this.validateVariableExist(this.profileImageM)) {
-                    this.updateImage(this.profileImageM, 'm_image')
+                    await this.updateImage(this.profileImageM, 'm_image')
                 }
+                alert('저장되었습니다.')
+                
             }).catch((err) => {
                 console.log('에러!!', err)
             })
@@ -334,22 +349,24 @@ export default {
             //param setting
             let param = {  }
             param['no']=this.editedItem.no
-            param['table']="banner"
+            param['table'] = 'banner'
             param['priority'] = this.editedItem.priority
             param['title'] = this.editedItem.title
             param['content'] = this.editedItem.content
             param['type'] = this.editedItem.type
             param['status'] = '활성'
             // param['image'] = this.editedItem.image
-            param['conditions'] = [{q:"==",f:"no",v:this.editedItem.no}]
-            await this.$axios.post('/admin/update', param).then((res) => {
-                console.log('업데이트 결과값: ', res.data)
+            param['conditions'] = [{q:"=",f:"no",v:this.editedItem.no}]
+            console.log("updateItem : ", param)
+            await this.$axios.post('/admin/update', param).then(async (res) => {
+                console.log(this.profileImage, this.profileImageM)
                 if (!this.validateVariableExist(this.profileImage)) {
-                    this.updateImage(this.profileImage, 'image')
+                    await this.updateImage(this.profileImage, 'image')
                 }
                 if (!this.validateVariableExist(this.profileImageM)) {
-                    this.updateImage(this.profileImageM, 'm_image')
+                    await this.updateImage(this.profileImageM, 'm_image')
                 }
+                alert('저장되었습니다.')
             }).catch((err) => {
                 console.log('에러!!', err)
             }) 
@@ -357,45 +374,54 @@ export default {
 
         // delete db
         async deleteItem() {
-            console.log('tdsds')
             let param = {  }
             param['no']=this.editedItem.no
             param['table']="banner"
             param['status'] = "삭제"
-            param['conditions'] = [{q:"==",f:"no",v:this.editedItem.no}]
+            param['conditions'] = [{q:"=",f:"no",v:this.editedItem.no}]
             await this.$axios.post('/admin/update', param).then((res) => {
-                console.log('업데이트 결과값: ', res.data)
+                
             }).catch((err) => {
                 console.log('에러!!', err)
             })
-        }
-        ,async updateImage(obj, text) {
+        },
+        async updateImage(obj, text) {
             let formData = new FormData()
             formData.append('imageParam', text)
             formData.append('no', this.editedItem.no)
             formData.append('table', 'banner')
             formData.append('conditions', JSON.stringify([{q:"=",f:"no",v:this.editedItem.no}]))
-            if (obj.length > 0) {
+            if (Array.isArray(obj)) {
                 for (const file of obj) 
                     formData.append('files', file)
             } else {
-                formData.append('files', obj)
+                if (obj != null)
+                    formData.append('files', obj)
             }
-
+            
             await this.$axios.post('/admin/updateMultipart', formData, {
                 headers: {'Content-Type': 'multipart/form-data'}
             }).then(res => {
-                console.log("multipart response : ", res);
+                console.log("updateImage")
             }).catch(err => {
                 console.log("multipart error : ", err);
             })
         },
         profileImageUrl(url) {
+            if (!url) return null
             if(url.includes('http')) return url
             else return this.hostUrl+url
         },
         validateVariableExist(value) {
-            return (value == null || value == undefined || value == '' || value == '[]')
+            return (value == null || value == undefined || value == '' || value == '[]' || value == [])
+        },
+        async convertUrl(url){
+            const response =  await fetch(url);
+            const data =  await response.blob();
+            const ext = await url.split(".").pop();
+            const filename = await url.split("/").pop()
+            const metadata = { type: `image/${ext}` };
+            return new File([data], filename, metadata);
         },
     }
 }
