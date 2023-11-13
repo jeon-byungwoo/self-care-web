@@ -133,7 +133,6 @@ export default {
   },
   methods: {
     tabStatusChange(tabVal){
-        console.log('rrre')
         this.tabStatus = tabVal
         this.selectItem()
     },

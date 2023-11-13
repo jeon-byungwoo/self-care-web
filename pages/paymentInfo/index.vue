@@ -239,28 +239,6 @@ export default {
   },
   methods: {
     async buy(){
-        let dateMili = new Date()
-        //주문 정보
-        let formBody = {
-            version:"1.0",
-            gopaymethod:"Card:Directbank:vbank",
-            mid:"bustownco1",
-            oid:"1234",
-            price:1000,
-            timestamp:Date.now(),
-            use_chkfake:"Y",
-            currency:"WON",
-            signkey:"a2hsb3FUd2hwbDJVRmtkbG9DNlZmQT09",
-            goodname:"상품의 이름름",
-            buyername:"구매자의 이름름",
-            buyertel:"01011112222",
-            buyeremail:"email@test.com",
-            returnUrl:"'https://self-care.kr/pay/returnOrder'",
-            closeUrl:"'https://self-care.kr/pay/closeOrder'",
-            payViewType: 'popup',
-            popupUrl: `https://self-care.kr/pay/payWeb`,
-            acceptmethod:"centerCd(Y)"
-        }
         this.onOrderRequest()
     },
 

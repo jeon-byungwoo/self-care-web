@@ -326,8 +326,8 @@ export default {
             param['type'] = this.editedItem.type
             param['status'] = '활성'
             // param['image'] = this.editedItem.image
-            if (this.profileImage == null) {param['image'] = JSON.stringify([])}
-            if (this.profileImageM == null) {param['m_image'] = JSON.stringify([])}
+            // if (this.profileImage == null) {param['image'] = JSON.stringify([])}
+            // if (this.profileImageM == null) {param['m_image'] = JSON.stringify([])}
             
             await this.$axios.post('/admin/insert', param).then(async (res) => {
                 this.editedItem.no = res.data[0].no
@@ -357,7 +357,6 @@ export default {
             param['status'] = '활성'
             // param['image'] = this.editedItem.image
             param['conditions'] = [{q:"=",f:"no",v:this.editedItem.no}]
-            console.log("updateItem : ", param)
             await this.$axios.post('/admin/update', param).then(async (res) => {
                 console.log(this.profileImage, this.profileImageM)
                 if (!this.validateVariableExist(this.profileImage)) {

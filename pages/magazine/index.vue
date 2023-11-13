@@ -278,7 +278,7 @@ export default {
       }
       .magazine-item-bottom-group {
         width: 100%;
-        height: 177px;
+        height: 208px;
         border-left-width: 1px;
         border-right-width: 1px;
         border-bottom-width: 1px;
@@ -289,10 +289,6 @@ export default {
         padding: 20px 40px 26px 40px;
         display: flex;
         flex-direction: column;
-        white-space: nowrap ;
-        word-break: normal;
-        overflow: hidden ;
-        text-overflow: ellipsis;
       }
 
       .magazine-item-bottom-title {
@@ -307,8 +303,11 @@ export default {
         font-family: 'score2';
         color: #333333;
         margin-top: 14px;
-        overflow: hidden;
-      }
+          overflow: hidden;
+          display: -webkit-box;
+          -webkit-line-clamp: 2; /* number of lines to show */
+          line-clamp: 2; 
+          -webkit-box-orient: vertical;      }
 
       .magazine-item-bottom-share-explore-group {
         display: flex;

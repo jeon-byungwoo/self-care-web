@@ -281,7 +281,7 @@
                     </v-row>
                     <v-row class="ma-2 pa-0 align-center">
                         <v-col class="ma-0 pa-0" cols="12" sm="4" md="4">
-                            <div >www.self-care.co.kr/</div>
+                            <div >셀프케어 소개링크</div>
                         </v-col>
                         <v-col class="ma-0 pa-0" cols="12" sm="5" md="5">
                             <v-text-field
@@ -660,7 +660,7 @@ export default {
         },
         async copyUrl() {
             if (this.userObj.url != null || this.userObj.url != '' || this.userObj.url != undefined) {
-                let text = "www.self-care.co.kr/" + this.userObj.url
+                let text = "www.self-care.co.kr/healthConsulting/" + this.userObj.url
                 await window.navigator.clipboard.writeText(text).then(() => {
                     alert('복사되었습니다.')
                 })

@@ -33,7 +33,7 @@
             </div>
 
             <div class="select-area">
-              <select>
+              <select v-model="selectedDetailItem" @change="onSelectCategoryDetail()">
                 <option 
                 v-for="(item, index) in selectedCategoryDetailList"
                 :key="index" 
@@ -46,7 +46,7 @@
 
             <div style="flex: 1"></div>
 
-            <input class="input-search" placeholder="검색" />
+            <input v-model="searchText" class="input-search" placeholder="검색" @keypress.enter="search()" />
           </div>
         </div>
 
@@ -55,7 +55,7 @@
             v-for="(item, index) in productList"
             :key="index"
             class="item-body"
-            @click="productDetailClick"
+            @click="productDetailClick()"
           >
             <div class="item-img-group">
               <img
@@ -65,41 +65,41 @@
               />
             </div>
 
-            <div class="item-title">{{ item.title }}</div>
-            <div v-if="item.sale.length > 0" class="item-basic-group">
+            <div class="item-title">{{ item.name }}</div>
+            <div v-if="item.p_discount?.length > 0" class="item-basic-group">
               <div class="item-basic-price">
-                <s>{{ item.price }}</s>
+                <s>{{ item.p_discount }}</s>
               </div>
               <div class="item-basic-price-won">원</div>
             </div>
 
             <div class="item-total-group">
-              <div v-if="item.sale.length > 0" class="item-sale-group">
+              <div v-if="item.p_discount_per != 0" class="item-sale-group">
                 <div class="item-sale">
-                  {{ item.sale }}
+                  {{ item.p_discount_per }}
                 </div>
                 <div class="item-sale-percent">%</div>
               </div>
 
               <div class="item-total-price-group">
-                <div class="item-total-price">{{ item.price }}</div>
+                <div class="item-total-price">{{ item.p_sell }}</div>
                 <div class="item-total-price-won">원</div>
               </div>
             </div>
-            <div v-if="item.rating.length > 0" class="item-rating-review-group">
+            <div v-if="item.rating != 0" class="item-rating-review-group">
               <img
                 class="item-rating-img"
                 src="@/assets/image/ic_star.png"
                 draggable="false"
               />
               <div class="item-rating-review">
-                {{ item.rating + ' 후기 ' + item.reviewCnt }}
+                {{ item.rating + ' 후기 ' + item.review_cnt }}
               </div>
             </div>
 
-            <div class="item-tag-group">
-              <div
-                v-for="(item1, index1) in item.tags"
+            <div class="item-tag-group" v-if="item.hashtag!=null">
+              <div 
+                v-for="(item1, index1) in JSON.parse(item.hashtag)"
                 :key="index1"
                 class="item-tag"
               >
@@ -131,6 +131,7 @@ export default {
   },
   mounted() {
     this.selectedCategoryDetailList = this.categoryDetailList
+    this.selectItem()
   },
 
   methods: {
@@ -146,10 +147,50 @@ export default {
             }
             
         }
-        console.log(this.selectedItem)
+    },
+
+    onSelectCategoryDetail(){
+        this.selectedCategory = ''
+        if(this.selectedDetailItem!='전체'){
+            this.selectedCategory = this.selectedDetailItem
+        }
+        
+        this.selectItem()
+    },
+    search(){
+        this.selectItem()
+    },
+    async selectItem(){
+        this.productList = []
+        let conditions = [{ q: '=', f: 'part', v: 2 }]
+        if(this.selectedCategory!=''){
+            conditions.push({ op:"AND", q: 'JSON_CONTAINS', f: 'category_detail', v: this.selectedCategory })
+        }
+        if(this.searchText!=''){
+            conditions.push({ op:"AND", q: 'like', f: 'name', str: this.searchText })
+        }
+        let formBody = {
+        table: 'product',
+        conditions: conditions,
+      }
+      try {
+        await this.$axios
+          .post('/api/select', formBody)
+          .then((res) => {
+            console.log('조회된 데이터:: ', (res.data))
+            if (res.data.length > 0) {
+                this.productList = res.data
+                
+            } 
+          })
+          .catch(function (error) {
+            console.log('에러!!', error)
+          })
+      } catch (err) {
+        console.log('err!! : ' + err)
+      }
     },
     detailClick() {
-      console.log('click')
       this.$router.push({ name: 'magazineDetail' })
     },
     insuranceDialogClose() {
@@ -182,6 +223,8 @@ export default {
       petInsuranceDialogStatus: false,
       petReceiptDialogStatus: false,
       navigationStatus: false,
+      selectedCategory:'',
+      searchText:'',
       categoryList:[
         {text:'전체'},
         {text:'강아지'},
@@ -190,6 +233,7 @@ export default {
         {text:'기타반려동물'}
       ],
       categoryDetailList:[
+        {category: '전체',text:'전체'},
         {category: '강아지',text:'강아지사료'},
         {category: '강아지',text:'강아지간식'},
         {category: '강아지',text:'강아지영양제'},
@@ -212,6 +256,7 @@ export default {
         {category: '기타반려동물',text:'곤충용품'},
         ],
         selectedItem:'전체',
+        selectedDetailItem:'전체',
         selectedCategoryDetailList:[],
       productList: [
       ],

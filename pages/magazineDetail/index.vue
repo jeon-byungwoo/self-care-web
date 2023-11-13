@@ -2,7 +2,7 @@
   <div>
     <Header> </Header>
     <div class="main-content-wrap">
-        <div class="main-title-wrap">SlefCare Magazine</div>
+        <div class="main-title-wrap">SelfCare Magazine</div>
             <div class="magazine-wrap">
                 <div class="title-area" v-if="magazine.image!=null" >
                     <div class="item-tag-group"

@@ -72,10 +72,11 @@
               </div>
             </div>
             <div class="title-text">·&nbsp;품종 및 이름을 입력해주세요.</div>
-            <input class="input-form" placeholder="로이/푸들" />
+            <input v-model="petName" class="input-form" placeholder="로이/푸들" />
             <div class="title-text">·&nbsp;성별을 선택 해 주세요.</div>
             <div class="gender-select-area">
               <div
+              @click="selectGender(1)"
                 :class="
                   selectedGender == 1 ? 'gender-select' : 'gender-not-select'
                 "
@@ -83,6 +84,7 @@
                 남
               </div>
               <div
+              @click="selectGender(2)"
                 :class="
                   selectedGender == 2 ? 'gender-select' : 'gender-not-select'
                 "
@@ -93,17 +95,21 @@
             <div class="title-text">
               ·&nbsp;아이가 태어난 날짜를 알려주세요.
             </div>
-            <input class="input-form" placeholder="출생 일자(200101)" />
+            <input v-model="petBirth" class="input-form" placeholder="출생 일자(200101)" />
           </div>
           <div class="right-area">
             <div class="bg-area">
               <div class="title-text">·&nbsp;거주 지역을 선택해주세요.</div>
               <div class="input-half-group">
                 <div class="coalition-area">
-                  <select>
-                    <option value="" selected disabled>시/도</option>
-                    <option>가</option>
-                    <option>나</option>
+                  <select v-model="selectedCity" @change="onChangeCity()">
+                    <option 
+                        v-for="(item, index) in cityList"
+                        :key="index" 
+                        >{{
+                            item.ko
+                        }}
+                    </option>
                   </select>
                   <img
                     class="right-arrow"
@@ -113,9 +119,13 @@
                 <div class="coalition-area">
                   <select>
                     <!-- <optgroup label="군/구"> -->
-                    <option value="" selected disabled>군/구</option>
-                    <option>가</option>
-                    <option>나</option>
+                    <option 
+                        v-for="(item, index) in townList"
+                        :key="index" 
+                        >{{
+                            item.ko
+                        }}
+                    </option>
                     <!-- </optgroup> -->
                   </select>
                   <img
@@ -125,12 +135,12 @@
                 </div>
               </div>
               <div class="title-text">·&nbsp;보호자명</div>
-              <input class="input-form" placeholder="성명" />
+              <input v-model="ownerName" class="input-form" placeholder="성명" />
               <div class="title-text">·&nbsp;보호자 연락처</div>
-              <input class="input-form" placeholder="연락처('-'없이 입력)" />
+              <input  v-model="ownerPhone" class="input-form" placeholder="연락처('-'없이 입력)" />
             </div>
 
-            <div class="insurance-btn" @click="sendData">문의하기</div>
+            <div class="insurance-btn" @click="sendData()">문의하기</div>
           </div>
         </div>
       </div>
@@ -145,9 +155,80 @@ export default {
     return {
       selectedPet: 1,
       selectedGender: 1,
+      selectedCity:'서울시',
+      selectedTown:'군/구',
+      cityList:[],
+      townList:[],
     }
   },
+  mounted() {
+    this.selectCity()
+  },
+
   methods: {
+    selectGender(i){
+        this.selectedGender = i
+    },
+    onChangeCity(){
+        this.selectTown()
+    },
+    async selectCity(){
+      let conditions = [{ q: '=', f: '1', v: 1 }]
+      let formBody = {
+        table: 'city',
+        conditions: conditions,
+      }
+      try {
+        await this.$axios
+          .post('/api/select', formBody)
+          .then((res) => {
+            console.log('조회된 데이터:: ', (res.data))
+            if (res.data.length > 0) {
+                this.cityList = res.data
+                
+            } 
+          })
+          .catch(function (error) {
+            console.log('에러!!', error)
+          })
+      } catch (err) {
+        console.log('err!! : ' + err)
+      }
+    },
+    async selectTown(){
+        this.townList=[]
+        console.log(this.selectedCity)
+        
+        let cityNo = 0
+        for(let i of this.cityList){
+            if(i.ko==this.selectedCity){
+                cityNo = i.no
+            }
+        }
+
+
+      let conditions = [{ q: '=', f: 'city_no', v: cityNo }]
+      let formBody = {
+        table: 'town',
+        conditions: conditions,
+      }
+      try {
+        await this.$axios
+          .post('/api/select', formBody)
+          .then((res) => {
+            console.log('조회된 데이터:: ', (res.data))
+            if (res.data.length > 0) {
+                this.townList = res.data
+                
+            } 
+          })
+          .catch(function (error) {
+            console.log('에러!!', error)
+          })
+      } catch (err) {
+        console.log('err!! : ' + err)
+      }
+    },
     preClick() {},
     petSelect() {
       console.log('click')
@@ -155,7 +236,24 @@ export default {
     closeAction() {
       this.$emit('closeAction', true)
     },
-    sendData() {
+    async sendData() {
+      let formBody = {
+        
+        target: 'town',
+        content
+
+      }
+      try {
+        await this.$axios
+          .post('/api/sendEmail', formBody)
+          .then((res) => {
+          })
+          .catch(function (error) {
+            console.log('에러!!', error)
+          })
+      } catch (err) {
+        console.log('err!! : ' + err)
+      }
       this.$emit('sendData')
     },
   },
@@ -308,6 +406,7 @@ export default {
         margin-left: 10px;
       }
       .gender-select {
+      cursor: pointer;
         width: 120px;
         height: 40px;
         font-size: 18px;
@@ -320,6 +419,7 @@ export default {
         border-radius: 20px;
       }
       .gender-not-select {
+        cursor: pointer;
         width: 120px;
         height: 40px;
         font-size: 18px;
@@ -549,6 +649,7 @@ export default {
           margin-left: 10px;
         }
         .gender-select {
+            cursor: pointer;
           width: 120px;
           height: 40px;
           font-size: 16px;
@@ -561,6 +662,7 @@ export default {
           border-radius: 20px;
         }
         .gender-not-select {
+            cursor: pointer;
           width: 120px;
           height: 40px;
           font-size: 16px;

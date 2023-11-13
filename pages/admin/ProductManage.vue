@@ -38,9 +38,12 @@
             <template v-slot:[`item.alive`]="{item}">
                 <div class="text-center">{{item.alive == 0 ? '비활성' : '활성'}}</div>
             </template>
+            <template v-slot:[`item.part`]="{item}">
+                <div class="text-center">{{item.part == 1 ? '일반' : '펫'}}</div>
+            </template>
             <template v-slot:[`item.i_r`]="{item}">
                 <img 
-                    v-if="item.i_r.length > 0"
+                    v-if="item.i_r?.length > 0"
                     class="product_main_image"
                     :src="imgRequire(item.i_r[0])"
                 />
@@ -82,6 +85,7 @@ export default {
             items: [],
             headers: [
                 {text:"No", value: "no", align: "center"},
+                {text:"분류", value: "part", align: "center"},
                 {text:"상태", value: "alive", align: "center"},
                 {text:"대표이미지", value: "i_r", align: "center"},
                 {text:"해시태그", value: "hashtag", align: "center"},
