@@ -92,8 +92,30 @@
                     </div>
                 </v-col>
             </v-row>
-            <v-row class="ma-0 pa-0 align-end justify-space-between">
+            <v-row class="ma-0 pa-0 align-center my-2" >
                 <v-col cols="12" sm="3" md="3" class="ma-0 pa-0">
+                    <h5>상품구분</h5>
+                    <v-btn-toggle 
+                        v-model="productObj.part"
+                        mandatory
+                        dense
+                        rounded
+                    >
+                        <v-btn 
+                            v-for="(obj, index) in partObj"
+                            :key="index"
+                            :color="color"
+                            :value="obj.value"
+                            :outlined="obj.value != productObj.part"
+                            class="px-3"
+                            :class="obj.value != productObj.part ? 'black--text' : 'white--text'"
+                        >
+                            {{obj.text}}
+                        </v-btn>
+                    </v-btn-toggle>
+                </v-col>
+                <v-col cols="12" sm="3" md="3" class="ma-0 pa-0">
+                    <h5>활성 상태</h5>
                     <v-btn-toggle 
                         v-model="productObj.status"
                         mandatory
@@ -107,12 +129,15 @@
                             :value="obj.value"
                             :outlined="obj.value != productObj.status"
                             class="px-3"
+                            :class="obj.value != productObj.status ? 'black--text' : 'white--text'"
                         >
                             {{obj.text}}
                         </v-btn>
                     </v-btn-toggle>
                 </v-col>
-                <v-col cols="12" sm="3" md="3" class="ma-0 pa-0 ml-4">
+            </v-row>
+            <v-row class="ma-0 pa-0 align-end justify-space-between">
+                <v-col cols="12" sm="3" md="3" class="ma-0 pa-0">
                     <h5>상품명</h5>
                     <v-text-field 
                         dense
@@ -125,39 +150,17 @@
                 </v-col>
                 <v-col cols="12" sm="5" md="5" class="ma-0 pa-0 ml-4">
                     <h5>해시태그</h5>
-                    <v-autocomplete
+                    <v-combobox
+                        v-model="productObj.hashtag"
+                        :items="productObj.hashtag"
+                        multiple
                         chips
-                        closable-chips 
+                        closable-chips
+                        clearable
                         dense
                         hide-details
                         outlined
-                        placeholder="해시태그"
-                        clearable
-                        :items="hashtags"
-                        multiple
-                        @keyup.enter="addHashtag"
-                        v-model="productObj.hashtag"
-                        density="comfortable"
-                    >
-                        <template v-slot:item="{ item, on, attrs }">
-                            <v-list-item v-on="on" v-bind="attrs" >
-                                <v-list-item-content>
-                                    <v-list-item-title>                      
-                                        <v-chip dark color="blue"> {{ item }} </v-chip>
-                                    </v-list-item-title>
-                                </v-list-item-content>
-                            </v-list-item>
-                        </template>
-                        <template v-slot:chip="{ props, item }">
-                            <v-chip
-                                dark
-                                color="blue"
-                                dense
-                                small
-                                v-bind="props"
-                            >{{item}}</v-chip>
-                        </template>
-                    </v-autocomplete>
+                    />
                 </v-col>
                 <v-spacer />
             </v-row>
@@ -246,17 +249,6 @@
                     >
                     </v-text-field>
                 </v-col>
-                <v-col cols="12" sm="3" md="3" class="ma-0 pa-0 ml-4">
-                    <h5>카테고리</h5>
-                    <v-select 
-                        dense
-                        hide-details
-                        outlined
-                        v-model="productObj.category"
-                        :items="categories"
-                    >
-                    </v-select>
-                </v-col>
                 <v-col cols="12" sm="2" md="2" class="ma-0 pa-0 ml-4">
                     <h5>인큐텐 여부</h5>
                     <v-btn-toggle 
@@ -272,17 +264,50 @@
                             :value="obj.value"
                             :outlined="obj.value != productObj.isIQT"
                             class="px-4"
+                            :class="obj.value != productObj.isIQT ? 'black--text' : 'white--text'"
                         >
                             {{obj.text}}
                         </v-btn>
                     </v-btn-toggle>
                 </v-col>
             </v-row>
+            <v-row class="ma-0 pa-0 my-2">
+                <v-col cols="12" sm="5" md="5" class="ma-0 pa-0 mr-4">
+                    <h5>카테고리</h5>
+                    <v-combobox
+                        v-model="productObj.category"
+                        :items="categories"
+                        multiple
+                        chips
+                        closable-chips
+                        clearable
+                        dense
+                        hide-details
+                        outlined
+                    >
+                    </v-combobox>
+                </v-col>
+                <v-col cols="12" sm="5" md="5" class="ma-0 pa-0">
+                    <h5>카테고리 상세</h5>
+                    <v-combobox
+                        v-model="productObj.category_detail"
+                        :items="category_detail"
+                        multiple
+                        chips
+                        closable-chips
+                        clearable
+                        dense
+                        hide-details
+                        outlined
+                    >
+                    </v-combobox>
+                </v-col>
+            </v-row>
             <v-row class="ma-0 pa-0 align-end my-2">
                 <v-col cols="12" sm="6" md="6" class="ma-0 pa-0">
                     <h5>건강설문 추천 사항</h5>
                     <v-combobox
-                        v-model="productObj.survay_recomand"
+                        v-model="productObj.survey_recomand"
                         :items="questionsObj"
                         multiple
                         chips
@@ -336,15 +361,16 @@ export default {
                 delivery_fee: null,
                 delivery_memo: null,
                 hashtag: [],
-                category: null,
+                category: [],
+                category_detail: [],
                 isIQT: null,
-                survay_recomand: [],
+                survey_recomand: [],
                 content: null,
                 alive: 1,
                 status: 1,
-                part: null
+                part: 1
             },
-            color: this.$vuetify.theme.themes.light.basicColor,
+            color: "primary",//this.$vuetify.theme.themes.light.basicColor,
             profileImage: null,
             files: [],
             filesUrls: [],
@@ -357,26 +383,68 @@ export default {
             ],
             hashtags: [],
             categories: [
-                {text: "", value:null},
-                {text: "비타민", value:"vitamin"},
-                {text: "영양제", value:"nutrition"},
-                {text: "개껌", value:"dogsgum"},
+                "헬스케어",
+                "퍼스널케어",
+                "의료기기",
+                "여성건강",
+                "관절,뼈",
+                "피로,활력",
+                "간건강",
+                "변비,장건강",
+                "위,소화",
+                "남성건강",
+                "눈건강",
+                "면역력",
+                "유,소아건강",
+                "다이어트",
+                "노화,황산화",
+                "모발,두피",
+                "강아지",
+                "고양이",
+                "반려동물용품",
+                "기타반려동물",
+            ],
+            category_detail: [
+                "강아지사료",
+                "강아지간식",
+                "강아지영양제",
+                "강아지위생용품",
+                "강아지미용/패션용품",
+                "고양이사료",
+                "고양이간식",
+                "고양이영양제",
+                "고양이위생용품",
+                "고양이미용/패션용품",
+                "반려동물영양제",
+                "장난감/훈련용품",
+                "식기/급수기",
+                "하우스/안전용품",
+                "외출용품",
+                "기타반려동물용품",
+                "햄스터/토끼용품",
+                "조류용품",
+                "관상어용품",
+                "곤충용품",
             ],
             IQTObj: [
                 {text:"해당", value: 1},
                 {text:"미해당", value: 0},
             ],
             questionsObj: [
-                {text:"면역", value:"면역"},
-                {text:"순환", value:"순환"},
-                {text:"소화", value:"소화"},
-                {text:"장관", value:"장관"},
-                {text:"뇌신경", value:"뇌신경"},
-                {text:"호르몬", value:"호르몬"},
-                {text:"호흡", value:"호흡"},
-                {text:"비뇨", value:"비뇨"},
-                {text:"골격", value:"골격"},
-                {text:"피부,모발", value:"피부모발"},
+                "면역",
+                "순환",
+                "소화",
+                "장관",
+                "뇌신경",
+                "호르몬",
+                "호흡",
+                "비뇨",
+                "골격",
+                "피부모발",
+            ],
+            partObj: [
+                {text:"일반 상품", value: 1},
+                {text:"펫 상품", value: 2},
             ],
             content: '',
             hostUrl: process.env.BASE_URL,
@@ -412,12 +480,20 @@ export default {
                 let param = {table:"product", conditions: conditions}
                 await this.$axios.post('/admin/select', param).then(async res => {
                     if (res.data.length > 0) {
+                        console.log(res.data)
                         res.data.filter(item => {
                             if (!this.validateVariableExist(item.i_r)) item.i_r = JSON.parse(item.i_r)
                             if (!this.validateVariableExist(item.i_list)) item.i_list = JSON.parse(item.i_list)
                             if (!this.validateVariableExist(item.hashtag)) item.hashtag = JSON.parse(item.hashtag)
+                            else item.hashtag = null
+                            if (!this.validateVariableExist(item.survey_recomand)) item.survey_recomand = JSON.parse(item.survey_recomand)
+                            if (!this.validateVariableExist(item.category)) item.category = JSON.parse(item.category)
+                            else item.category = null
+                            if (!this.validateVariableExist(item.category_detail)) item.category_detail = JSON.parse(item.category_detail)
+                            else item.category_detail = null
                         })
                         this.productObj = res.data[0]
+                        console.log(this.productObj)
                         this.$refs.editor.setContents(this.productObj.content, 'product')
                         if (this.productObj.i_r?.length > 0) {
                             this.profileImage = await this.convertUrl(this.profileImageUrl(this.productObj.i_r[0]))
@@ -489,15 +565,8 @@ export default {
             }
             else return src
         },
-        addHashtag(event) {
-            if (this.productObj.hashtag == null) this.productObj.hashtag = []
-            if (!this.hashtags.includes(event.target.value)) {
-                this.hashtags.push(event.target.value)
-                this.productObj.hashtag.push(`${event.target.value}`)
-            }
-        },
         validateVariableExist(value) {
-            return (value == null || value == undefined || value == '' || value == '[]')
+            return (value == null || value == undefined || value == '' || value == "[]" || value == [])
         },
         insertProduct () {
             let param = {
@@ -509,9 +578,10 @@ export default {
                 delivery_fee:this.productObj.delivery_fee,
                 delivery_memo:this.productObj.delivery_memo,
                 hashtag:JSON.stringify(this.productObj.hashtag),
-                category:this.productObj.category,
+                category:JSON.stringify(this.productObj.category),
+                category_detail:JSON.stringify(this.productObj.category_detail),
                 isIQT:this.productObj.isIQT,
-                survay_recomand:JSON.stringify(this.productObj.survay_recomand),
+                survey_recomand:JSON.stringify(this.productObj.survey_recomand),
                 content:this.content,
                 part:this.productObj.part,
                 table: 'product',
@@ -547,19 +617,19 @@ export default {
                 delivery_fee:this.productObj.delivery_fee,
                 delivery_memo:this.productObj.delivery_memo,
                 hashtag:JSON.stringify(this.productObj.hashtag),
-                category:this.productObj.category,
+                category:JSON.stringify(this.productObj.category),
+                category_detail:JSON.stringify(this.productObj.category_detail),
                 isIQT:this.productObj.isIQT,
-                survay_recomand:JSON.stringify(this.productObj.survay_recomand),
+                survey_recomand:JSON.stringify(this.productObj.survey_recomand),
                 content:this.content,
                 part:this.productObj.part,
                 table: 'product',
                 conditions:[{q:"=",f:"no",v:this.productObj.no}]
             }
-            
             for (const [key, value] of Object.entries(param)) {    
                 if (this.validateVariableExist(value)) delete param[key]
             }
-
+            console.log(param.hashtag)
             this.$axios.post('/admin/update', param).then(async res => {
                 if (!this.validateVariableExist(this.profileImage)) {
                     await this.updateImage(this.profileImage, 'i_r')
