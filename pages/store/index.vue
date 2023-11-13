@@ -14,25 +14,25 @@
           <div class="tab-group">
             <div
               :class="tabStatus == 1 ? 'selected-tab-btn-area' : 'tab-btn-area'"
-              @click="tabStatus = 1"
+              @click="tabStatusChange(1)"
             >
               전체보기
             </div>
             <div
               :class="tabStatus == 2 ? 'selected-tab-btn-area' : 'tab-btn-area'"
-              @click="tabStatus = 2"
+              @click="tabStatusChange(2)"
             >
               헬스케어
             </div>
             <div
               :class="tabStatus == 3 ? 'selected-tab-btn-area' : 'tab-btn-area'"
-              @click="tabStatus = 3"
+              @click="tabStatusChange(3)"
             >
               퍼스널케어
             </div>
             <div
               :class="tabStatus == 4 ? 'selected-tab-btn-area' : 'tab-btn-area'"
-              @click="tabStatus = 4"
+              @click="tabStatusChange(4)"
             >
               의료기기
             </div>
@@ -42,6 +42,7 @@
               v-for="(item, index) in categories"
               :key="index"
               class="category-area"
+              @click="categoryChange(item)"
             >
               <img class="category-img" :src="item.url" draggable="false" />
               <div class="category-text">{{ item.title }}</div>
@@ -57,7 +58,7 @@
             @click="productDetailClick(item)"
           >
             <div class="item-img-group">
-              <img
+              <img v-if="item.i_r!=null"
                 class="item-img"
                 :src="`${hostUrl+JSON.parse(item.i_r)[0]}`"
                 draggable="false"
@@ -127,6 +128,7 @@ export default {
   data() {
     return {
       tabStatus: 1, //1 전체보기, 2 라이프, 3 영양성분, 4 후기
+      selectedCategory:'',
       hostUrl: process.env.BASE_URL,
       navigationStatus: false,
       categories: [
@@ -189,20 +191,35 @@ export default {
   },
   mounted() {
     this.selectItem()
+    this.selectedCategory =''
   },
   methods: {
-
     productDetailClick(item) {
-      console.log('click')
-      //this.$router.push({ name: 'productDetail' })
         this.$router.push({name: 'productDetail', query: {no: item.no}})
     },
     onChildUpdate(newValue) {
       console.log('index', newValue)
       this.navigationStatus = newValue
     },
+    tabStatusChange(index){
+        this.tabStatus = index
+        if(index == 1) this.selectedCategory = ''
+        if(index == 2) this.selectedCategory = '헬스케어'
+        if(index == 3) this.selectedCategory = '퍼스널케어'
+        if(index == 4) this.selectedCategory = '의료기기'
+        
+        this.selectItem()
+    },
+    categoryChange(item){
+        this.selectedCategory = item.title
+        this.selectItem()
+    },
     async selectItem(){
-        let conditions = [{ q: '=', f: '1', v: 1 }]
+        this.productList = []
+        let conditions = [{ q: '=', f: 'part', v: 1 }]
+        if(this.selectedCategory!=''){
+            conditions.push({ op:"AND", q: 'JSON_CONTAINS', f: 'category', v: this.selectedCategory })
+        }
         let formBody = {
         table: 'product',
         conditions: conditions,

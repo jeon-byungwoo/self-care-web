@@ -22,7 +22,10 @@ export default {
   },
   methods: {
     async selectItem(){
-       
+       //오더 업데이트
+
+       //포인트 지급
+
     }
 
   }

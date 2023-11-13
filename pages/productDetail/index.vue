@@ -132,13 +132,13 @@
               class="review-list-item"
             >
               <div class="review-list-item-name-rating-area">
-                <div class="review-list-item-name">{{ item.name }}</div>
+                <div class="review-list-item-name">{{ item.u_name }}</div>
                 <div style="flex: 1"></div>
                 <div class="review-list-item-rating-area">
                   <img
                     class="review-list-item-rating-img"
                     :src="
-                      item.rating >= 1
+                      item.score >= 1
                         ? require('@/assets/image/ic_star.png')
                         : require('@/assets/image/ic_gray_star.png')
                     "
@@ -146,7 +146,7 @@
                   <img
                     class="review-list-item-rating-img"
                     :src="
-                      item.rating >= 2
+                      item.score >= 2
                         ? require('@/assets/image/ic_star.png')
                         : require('@/assets/image/ic_gray_star.png')
                     "
@@ -154,7 +154,7 @@
                   <img
                     class="review-list-item-rating-img"
                     :src="
-                      item.rating >= 3
+                      item.score >= 3
                         ? require('@/assets/image/ic_star.png')
                         : require('@/assets/image/ic_gray_star.png')
                     "
@@ -162,7 +162,7 @@
                   <img
                     class="review-list-item-rating-img"
                     :src="
-                      item.rating >= 4
+                      item.score >= 4
                         ? require('@/assets/image/ic_star.png')
                         : require('@/assets/image/ic_gray_star.png')
                     "
@@ -170,7 +170,7 @@
                   <img
                     class="review-list-item-rating-img"
                     :src="
-                      item.rating >= 5
+                      item.score >= 5
                         ? require('@/assets/image/ic_star.png')
                         : require('@/assets/image/ic_gray_star.png')
                     "
@@ -182,8 +182,7 @@
                 src="@/assets/image/img_medicine_test.png"
               />
               <div class="review-list-item-contents">
-                첫가입시 주는 쿠폰으로 구독을 시작했어요. 첫가입시 주는 쿠폰
-                으로 구독을 시작했어요.
+                {{item.content}}
               </div>
             </div>
           </div>
@@ -361,12 +360,53 @@ export default {
         await this.$axios
           .post('/api/select', formBody)
           .then((res) => {
-            console.log('조회된 데이터:: ', (res.data))
             if (res.data.length > 0) {
                 this.product = res.data[0]
                 this.curImage = this.hostUrl+JSON.parse(this.product.i_list)[0]
                 this.calPrice = this.product.p_sell
                 this.imgList = JSON.parse(this.product.i_list)
+                this.selectReview()
+            }
+
+          })
+          .catch(function (error) {
+            console.log('에러!!', error)
+          })
+      } catch (err) {
+        console.log('err!! : ' + err)
+      }
+    },
+    maskingName(strName){
+        if (strName.length > 2) {
+            var originName = strName.split('');
+            originName.forEach(function(name, i) {
+            if (i === 0 || i === originName.length - 1) return;
+            originName[i] = '*';
+            });
+            var joinName = originName.join();
+            return joinName.replace(/,/g, '');
+        } else {
+            var pattern = /.$/; // 정규식
+            return strName.replace(pattern, '*');
+        }
+    },
+    async selectReview(){
+      this.reviewList = []
+      let no = this.$route.query.no
+      let conditions = [{ q: '=', f: 'p_no', v: no }]
+      let formBody = {
+        table: 'review',
+        conditions: conditions,
+      }
+      try {
+        await this.$axios
+          .post('/api/select', formBody)
+          .then((res) => {
+            if (res.data.length > 0) {
+                this.reviewList = res.data
+                for(let i of this.reviewList){
+                    i.u_name = this.maskingName(i.u_name)
+                }
             }
 
           })
@@ -692,6 +732,11 @@ export default {
             font-family: 'score2';
             color: #333;
             line-height: 1.4;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2; /* number of lines to show */
+            line-clamp: 2; 
+            -webkit-box-orient: vertical;
           }
         }
       }

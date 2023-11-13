@@ -102,6 +102,11 @@ export default {
             page: 1,
             busy: false,
             hostUrl: process.env.BASE_URL,
+            stateObj: [
+                {text: "라이프", value: 1},
+                {text: "영양성분", value: 2},
+                {text: "후기", value: 3},
+            ]
         }
     },
     mounted() {
@@ -172,7 +177,7 @@ export default {
                     res.data.filter(item => {
                         if (item.image != null && item.image != undefined) item.image = JSON.parse(item.image)
                         if (item.hashtag != null && item.hashtag != undefined && item.hashtag != '') item.hashtag = JSON.parse(item.hashtag)
-                        item.cd = moment(item.cd).format('YYYY-MM-DD hh:mm')
+                        item.cd = moment(item.cd).format('YYYY-MM-DD')
                     })
                     this.items = res.data
                     // this.items.push(...res.data)
