@@ -604,7 +604,7 @@ export default {
       }
       if (this.stepNum != 5) {
         this.stepNum += 1
-        $('html').scrollTop(0)
+        window.scrollTo(0,0)
       } else {
         if(localStorage!= undefined){//로그인 정보가 있는 경우
             //데이터 준비

@@ -1,7 +1,7 @@
 <template>
     <v-card class="ma-0 pa-0 d-flex flex-column">
         <v-toolbar flat class="ma-0 pa-0">
-            <v-toolbar-title>회원 통계</v-toolbar-title>
+            <v-toolbar-title>매출 통계</v-toolbar-title>
         </v-toolbar>
         <v-container class="ma-0 px-4 pt-0 pb-4 " style="min-width:100%">
             <div >검색 기준일</div>
@@ -91,36 +91,29 @@
                     검색
                 </v-btn>
             </v-row>
-            <!-- <v-card class="ma-0 pa-0">
-                <v-card-title >일별 회원가입(기간)</v-card-title>
-                <client-only >
-                    <SignupChart :data="typeData" :options="options" :height="150"/>
-                </client-only>
-                
-            </v-card> -->
             <v-card class="ma-0 pa-0">
-                <v-card-title >일별 회원가입(기간)</v-card-title>
+                <v-card-title >일별 판매 추이</v-card-title>
                 <div class="pa-4">
                     <canvas id="typeChart" style="margin-bottom:20px; height:300px; min-height:300px; max-height:300px;"></canvas>
                 </div>
             </v-card>
             <v-card class="ma-0 pa-0 my-2">
-                <v-card-title >누적회원가입</v-card-title>
-                <div class="pa-4">
-                    <canvas id="accumulationChart" style="margin-bottom:20px; height:300px; min-height:300px; max-height:300px;"></canvas>
-                </div>
-            </v-card>
-            <v-card class="ma-0 pa-0 my-2">
-                <v-card-title >연령별 가입자</v-card-title>
-                <div class="pa-4">
-                    <canvas id="ageChart" style="margin-bottom:20px; height:300px; min-height:300px; max-height:300px;"></canvas>
-                </div>
-            </v-card>
-            <v-card class="ma-0 pa-0 my-2">
-                <v-card-title >가입자 성별</v-card-title>
-                <div class="pa-4">
-                    <canvas id="genderChart" style="margin-bottom:20px; height:300px; min-height:300px; max-height:300px;"></canvas>
-                </div>
+                <v-data-table 
+                    :items="orderList"
+                    :headers="headers"
+                    disable-sort
+                    :item-per-page="10"
+                >
+                    <template v-slot:[`item.status`]="{item}">
+                        <div class="text-center" v-if="item.status == 1">주문대기</div>
+                        <div class="text-center" v-if="item.status == 2">주문취소</div>
+                        <div class="text-center" v-if="item.status == 3">상품준비중</div>
+                        <div class="text-center" v-if="item.status == 4">배송중</div>
+                        <div class="text-center" v-if="item.status == 5">배송완료</div>
+                        <div class="text-center" v-if="item.status == 6">결제도중취소</div>
+                        <div class="text-center" v-if="item.status == 7">결제완료</div>
+                    </template>
+                </v-data-table>
             </v-card>
         </v-container>
     </v-card>
@@ -144,38 +137,34 @@ export default {
             startDateObj: {
                 year: new Date().getFullYear() + '년',
                 month: (new Date().getMonth()+1) + '월',
-                // day: new Date().getDate()
-                // year: new Date().getFullYear() + '년',
-                // month: '10월',
                 day: 1
             },
             endDateObj: {
                 year: new Date().getFullYear() + '년',
                 month: (new Date().getMonth()+1) + '월',
-                // day: new Date().getDate()
-                // year: new Date().getFullYear() + '년',
-                // month: '10월',
                 day: (new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0)).getDate()
             },
-            userList:[],
+            orderList:[],
             years:[...Array(20)].map((a,b)=> new Date().getFullYear() - b + 2 + '년'),
             months:[...Array(12)].map((a,b)=> 12 - b + '월'),
             dateLabelList: [],  // 차트의 날짜
             chart1: null,       // 차트 1
-            typeKakaoData: [],          // 차트 1에 쓸 데이터 (카카오)
+            readyToOrderData: [],          // 차트 1에 쓸 데이터 (카카오)
             stackData1: [],     // 차트 1용 stack 데이터 
-            typeNaverData: [],          // 차트 1에 쓸 데이터 (네이버)
+            orderCancelData: [],          // 차트 1에 쓸 데이터 (네이버)
             stackData2: [],     // 차트 1용 stack 데이터 
-            typeEmailData: [],          // 차트 1에 쓸 데이터 (이메일)
+            readyToProductData: [],          // 차트 1에 쓸 데이터 (이메일)
             stackData3: [],     // 차트 1용 stack 데이터 
-            typeSummaryData: [],          // 차트 1에 쓸 데이터 (회원 합산)
+            deliveryData: [],          // 차트 1에 쓸 데이터 (이메일)
             stackData4: [],     // 차트 1용 stack 데이터 
-            chart2: null,
-            chart3: null,
-            ageLabels: ["10세이하","10대","20대","30대","40대","50대","60대","70대","80대","90대","100세이상"],
-            genderArr:[0,0,0],
-            ageData:[0,0,0,0,0,0,0,0,0,0,0,0],
-            chart4: null,
+            deliveryCompleteData: [],          // 차트 1에 쓸 데이터 (이메일)
+            stackData5: [],     // 차트 1용 stack 데이터 
+            cancelToSettlementData: [],          // 차트 1에 쓸 데이터 (이메일)
+            stackData6: [],     // 차트 1용 stack 데이터 
+            settlementCompleteData: [],          // 차트 1에 쓸 데이터 (이메일)
+            stackData7: [],
+            typeSummaryData: [],          // 차트 1에 쓸 데이터 (회원 합산)
+            stackData8: [],     // 차트 1용 stack 데이터 
             options: {
                 tooltips: {
                     displayColors: true,
@@ -200,7 +189,7 @@ export default {
                 },
                 title: {
                     display: false,
-                    text: '일별 회원가입(기간)'
+                    text: ''
                 },
                 responsive: true,
                 maintainAspectRatio: false,
@@ -223,20 +212,18 @@ export default {
                 labels:[],
                 datasets: []
             },
-            accumulationData: {
-                labels:[],
-                datasets: []
-            },
-            ageData: {
-                labels: [],
-                datasets: []
-            },
-            genderData: {
-                labels: [],
-                datasets: []
-            },
-            timeFlag: false,
-
+            headers: [
+                {text:"No", value:"no", align:"center"},
+                {text:"구매자", value:"b_name", align:"center"},
+                {text:"주문자 연락처", value:"b_phone", align:"center"},
+                {text:"이메일", value:"b_email", align:"center"},
+                {text:"받는사람", value:"r_name", align:"center"},
+                {text:"받는사람 연락처", value:"r_phone", align:"center"},
+                {text:"주문상태", value:"status", align:"center"},
+                {text:"금액", value:"total_price", align:"center"},
+                {text:"수단", value:"payment_info", align:"center"},
+                {text:"주문일시", value:"cd", align:"center"},
+            ]
         }
     },
     mounted() {
@@ -250,92 +237,87 @@ export default {
             
             this.dateLabelList = this.getDates(startDate, endDate)
             
-            this.typeKakaoData = []
+            this.readyToOrderData = []
 
             for (let l of this.dateLabelList) {
-                this.typeKakaoData.push(0)
-                this.typeNaverData.push(0)
-                this.typeEmailData.push(0)
+                this.readyToOrderData.push(0)
+                this.orderCancelData.push(0)
+                this.readyToProductData.push(0)
+                this.deliveryData.push(0)
+                this.deliveryCompleteData.push(0)
+                this.cancelToSettlementData.push(0)
+                this.settlementCompleteData.push(0)
                 this.typeSummaryData.push(0)
             }
             
             let conditions = []
-            conditions.push({"q":"=","f":"status","v":1})
-            conditions.push({"op":"AND", "q": "=", "f": "is_manager", "v":0})
-            conditions.push({"op":"AND", "q": ">=", "f": "cd", "v":startDate})
+            conditions.push({"q": ">=", "f": "cd", "v":startDate})
             conditions.push({"op":"AND", "q": "<=", "f": "cd", "v":endDate})
 
             let param = {
-                table: 'user',
+                table: 'orders',
                 conditions: conditions
             }
-            console.log("param : ", param)
+            console.log(param)
             await this.$axios.post('/admin/select', param).then((res)=> {
+                console.log("order list : ", res.data)
                 if (res.data?.length > 0) {
-                    this.userList = res.data
-                    console.log(this.userList)
-                    this.userList.forEach((user)=> {
-                        if (Number(user.birth) != null && Number(user.birth) != undefined && !isNaN(Number(user.birth)) && Number(user.birth) != 0) {
-                            user.age = this.getAge(user.birth)
-                            if(user.age<10){ this.ageData[0]++ }
-                            else if( user.age<20 ){this.ageData[1]++}
-                            else if( user.age<30 ){this.ageData[2]++}
-                            else if( user.age<40 ){this.ageData[3]++}
-                            else if( user.age<50 ){this.ageData[4]++}
-                            else if( user.age<60 ){this.ageData[5]++}
-                            else if( user.age<70 ){this.ageData[6]++}
-                            else if( user.age<80 ){this.ageData[7]++}
-                            else if( user.age<90 ){this.ageData[8]++}
-                            else if( user.age<100 ){this.ageData[9]++}
-                            else {this.ageData[10]++}
-                        }
-                        user.cd = moment(user.cd).format('YYYY-MM-DD')
+                    this.orderList = res.data
+                    this.orderList.forEach((order)=> {
+                        order.cd = moment(order.cd).format('YYYY-MM-DD')
 
                         this.dateLabelList.forEach((label, index) => {
-                            if (moment(label).format('YYYY-MM-DD') == user.cd) {
-                                if (user.type == '카카오') this.typeKakaoData[index]++
-                                else if (user.type == '네이버') this.typeNaverData[index]++
-                                else this.typeEmailData[index]++
-
+                            if (label == order.cd) {
+                                if (order.status == 1) this.readyToOrderData[index]++
+                                else if (order.status == 2) this.orderCancelData[index]++
+                                else if (order.status == 3) this.readyToProductData[index]++
+                                else if (order.status == 4) this.deliveryData[index]++
+                                else if (order.status == 5) this.deliveryCompleteData[index]++
+                                else if (order.status == 6) this.cancelToSettlementData[index]++
+                                else if (order.status == 7) this.settlementCompleteData[index]++
+                                
                                 this.typeSummaryData[index]++
                             }
                         })
-                        if (user.gender == 1) 
-                            this.genderArr[1]++
-                        else if (user.gender == 0) 
-                            this.genderArr[0]++
-                        else 
-                            this.genderArr[2]++
                     })
                     let stackSum1 = 0
                     let stackSum2 = 0
                     let stackSum3 = 0
                     let stackSum4 = 0
+                    let stackSum5 = 0
+                    let stackSum6 = 0
+                    let stackSum7 = 0
                     
-                    this.typeKakaoData.forEach((one)=>{
+                    this.readyToOrderData.forEach((one)=>{
                         stackSum1+=one
                         this.stackData1.push(stackSum1)
                     })
-                    this.typeNaverData.forEach((one)=>{
+                    this.orderCancelData.forEach((one)=>{
                         stackSum2+=one
                         this.stackData2.push(stackSum2)
                     })
-                    this.typeEmailData.forEach((one)=>{
+                    this.readyToProductData.forEach((one)=>{
                         stackSum3+=one
                         this.stackData3.push(stackSum3)
                     })
-                    this.typeSummaryData.forEach((one)=>{
+                    this.deliveryData.forEach((one)=>{
                         stackSum4+=one
                         this.stackData4.push(stackSum4)
                     })
-                    console.log("this.timeFlag : ", this.timeFlag)
-                    // if(!this.timeFlag)
-                        // this.drawChart()
-                    // else this.reloadChart()
+                    this.deliveryCompleteData.forEach((one)=>{
+                        stackSum5+=one
+                        this.stackData5.push(stackSum5)
+                    })
+                    this.cancelToSettlementData.forEach((one)=>{
+                        stackSum6+=one
+                        this.stackData6.push(stackSum6)
+                    })
+                    this.settlementCompleteData.forEach((one)=>{
+                        stackSum7+=one
+                        this.stackData7.push(stackSum7)
+                    })
+
                     this.setupTypeData()
-                    this.setupAccumulationData()
-                    this.setupAgeData()
-                    this.setupGenderData()
                 }
             }).catch(()=>{
                 
@@ -346,30 +328,53 @@ export default {
             this.typeData.datasets = []
             this.typeData.datasets.push({
                 type: 'line',
-                label: '금일 가입자수',
+                label: '총 거래 내역',
                 backgroundColor: 'black',
                 fill: false,
                 data: this.typeSummaryData
             })
             this.typeData.datasets.push({
                 type: 'bar',
-                label: '카카오',
+                label: '주문대기',
                 backgroundColor: '#F9DF32',
-                data: this.typeKakaoData
+                data: this.readyToOrderData
             })
             this.typeData.datasets.push({
                 type: 'bar',
-                label: '네이버',
+                label: '주문취소',
                 backgroundColor: '#1DB867',
-                data: this.typeNaverData
+                data: this.orderCancelData
             })
             this.typeData.datasets.push({
                 type: 'bar',
-                label: '이메일',
+                label: '상품준비중',
                 backgroundColor: '#1CA4FC',
-                data: this.typeEmailData
+                data: this.readyToProductData
             })
-            console.log(this.chart1)
+            this.typeData.datasets.push({
+                type:'bar',
+                label: '배송중',
+                backgroundColor: '#AB47BC',
+                data: this.deliveryData
+            })
+            this.typeData.datasets.push({
+                type:'bar',
+                label: '배송완료',
+                backgroundColor: '#1E88E5',
+                data: this.deliveryCompleteData
+            })
+            this.typeData.datasets.push({
+                type:'bar',
+                label: '결제도중취소',
+                backgroundColor: '#EF5350',
+                data: this.cancelToSettlementData
+            })
+            this.typeData.datasets.push({
+                type:'bar',
+                label: '결제완료',
+                backgroundColor: '#26A69A',
+                data: this.settlementCompleteData
+            })
             if (this.chart1 != null) this.chart1.update()
             else {
                 let ctx = document.getElementById("typeChart")
@@ -380,100 +385,8 @@ export default {
                 })
                 this.chart1.update()
             }
-            console.log(this.chart1)
         },
-        setupAccumulationData() {
-            this.accumulationData.labels = this.dateLabelList
-            this.accumulationData.datasets = []
-            this.accumulationData.datasets.push(
-                {
-                    type: 'line',
-                    label: '금일 가입자수',
-                    backgroundColor: 'black',
-                    fill: false,
-                    data: this.stackData4
-                },
-            )
-            this.accumulationData.datasets.push(
-                {
-                    type: 'bar',
-                    label: '카카오',
-                    backgroundColor: '#F9DF32',
-                    data: this.stackData1
-                }
-            )
-            this.accumulationData.datasets.push(
-                {
-                    type: 'bar',
-                    label: '네이버',
-                    backgroundColor: '#1DB867',
-                    data: this.stackData2
-                }
-            )
-            this.accumulationData.datasets.push(
-                {
-                    type: 'bar',
-                    label: '이메일',
-                    backgroundColor: '#1CA4FC',
-                    data: this.stackData3
-                }
-            )
-            if (this.chart2 != null) this.chart2.update()
-            else {
-                let ctx = document.getElementById("accumulationChart")
-                this.chart2 = new Chart(ctx, {
-                    type: 'bar',
-                    data: this.accumulationData,
-                    options: this.options
-                })
-                this.chart2.update()
-            }
-        },
-        setupAgeData() {
-            this.ageData.labels = this.ageLabels
-            this.ageData.datasets = []
-            this.ageData.datasets.push(
-                {
-                    type: 'bar',
-                    label: '연령별 가입자수',
-                    backgroundColor: 'rgba(20, 255, 0, 0.7)',
-                    fill: false,
-                    data: this.ageData
-                },
-            )
-            if (this.chart3 != null) this.chart3.update()
-            else {
-                let ctx = document.getElementById("ageChart")
-                this.chart3 = new Chart(ctx, {
-                    type: 'bar',
-                    data: this.ageData,
-                    options: this.options
-                })
-                this.chart3.update()
-            }
-        },
-        setupGenderData() {
-            this.genderData.labels = ['MALE','FEMALE','UNKNOWN']
-            this.genderData.datasets = []
-            this.genderData.datasets.push(
-                {
-                    type: 'doughnut',
-                    label: '',
-                    backgroundColor: ['rgba(0, 0, 255, 0.7)','rgba(255, 0, 0, 0.7)','rgba(120, 120, 120, 0.7)'],
-                    data: this.genderArr,
-                    hoverOffset: 4
-                },
-            )
-            if (this.chart4 != null) this.chart4.update()
-            else {
-                let ctx = document.getElementById("genderChart")
-                this.chart4 = new Chart(ctx, {
-                    type: 'doughnut',
-                    data: this.genderData
-                })
-                this.chart4.update()
-            }
-        },
+        
         getDaysInMonth(year, month) {
             if (year == null || month == null) {
                 return []
@@ -552,16 +465,21 @@ export default {
             return age
         },
         resetDatas() {
-            this.userList = []
+            this.orderList = []
             this.dateLabelList = []
-            this.typeEmailData = []
-            this.typeKakaoData = []
-            this.typeNaverData = []
+            this.readyToProductData = []
+            this.deliveryData = []
+            this.deliveryCompleteData = []
+            this.cancelToSettlementData = []
+            this.settlementCompleteData = []
+            this.readyToOrderData = []
+            this.orderCancelData = []
             this.typeSummaryData = []
             this.stackData1 = []
             this.stackData2 = []
             this.stackData3 = []
             this.stackData4 = []
+            this.stackData5 = []
             this.genderArr = [0,0,0]
             this.ageData = [0,0,0,0,0,0,0,0,0,0,0,0]
         },

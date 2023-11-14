@@ -75,13 +75,26 @@
                 :obj="selectedUser"
             />
         </v-dialog>
+        <v-dialog
+            v-model="historyPopup"
+            max-width="1000"
+            persistent
+        >
+            <UserHistoryPopup
+                v-if="historyPopup"
+                @click-close="closePopup"
+                :obj="selectedUser"
+                :type="historyType"
+            />
+        </v-dialog>
     </div>
 </template>
 <script>
 import moment from 'moment'
 import UserEdit from '@/pages/admin/user/UserEdit'
+import UserHistoryPopup from '@/pages/admin/user/UserHistoryPopup'
 export default {
-    components: { UserEdit},
+    components: { UserEdit, UserHistoryPopup },
     layout: 'Admin',
     name: 'IndexPage',
     data() {
@@ -106,7 +119,9 @@ export default {
             isManager: true,
             isNormal: true,
             userPopup: false,
-            selectedUser: null
+            selectedUser: null,
+            historyType: null,
+            historyPopup: false,
         }
     },
     mounted() {
@@ -143,6 +158,8 @@ export default {
             this.selectedUser = null
             if (type == 'user') {
                 this.userPopup = !this.userPopup
+            } else {
+                this.historyPopup = !this.historyPopup
             }
             this.selectUser()
         },
@@ -161,10 +178,18 @@ export default {
             }
         },
         showProgressQuestion(item) {
-            console.log("showProgressQuestion : ", item)
+            if (item != null || item != undefined) {
+                this.selectedUser = item
+                this.historyType = "survey"
+                this.historyPopup = !this.historyPopup
+            }
         },
         sendBuyList(item) {
-            console.log("sendBuyList : ", item)
+            if (item != null || item != undefined) {
+                this.selectedUser = item
+                this.historyType = "order"
+                this.historyPopup = !this.historyPopup
+            }
         }
     }
 }

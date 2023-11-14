@@ -114,7 +114,6 @@ export default {
             //세군데로 넘겨줘야함
             //로그인, 회원가입, 네이버가입(로그인)
         }
-
     }
   },
   methods: {
@@ -169,6 +168,7 @@ export default {
             console.log('인서트 결과값:: ', JSON.stringify(res.data))
             if (res.data.length > 0) {
               if (res.data[0].status == 1) {
+                console.log("?????")
                 localStorage.removeItem('userInfo')
                 let userInfo = {
                   no: res.data[0].no,
@@ -183,12 +183,14 @@ export default {
                 }
                 localStorage.setItem('loginStatus', true)
                 localStorage.setItem('userInfo', JSON.stringify(userInfo))
-                
+                console.log("localStorage : ", localStorage)
                 if(localStorage!=undefined){
                     if(localStorage.getItem('surveyResult')!=undefined){
                         this.insertSurveyResult()
                     }else if(localStorage.getItem('surveyResult')!=undefined){
                         this.$router.push({ name: 'cart' })
+                    } else {
+                      this.$router.push({ name: 'index' })  
                     }
                 }else{
                     this.$router.push({ name: 'index' })
@@ -299,6 +301,8 @@ export default {
                       this.insertSurveyResult()
                     }else if(localStorage.getItem('surveyResult')!=undefined){
                       this.$router.push({ name: 'cart' })
+                    } else {
+                      this.$router.push({ name: 'index' })
                     }
                   }else{
                     this.$router.push({ name: 'index' })
