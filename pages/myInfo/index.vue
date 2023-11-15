@@ -142,7 +142,7 @@
                 v-for="(item, i) in buyList"
                 :key="i"
                 class="consulting-list-item"
-                @click="$router.push({ name: 'paymentHistoryDetail' })"
+                @click="$router.push({ name: 'paymentHistoryDetail', query: {order_no: item.no} })"
               >
                 <div class="consulting-title">{{ item.title }}</div>
                 <div class="consulting-date">{{ item.cd }}</div>

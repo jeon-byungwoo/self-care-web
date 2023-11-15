@@ -3,7 +3,7 @@
     <div class="window">
       <div class="popup">
         <div class="title-close-area">
-          <div class="title-text">리뷰 쓰기</div>
+          <div class="title-text">{{item.review!=null?'리뷰 수정':'리뷰 쓰기'}}</div>
           <img
             class="close-btn"
             draggable="false"
@@ -70,7 +70,7 @@
           <div class="review-contents-text">리뷰 내용을 작성 해주세요.</div>
           <div class="pw-area">
             <textarea
-              v-model="nowPw"
+              v-model="content"
               class="pw"
               type="text"
               placeholder="리뷰 내용을 작성해주세요."
@@ -132,13 +132,24 @@
 <script>
 export default {
   name: 'howToView',
+  props:[
+    'item'
+  ],
   data() {
     return {
-      nowPw: '',
-      newPw: '',
-      confirmPw: '',
+      content: '',
       rating: 0,
       imageList: [],
+      review:[],
+      hostUrl:process.env.BASE_URL,
+      reviewCnt:0
+    }
+  },
+  mounted() {
+    this.hostUrl=process.env.BASE_URL
+    this.selectProduct(this.item.product.no)
+    if(this.item.review!=null){
+        this.selectReview()
     }
   },
   methods: {
@@ -147,8 +158,144 @@ export default {
       this.$emit('closeAction', true)
     },
     sendData() {
-      this.$emit('sendData', this.nowPw, this.newPw, this.confirmPw)
-      //   console.log(this.nowPw, this.newPw, this.confirmPw)
+        let reviewInfo = {}
+        
+        if(this.item.review!=null){
+            this.updateReview()
+        }else{
+            this.insertReview()
+        }
+        if(this.imageList?.length>0){
+            this.imageUpdateReview()
+        }
+        
+    },
+    async selectProduct(no){
+        let conditions = [{ q: '=', f: 'no', v: no}]
+        let orderFormBody = {
+            table: 'product',
+            conditions: conditions,
+        }
+        try {
+            await this.$axios.post('/api/select', orderFormBody).then(async (res) => {
+                if (res.data.length > 0) {
+                    this.reviewCnt = res.data[0].review_cnt
+                } 
+            }).catch(function (error) { console.log('에러!!', error) })
+        } catch (err) { console.log('err!! : ' + err)}
+    },
+    async selectReview(){
+        let conditions = [{ q: '=', f: 'no', v: this.item.review }]
+        let orderFormBody = {
+            table: 'review',
+            conditions: conditions,
+        }
+        try {
+            await this.$axios.post('/api/select', orderFormBody).then(async (res) => {
+                if (res.data.length > 0) {
+                    this.review = res.data[0]
+                    this.content = res.data[0].content
+                    this.rating = res.data[0].score
+
+                    for(let i of JSON.parse(res.data[0].i_list)){                        
+                        this.imageList.push({
+                            image: await this.convertURLtoFile(this.hostUrl+i),
+                            imageUploaded: (this.hostUrl+i),
+                        })
+                    }
+                } 
+            }).catch(function (error) { console.log('에러!!', error) })
+        } catch (err) { console.log('err!! : ' + err)}
+    },
+    async insertReview(){
+        let formBody = {
+            table: 'review',
+            u_no:JSON.parse(localStorage.getItem('userInfo')).no,
+            u_name:JSON.parse(localStorage.getItem('userInfo')).name,
+            p_no:this.item.product.no,
+            p_name:this.item.product.name,
+            i_list:JSON.stringify([]),
+            content:this.content,
+            score:this.rating,
+        }
+      try {
+        await this.$axios
+          .post('/api/insert', formBody)
+          .then((res) => {
+            let resultNo = res.data[0].no
+            this.review = res.data[0]
+            this.updateProductReviewCnt(res.data[0].p_no)
+            this.calReview(res.data[0].p_no)
+            this.$emit('sendData', res.data[0])
+          })
+          .catch(function (error) {
+            console.log('에러!!', error)
+          })
+      } catch (err) {
+        console.log('err!! : ' + err)
+      }
+    },
+    async updateProductReviewCnt(p_no){
+        let cnt = 0
+        let param = {  }
+        param['no']= p_no
+        param['table']="product"
+        param['review_cnt']=this.reviewCnt+1
+        param['conditions'] = [{q:"=",f:"no",v:p_no}]
+        await this.$axios.post('/api/update', param).then((res) => {
+            this.$emit('sendData', res.data[0])
+        }).catch((err) => {
+            console.log('에러!!', err)
+        }) 
+    },
+    async updateReview(){
+        let param = {  }
+        param['no']= this.item.review
+        param['table']="review"
+        param['content']=this.content
+        param['score']=this.rating
+        param['conditions'] = [{q:"=",f:"no",v:this.item.review}]
+        await this.$axios.post('/api/update', param).then((res) => {
+            this.calReview(res.data[0].p_no)
+            this.$emit('sendData', res.data[0])
+        }).catch((err) => {
+            console.log('에러!!', err)
+        }) 
+    },
+    async calReview(pNo){
+        let param = {  }
+        param['no']= pNo
+        param['conditions'] = [{q:"=",f:"1",v:1}]
+        await this.$axios.post('/api/calReview', param).then((res) => {
+        }).catch((err) => {
+            console.log('에러!!', err)
+        }) 
+    },
+    async imageUpdateReview(){
+        let obj = []
+        
+        for(let i of this.imageList){
+            obj.push(i.image)
+        }
+        let formData = new FormData()
+        formData.append('imageParam', 'i_list')
+        formData.append('no', this.review.no)
+        formData.append('table', 'review')
+        formData.append('conditions', JSON.stringify([{q:"=",f:"no",v:this.review.no}]))
+        if (obj.length > 0) {
+            for (const file of obj) 
+                formData.append('files', file)
+        } else {
+            formData.append('files', obj)
+        }
+
+        await this.$axios.post('/admin/updateMultipart', formData, {
+            headers: {'Content-Type': 'multipart/form-data'}
+        }).then(res => {
+            
+        }).catch(err => {
+            console.log("multipart error : ", err);
+        })
     },
     imageUpload() {
       for (let i = 0; i < this.$refs.images.files.length; i++) {
@@ -158,48 +305,20 @@ export default {
         }
         this.imageList.push(obj)
       }
-      console.log(this.imageList.length)
     },
     imageDelete(index) {
       let result = this.imageList.filter((item, i) => i != index)
       this.imageList = result
     },
-    submitPost() {
-      // 원래 있던 dto랑 이미지를 UserFormData에 넣어서 axios로 보내야함
-
-      // const vm = this
-      const userPK = this.$store.state.loginStore.id
-
-      const dto = {
-        date: this.date,
-        routine: this.content,
-      }
-      // 먼저 dto를 blob으로 바꿈
-      const dtoToBlob = new Blob([JSON.stringify(dto)], {
-        type: 'application/json',
-      })
-
-      // FormData를 만듬
-      var formData = new FormData()
-
-      // blob으로 바꾼 dto랑 사용자가 입력한 이미지 formData에 append함
-      formData.append('routineDTO', dtoToBlob)
-      formData.append('image', this.image)
-
-      const config = {
-        headers: {
-          Authorization: 'Bearer ' + this.$store.state.loginStore.token,
-          'Content-Type': 'multipart/form-data', // 컨텐츠 타입 지정해줘야함
-        },
-      }
-      axios
-        .post('http://localhost:8081/routine/' + userPK, formData, config)
-        .then((res) => {
-          alert('생성 완료')
-          console.log(res.data)
-          document.location = 'http://localhost:8080/myPage'
-        })
+    async convertURLtoFile(url){
+        const response = await fetch(url);
+        const data = await response.blob();
+        const ext = url.split(".").pop(); // url 구조에 맞게 수정할 것
+        const filename = url.split("/").pop(); // url 구조에 맞게 수정할 것
+        const metadata = { type: `image/${ext}` };
+        return new File([data], filename, metadata);
     },
+    
   },
 }
 </script>

@@ -117,7 +117,7 @@
                   />
                 </div>
                 <div class="coalition-area">
-                  <select>
+                  <select v-model="selectedTown">
                     <!-- <optgroup label="군/구"> -->
                     <option 
                         v-for="(item, index) in townList"
@@ -159,6 +159,12 @@ export default {
       selectedTown:'군/구',
       cityList:[],
       townList:[],
+      ownerPhone:'',
+      ownerName:'',
+      petName:'',
+      petBirth:'',
+
+
     }
   },
   mounted() {
@@ -237,15 +243,22 @@ export default {
       this.$emit('closeAction', true)
     },
     async sendData() {
+
       let formBody = {
         
-        target: 'town',
-        content
-
+        petSort: this.selectedPet==1?'강아지':'고양이',
+        petGender: this.selectedGender==1?'남':'여',
+        petName:this.petName,
+        petBirth:this.petBirth,
+        name:this.ownerName,
+        phone:this.ownerPhone,
+        city:this.selectedCity,
+        town:this.selectedTown
       }
+      console.log(formBody)
       try {
         await this.$axios
-          .post('/api/sendEmail', formBody)
+          .post('/api/petEmail', formBody)
           .then((res) => {
           })
           .catch(function (error) {

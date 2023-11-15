@@ -354,7 +354,7 @@ export default {
           }
           .rep-image {
             width: 100%;
-            height: auto;
+            min-height: 400px;
             margin-top: 20px;
           }
           .contents {

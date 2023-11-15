@@ -42,6 +42,8 @@
         <div class="survey-comment-wrap" v-html="item.survey_comment">
 
         </div>
+
+        <div v-if="saveFlag" class="btn-save" @click="btnSave()">검사 결과 저장</div>
     </div>
   </div>
 </template>
@@ -56,6 +58,7 @@ export default {
         hostUrl:process.env.BASE_URL,
         score:0,
         survey:[],
+        saveFlag:false,
     }
   },
   components: {
@@ -64,8 +67,38 @@ export default {
   mounted() {
     this.selectItem()
     this.hostUrl = process.env.BASE_URL
+    if(localStorage.getItem('userInfo')!=null){
+        this.saveFlag = true
+    }
   },
   methods: {
+    btnSave(){
+        console.log(this.survey)
+        console.log(this.score)
+        this.insertTestResult()
+        alert('검사 결과가 저장되었습니다. 저장 된 내용은 마미페이지에서 확인 가능합니다.')
+    },
+    async insertTestResult(){
+        let formBody = {
+            table: 'test_result',
+            u_no:JSON.parse(localStorage.getItem('userInfo')).no,
+            t_no:this.$route.query.no,
+            t_title:this.item.title,
+            result:JSON.stringify(this.survey),
+            score:this.score
+        }
+      try {
+        await this.$axios
+          .post('/api/insert', formBody)
+          .then((res) => {
+          })
+          .catch(function (error) {
+            console.log('에러!!', error)
+          })
+      } catch (err) {
+        console.log('err!! : ' + err)
+      }
+    },
     onSelect(_question,qNo){
         this.score=0
         for(let question of this.survey){
@@ -131,6 +164,20 @@ export default {
 }
 </script>
 <style lang="scss">
+.btn-save{
+    width: 130px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 15px;
+    font-family: "score6";
+    background-color: #9ad144;
+    cursor: pointer;
+    float: right;
+    margin-bottom: 40px;
+}
 .do-check-wrap{
     max-width: 1200px;
     margin: auto;
