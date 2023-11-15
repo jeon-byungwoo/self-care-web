@@ -390,6 +390,7 @@ export default {
         }
     },
     mounted() {
+        this.$refs.editor.setContents("", 'test')
         this.selectInquiry()  
     },
     methods: {

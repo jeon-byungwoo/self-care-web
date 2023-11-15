@@ -87,12 +87,12 @@
             <div class="staff-info-group">
               <div class="left-group">
                 <div class="staff-info-text">담당자 정보</div>
-                <div class="remains-info-text">이름&nbsp;:&nbsp;{{}}</div>
-                <div class="remains-info-text">연락처&nbsp;:&nbsp;{{}}</div>
-                <div class="remains-info-text">이메일&nbsp;:&nbsp;{{}}</div>
+                <div class="remains-info-text">이름&nbsp;:&nbsp;{{managerObj.name ?? ""}}</div>
+                <div class="remains-info-text">연락처&nbsp;:&nbsp;{{managerObj.phone ?? ""}}</div>
+                <div class="remains-info-text">이메일&nbsp;:&nbsp;{{managerObj.email ?? ""}}</div>
               </div>
               <div style="flex: 1"></div>
-              <div class="call-btn">전화하기</div>
+              <div class="call-btn" v-if="managerObj?.phone" @click="callToManager" >전화하기</div>
             </div>
 
             <div class="withless-area">
@@ -213,7 +213,6 @@ export default {
     messageTwoBtnDialog,
   },
   created() {
-    console.log('tabs: ', this.$route.params.tabs)
     if (this.$route.params.tabs != undefined) {
       this.tabStatus = this.$route.params.tabs
     }
@@ -295,6 +294,11 @@ export default {
       testList:[],
       reviewList:[],
       hostUrl:null,
+      managerObj: {
+        name: null,
+        phone: null,
+        email: null,
+      }
     }
   },
   mounted() {
@@ -316,8 +320,52 @@ export default {
     this.userInfo = JSON.parse(localStorage.getItem('userInfo'))
     this.tabStatus = this.$route.query.tab
     this.selectItem()
+    
+    if (this.userInfo.manager_no != null || this.userInfo.manager_no != undefined) {
+      this.selectManagerInfo(this.userInfo.manager_no)
+    } else {
+      this.selectUserInfo(this.userInfo.no)
+    }
   },
   methods: {
+    callToManager(){
+      if (managerObj?.phone)
+        window.location.href=`tel:${managerObj?.phone}`
+    },
+    async selectUserInfo(no) {
+      let conditions = []
+      conditions.push({"q":"=","f":"no","v":no})
+      let param = {
+        table: 'user',
+        conditions: conditions
+      }
+      await this.$axios.post('/api/select', param).then(res => {
+        if (res.data?.length > 0) {
+          if (res.data[0]?.manager_no) {
+            this.selectManagerInfo(res.data[0]?.manager_no)
+          }
+        }
+      }).catch(err => {
+        console.log("error : ", err)
+      })
+    },
+    async selectManagerInfo(no) {
+      let conditions = []
+      conditions.push({"q":"=","f":"no","v":no})
+      let param = {
+        table: 'user',
+        conditions: conditions
+      }
+      await this.$axios.post('/api/select', param).then(res => {
+        if (res.data?.length > 0) {
+          this.managerObj.name = res.data[0]?.name
+          this.managerObj.phone = res.data[0]?.phone
+          this.managerObj.email = res.data[0]?.email
+        }
+      }).catch(err => {
+        console.log("error : ", err)
+      })
+    },
     async selectItem(){
         let conditions = [{ q: '=', f: 'b_no', v: this.userInfo.no },{ "op":"AND",q: '=', f: 'status', v: 7 },{ q: 'order', f: 'cd', o: 'ASC' }]
         let orderFormBody = {
@@ -328,7 +376,6 @@ export default {
             await this.$axios
             .post('/api/select', orderFormBody)
             .then((res) => {
-                console.log('조회된 데이터:: ', (res.data))
                 if (res.data.length > 0) {
                     this.buyList = res.data
                     for(let one of this.buyList){
@@ -357,7 +404,6 @@ export default {
             await this.$axios
             .post('/api/select', surveyFormBody)
             .then((res) => {
-                console.log('조회된 데이터:: ', (res.data))
                 if (res.data.length > 0) {
                     this.healthCheckList = res.data
                     for(let one of this.healthCheckList){
@@ -381,7 +427,6 @@ export default {
             await this.$axios
             .post('/api/select', testFormBody)
             .then((res) => {
-                console.log('조회된 데이터:: ', (res.data))
                 if (res.data.length > 0) {
                     this.testList = res.data
                     for(let one of this.testList){
@@ -404,13 +449,12 @@ export default {
             await this.$axios
             .post('/api/select', reviewFormBody)
             .then((res) => {
-                console.log('조회된 데이터:: ', (res.data))
                 if (res.data.length > 0) {
                     this.reviewList = res.data
                     for(let one of this.reviewList){
                         
                         one.i_list = JSON.parse(one.i_list)
-                        console.log(one.i_list)
+                        
                         one.cd = Moment(one.cd).format('YYYY-MM-DD HH:mm')
                     }
                 } 
@@ -424,11 +468,9 @@ export default {
 
     },
     onChildUpdate(newValue) {
-      console.log('index', newValue)
       this.navigationStatus = newValue
     },
     dialogClose(dialogType) {
-      console.log('action', dialogType)
       if (dialogType == 'pw') {
         this.pwChangedialogStatus = false
       } else if (dialogType == 'messageDialog') {
@@ -453,7 +495,6 @@ export default {
       }
     },
     sendDataDialog(dialogType, type) {
-      console.log(type)
       if (dialogType == 'messageTwoDialog') {
         if (type == 'logout') {
           this.logoutClick()
@@ -517,14 +558,11 @@ export default {
         this.dialogText = '회원탈퇴가 정상적으로 진행되었습니다.'
       }
 
-      console.log(formBody)
 
       try {
         await this.$axios
           .post('/api/update', formBody)
           .then((res) => {
-            console.log('인서트 결과값:: ', JSON.stringify(res.data))
-            console.log(res.data.length)
             if (res.data.length > 0) {
               if (type == 3) {
                 this.messageOneBtnDialogStatus = true
@@ -565,16 +603,11 @@ export default {
         conditions: conditions,
       }
 
-      console.log(formBody)
-
       try {
         await this.$axios
           .post('/api/select', formBody)
           .then((res) => {
-            console.log('인서트 결과값:: ', JSON.stringify(res.data))
-            console.log(res.data.length)
             if (res.data.length > 0) {
-              console.log('found')
               this.currentPwCheck = 0
               this.pwChangedialogStatus = false
               this.updateProfile(1)
