@@ -164,7 +164,17 @@ export default {
             this.selectUser()
         },
         sendTempPw(item) {
-            console.log("sendTempPw : ", item)
+            if (item.type != '이메일') return 
+            if (!item.email || !item.no) return
+            let param = {
+                no: item.no,
+                email: item.email
+            }
+            this.$axios.post('/api/findPW', param).then(res => {
+                console.log("send Email : ", res)
+            }).catch(err => {
+                console.log("send Email err : ", err)
+            })
         },
         editUser() {
             this.selectedUser = null

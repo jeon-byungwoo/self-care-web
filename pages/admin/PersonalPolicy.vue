@@ -39,8 +39,8 @@ export default {
         }
     },
     mounted() {
+        this.$refs.editor.setContents("", 'site')
         this.selectSite()
-        
     },
     methods: {
         async selectSite() {

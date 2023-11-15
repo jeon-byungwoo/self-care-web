@@ -454,6 +454,7 @@ export default {
         }
     },
     mounted() {
+        this.$refs.editor.setContents("", 'product')
         this.selectProduct()  
     },
     methods: {

@@ -224,12 +224,16 @@ export default {
 			this.content = text
 			this.table = table
 			this.editor.commands.setContent(this.content)
+			console.log("this.table : ", this.table)
 		},
 		async addImage() {
 			let formData = new FormData()
             formData.append('table', this.table)
             formData.append('files', this.selectedImg)
-            
+			
+
+			console.log("this.table : ", this.table)
+
 			await this.$axios.post('/admin/insertMultipart', formData, {
                 headers: {'Content-Type': 'multipart/form-data'}
             }).then(res => {

@@ -107,13 +107,12 @@ export default {
         }
     },
     mounted() {
+        this.$refs.editor.setContents("", 'board')
         this.selectBoard()  
     },
     methods: {
         async selectBoard() {
             if (this.obj != null) {
-                // Object.assign(this.boardObj, this.obj)
-                // this.$refs.editor.setContents(this.boardObj.content, 'test')
                 let conditions = []
                 conditions.push({"q":"=","f":"no","v":this.obj.no})
                 conditions.push({"q":"order","f":"no","o":"ASC"})

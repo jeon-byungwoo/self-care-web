@@ -156,6 +156,7 @@ export default {
         }
     },
     mounted() {
+        this.$refs.editor.setContents("", 'magazine')
         this.selectMagazine()  
     },
     methods: {
