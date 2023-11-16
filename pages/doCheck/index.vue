@@ -4,7 +4,9 @@
     <div v-if="item!=null" class="do-check-wrap">
         <div class="title-wrap">
             <div class="title-text">{{item.title}}</div>
-            <div class="title-image" :style="{'background-image': 'url('+hostUrl+JSON.parse(item.image)[0]+')'}"></div>
+        </div>
+        <div class="title-wrap">
+            <v-img :src="imagePresent" contain max-height="300"/>
         </div>
         <div class="content-wrap" v-html="item.content">
             
@@ -73,10 +75,18 @@ export default {
   },
   methods: {
     btnSave(){
-        console.log(this.survey)
-        console.log(this.score)
-        this.insertTestResult()
-        alert('검사 결과가 저장되었습니다. 저장 된 내용은 마미페이지에서 확인 가능합니다.')
+        let allCheckFlag = false
+        for(let one of this.survey){
+            if(one.selection1.selected==0&&one.selection2.selected==0&&one.selection3.selected==0&&one.selection4.selected==0&&one.selection5.selected==0)
+                allCheckFlag = true
+        }
+        if(!allCheckFlag){
+            this.insertTestResult()
+            alert('검사 결과가 저장되었습니다. 저장 된 내용은 마이페이지에서 확인 가능합니다.')
+        }else{
+            alert('선택하지 않은 항목이 존재합니다. 모든 항목을 선택 해 주세요.')
+        }
+       
     },
     async insertTestResult(){
         let formBody = {
@@ -141,6 +151,7 @@ export default {
             if (res.data.length > 0) {
                 this.itemList = res.data
                 this.item = this.itemList[0]
+                this.imagePresent = this.hostUrl+JSON.parse(this.item.image)[0]
                 this.survey = JSON.parse(this.item.survey)
                 this.socre = 0
                 for(let question of this.survey){

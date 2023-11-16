@@ -6,6 +6,18 @@
       @sendData="pwChangeDialogSendData"
       :message="currentPwCheck"
     ></PwChangeDialog>
+    <UserSurveyPopup
+      v-if="historyPopup"
+        @click-close="closePopup"
+        :obj="selectedUser"
+        :popup="historyPopup"
+    ></UserSurveyPopup>
+    <UserTestPopup
+      v-if="testPopup"
+        @click-close="closePopup"
+        :obj="selectedTestResult"
+        :popup="testPopup"
+    ></UserTestPopup>
     <messageOneBtnDialog
       v-if="messageOneBtnDialogStatus"
       @closeAction="dialogClose"
@@ -84,7 +96,7 @@
               </div>
             </div>
 
-            <div class="staff-info-group">
+            <div class="staff-info-group" v-if="managerObj?.name">
               <div class="left-group">
                 <div class="staff-info-text">담당자 정보</div>
                 <div class="remains-info-text">이름&nbsp;:&nbsp;{{managerObj.name ?? ""}}</div>
@@ -111,6 +123,7 @@
                 v-for="(item, i) in healthCheckList"
                 :key="i"
                 class="consulting-list-item"
+                @click="historyPopup=true"
               >
                 <div class="consulting-title">{{ item.title }}</div>
                 <div class="consulting-date">{{ item.cd }}</div>
@@ -126,8 +139,9 @@
                 v-for="(item, i) in testList"
                 :key="i"
                 class="consulting-list-item"
+                @click="onClickTestPop(item)"
               >
-                <div class="consulting-title">{{ item.test_name }}</div>
+                <div class="consulting-title">{{ item.t_title }}</div>
                 <div class="consulting-date">{{ item.cd }}</div>
               </div>
             </div>
@@ -192,7 +206,15 @@
           </div>
         </div>
       </div>
+
     </div>
+    <!-- <v-dialog
+        v-model="historyPopup"
+        max-width="1000"
+        persistent
+    >
+        
+    </v-dialog> -->
   </div>
 </template>
 
@@ -201,6 +223,9 @@ import Header from '../../components/header.vue'
 import PwChangeDialog from '../../components/passwordChangeDialog.vue'
 import messageOneBtnDialog from '~/components/messageOneBtnDialog.vue'
 import messageTwoBtnDialog from '~/components/messageTwoBtnDialog.vue'
+import UserSurveyPopup from '@/components/userSurveyPopup'
+import UserTestPopup from '@/components/userTestPopup'
+
 import Moment from 'moment'
 
 export default {
@@ -211,6 +236,8 @@ export default {
     PwChangeDialog,
     messageOneBtnDialog,
     messageTwoBtnDialog,
+    UserSurveyPopup,
+    UserTestPopup,
   },
   created() {
     if (this.$route.params.tabs != undefined) {
@@ -298,7 +325,12 @@ export default {
         name: null,
         phone: null,
         email: null,
-      }
+      },
+      historyPopup: false,
+      selectedUser:null,
+      testPopup:false,
+      selectedTestResult:null,
+
     }
   },
   mounted() {
@@ -328,6 +360,15 @@ export default {
     }
   },
   methods: {
+    onClickTestPop(item){
+        console.log(item)
+        this.testPopup=true
+        this.selectedTestResult = item
+    },
+    closePopup(type) {
+        if (type == 'history')this.historyPopup = !this.historyPopup
+        else this.testPopup = !this.testPopup
+    },
     callToManager(){
       if (managerObj?.phone)
         window.location.href=`tel:${managerObj?.phone}`
@@ -341,6 +382,7 @@ export default {
       }
       await this.$axios.post('/api/select', param).then(res => {
         if (res.data?.length > 0) {
+            this.selectedUser = res.data[0]
           if (res.data[0]?.manager_no) {
             this.selectManagerInfo(res.data[0]?.manager_no)
           }
@@ -367,7 +409,7 @@ export default {
       })
     },
     async selectItem(){
-        let conditions = [{ q: '=', f: 'b_no', v: this.userInfo.no },{ "op":"AND",q: '=', f: 'status', v: 7 },{ q: 'order', f: 'cd', o: 'ASC' }]
+        let conditions = [{ q: '=', f: 'b_no', v: this.userInfo.no },{ "op":"AND",q: '=', f: 'status', v: 7 },{ q: 'order', f: 'cd', o: 'DESC' }]
         let orderFormBody = {
             table: 'orders',
             conditions: conditions,
@@ -385,7 +427,7 @@ export default {
                         }else{
                             one['title'] = JSON.parse(productList[0]).product.name
                         }
-                        one.cd = Moment(one.cd).format('YYYY-MM-DD HH:mm')
+                        one.cd = Moment(one.cd).format('YY-MM-DD HH:mm')
                     }
                 } 
             })
@@ -395,7 +437,7 @@ export default {
         } catch (err) {
             console.log('err!! : ' + err)
         }
-        let sConditions = [{ q: '=', f: 'u_no', v: this.userInfo.no },{ q: 'order', f: 'cd', o: 'ASC' }]
+        let sConditions = [{ q: '=', f: 'u_no', v: this.userInfo.no },{ q: 'order', f: 'cd', o: 'DESC' }]
         let surveyFormBody = {
             table: 'survey_result',
             conditions: sConditions,
@@ -408,7 +450,7 @@ export default {
                     this.healthCheckList = res.data
                     for(let one of this.healthCheckList){
                         one.title = Moment(one.cd).format('YY년MM월DD일')+"의 건강설문 결과"
-                        one.cd = Moment(one.cd).format('YYYY-MM-DD HH:mm')
+                        one.cd = Moment(one.cd).format('YY-MM-DD HH:mm')
                     }
                 } 
             })
@@ -418,7 +460,7 @@ export default {
         } catch (err) {
             console.log('err!! : ' + err)
         }
-        let tConditions = [{ q: '=', f: 'u_no', v: this.userInfo.no },{ q: 'order', f: 'cd', o: 'ASC' }]
+        let tConditions = [{ q: '=', f: 'u_no', v: this.userInfo.no },{ q: 'order', f: 'cd', o: 'DESC' }]
         let testFormBody = {
             table: 'test_result',
             conditions: tConditions,
@@ -430,7 +472,7 @@ export default {
                 if (res.data.length > 0) {
                     this.testList = res.data
                     for(let one of this.testList){
-                        one.cd = Moment(one.cd).format('YYYY-MM-DD HH:mm')
+                        one.cd = Moment(one.cd).format('YY-MM-DD HH:mm')
                     }
                 } 
             })
@@ -455,7 +497,7 @@ export default {
                         
                         one.i_list = JSON.parse(one.i_list)
                         
-                        one.cd = Moment(one.cd).format('YYYY-MM-DD HH:mm')
+                        one.cd = Moment(one.cd).format('YY-MM-DD HH:mm')
                     }
                 } 
             })
@@ -481,6 +523,8 @@ export default {
         }
       } else if (dialogType == 'messageTwoDialog') {
         this.messageTwoBtnDialogStatus = false
+      } else if(dialogType == 'surveyResult'){
+
       }
     },
     twoDialogClick(dialogType) {
@@ -820,6 +864,8 @@ export default {
             font-family: 'score2';
             display: flex;
             justify-content: flex-end;
+            overflow: hidden;
+            white-space: nowrap;
           }
         }
       }
@@ -1168,6 +1214,8 @@ export default {
               color: #333;
               font-size: 14px;
               font-family: 'score2';
+              overflow: hidden;
+              white-space: nowrap;
             }
           }
         }

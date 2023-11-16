@@ -164,26 +164,56 @@ export default {
         if(this.itemList[index].cnt>1){
             this.itemList[index].cnt--
         }
+        this.totalPrice = 0
+        for(let item of this.itemList){
+            if(item.selected){
+                this.totalPrice = this.totalPrice + (item.cnt*item.product.p_sell)
+                if(item.product.delivery_fee!=null){
+                    if(this.d_fee < item.product.delivery_fee){
+                        this.d_fee = item.product.delivery_fee
+                    }
+                }
+                
+            }
+        }
+        if(this.totalPrice >=  50000){
+            this.d_fee = 0
+        }
     },
     onClickPlus(index){
         this.itemList[index].cnt++
+        this.totalPrice = 0
+        for(let item of this.itemList){
+            if(item.selected){
+                this.totalPrice = this.totalPrice + (item.cnt*item.product.p_sell)
+                if(item.product.delivery_fee!=null){
+                    if(this.d_fee < item.product.delivery_fee){
+                        this.d_fee = item.product.delivery_fee
+                    }
+                }
+                
+            }
+        }
+        if(this.totalPrice >=  50000){
+            this.d_fee = 0
+        }
     },
     async updateCart(){
         let conditions = [{ q: '=', f: 'u_no', v: JSON.parse(localStorage.getItem('userInfo')).no}]
         let formBody = {
-        table: 'cart',
-        conditions: conditions,
-        item_list: JSON.stringify(this.updateList),
-        no:this.cartNo
-      }
-      try {
-        await this.$axios.post('/api/update', formBody).then((res) => {
-            if (res.data.length > 0) {
-                
-            } 
-          })
-          .catch(function (error) { console.log('에러!!', error) })
-      } catch (err) { console.log('err!! : ' + err) }
+            table: 'cart',
+            conditions: conditions,
+            item_list: JSON.stringify(this.updateList),
+            no:this.cartNo
+        }
+        try {
+            await this.$axios.post('/api/update', formBody).then((res) => {
+                if (res.data.length > 0) {
+                    
+                } 
+            })
+            .catch(function (error) { console.log('에러!!', error) })
+        } catch (err) { console.log('err!! : ' + err) }
     },
     onClickDel(index){
         this.itemList.splice(index,1)

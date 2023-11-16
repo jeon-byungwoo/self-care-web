@@ -168,7 +168,7 @@ import Header from '../../components/header.vue'
 export default {
     head: {
         script: [
-            { src: 'https://stgstdpay.inicis.com/stdjs/INIStdPay.js',
+            { src: 'https://stdpay.inicis.com/stdjs/INIStdPay.js',
             //   src: 'https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js' 
               },
             //{ src: 'https://stdpay.inicis.com/stdjs/INIStdPay.js' },
@@ -255,7 +255,6 @@ export default {
         },
       }).open()
     },
-
 
     onOrderRequest(){
         if(this.receiptName!=''&&this.receiptPhone!=''&&this.Postcode!=''&&this.roadAddress!=''&&this.receiptDetailAddress!=''){
@@ -379,6 +378,23 @@ export default {
         }
     },
 
+    // async updateCart(){
+    //     let conditions = [{ q: '=', f: 'u_no', v: JSON.parse(localStorage.getItem('userInfo')).no}]
+    //     let formBody = {
+    //         table: 'cart',
+    //         conditions: conditions,
+    //         item_list: JSON.stringify([]),
+    //         no:this.cartNo
+    //     }
+    //     try {
+    //         await this.$axios.post('/api/update', formBody).then((res) => {
+    //             if (res.data.length > 0) {
+                    
+    //             } 
+    //         })
+    //         .catch(function (error) { console.log('에러!!', error) })
+    //     } catch (err) { console.log('err!! : ' + err) }
+    // },
     async fetchOrderInfo(){
         clearInterval(this.inicisFormStatus);
         console.log('fetch')
@@ -396,7 +412,7 @@ export default {
                     let orderPay = res.data[0]
                     if(orderPay.status==7){
                         //장바구니 비우기
-
+                        // this.updateCart()
                         //구매내역 화면으로 넘기기
                         this.$router.push({path: '/myInfo', query: {tab: 4} })
                     }else{

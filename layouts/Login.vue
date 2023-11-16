@@ -94,14 +94,24 @@ export default {
       weight: '',
       diseaseCheck: 0,
       disease: '',
+      managerLink:null,
+      managerNo:null
     }
   },
   mounted() {
+
+    let userInfo = null
+    if (typeof window !== undefined) {
+      userInfo =
+        localStorage != undefined
+          ? JSON.parse(localStorage.getItem('userInfo'))
+          : undefined
+    }
     
-    if(localStorage!=undefined){
+    if(userInfo!=undefined){
 
         //측정 하고 넘어온 유저인 경우 회원가입을 유도하기 위해 데이터를 일단 준비하는 과정
-            if(localStorage.getItem('surveyUserInfo')!=null){
+        if(localStorage.getItem('surveyUserInfo')!=null){
             let surveyUserInfo = JSON.parse(localStorage.getItem('surveyUserInfo'))
             let surveyResult = JSON.parse(localStorage.getItem('surveyResult'))
             this.name = surveyUserInfo.name
@@ -111,6 +121,8 @@ export default {
             this.weight = surveyUserInfo.weight
             this.disease = surveyUserInfo.disease
             this.serializedData = surveyResult
+            this.managerLink = localStorage.getItem('managerLink')
+            this.managerNo = localStorage.getItem('managerNo')
             //세군데로 넘겨줘야함
             //로그인, 회원가입, 네이버가입(로그인)
         }
@@ -132,6 +144,8 @@ export default {
           .post('/api/insert', formBody)
           .then((res) => {
             let resultNo = res.data[0].no
+            localStorage.removeItem('surveyUserInfo')
+            localStorage.removeItem('surveyResult')
             //화면 이동
             this.$router.push({name: 'healthConsultingResult', query: {no: resultNo}})
           })
@@ -183,18 +197,7 @@ export default {
                 }
                 localStorage.setItem('loginStatus', true)
                 localStorage.setItem('userInfo', JSON.stringify(userInfo))
-                console.log("localStorage : ", localStorage)
-                if(localStorage!=undefined){
-                    if(localStorage.getItem('surveyResult')!=undefined){
-                        this.insertSurveyResult()
-                    }else if(localStorage.getItem('surveyResult')!=undefined){
-                        this.$router.push({ name: 'cart' })
-                    } else {
-                      this.$router.push({ name: 'index' })  
-                    }
-                }else{
-                    this.$router.push({ name: 'index' })
-                }
+                this.goNext()
               } else {
                 this.snackbarMessage =
                   '회원탈퇴된 계정입니다. 고객센터에 문의바랍니다.'
@@ -224,7 +227,7 @@ export default {
         window.Kakao.API.request({
           url: '/v1/user/unlink',
           success: function (response) {
-            console.log('request: ', response)
+            // console.log('request: ', response)
             // window.Kakao.socialLogin(response.id, '', '카카오')
           },
           fail: function (error) {
@@ -242,7 +245,7 @@ export default {
               property_keys: ['kakao_account.email'],
             },
             success: async function (response) {
-              console.log('login: ', response.id, response.kakao_account.email)
+              //console.log('login: ', response.id, response.kakao_account.email)
               window.Kakao.socialLogin(
                 response.id,
                 response.kakao_account.email,
@@ -262,6 +265,33 @@ export default {
     logoClick() {
       this.$router.push({ path: '/' })
     },
+    async updateManagerInfo(){
+        let conditions = [{ q: '=', f: 'no', v: JSON.parse(localStorage.getItem('userInfo')).no}]
+        let formBody = {
+            table: 'user',
+            conditions: conditions,
+            manager_no: this.managerNo,
+            no:JSON.parse(localStorage.getItem('userInfo')).no
+        }
+        try {
+            await this.$axios.post('/api/update', formBody).then((res) => {
+                if (res.data.length > 0) { } 
+            })
+            .catch(function (error) { console.log('에러!!', error) })
+        } catch (err) { console.log('err!! : ' + err) }
+    },
+    goNext(){
+        if(localStorage!=undefined){
+            if(localStorage.getItem('surveyResult')!=undefined){
+                this.updateManagerInfo()
+                this.insertSurveyResult()
+            }else {
+                this.$router.push({ name: 'index' })
+            }
+        }else{
+            this.$router.push({ name: 'index' })
+        }
+    },
     loginClick() {
       if (this.email.length > 0 && this.pw.length > 0) {
         let conditions = [
@@ -272,12 +302,12 @@ export default {
           table: 'user',
           conditions: conditions,
         }
-        console.log('obj : ', formBody)
+        // console.log('obj : ', formBody)
         try {
           this.$axios
             .post('/api/select', formBody)
             .then((res) => {
-              console.log('인서트 결과값:: ', JSON.stringify(res.data))
+            //   console.log('인서트 결과값:: ', JSON.stringify(res.data))
               if (res.data.length > 0) {
                 if (res.data[0].status == 1) {
                   localStorage.removeItem('userInfo')
@@ -294,19 +324,8 @@ export default {
                   }
                   localStorage.setItem('loginStatus', true)
                   localStorage.setItem('userInfo', JSON.stringify(userInfo))
-                  this.$router.push({ name: 'index' })
+                  this.goNext()
 
-                  if(localStorage!=undefined){
-                    if(localStorage.getItem('surveyResult')!=undefined){
-                      this.insertSurveyResult()
-                    }else if(localStorage.getItem('surveyResult')!=undefined){
-                      this.$router.push({ name: 'cart' })
-                    } else {
-                      this.$router.push({ name: 'index' })
-                    }
-                  }else{
-                    this.$router.push({ name: 'index' })
-                  }
                 } else {
                   this.snackbarMessage =
                     '회원탈퇴된 계정입니다. 고객센터에 문의바랍니다.'

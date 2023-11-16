@@ -295,7 +295,7 @@ export default {
             this.updateCart()
       }
 
-      this.$router.push({name: 'cart' });
+      this.$router.push({name: 'cart' })
 
     },
     onChildUpdate(newValue) {

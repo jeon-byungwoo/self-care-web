@@ -177,6 +177,16 @@ export default {
       cityList: [],
       townList: [],
       birthList: [],
+      serializedData:[],
+      name: '',
+      gender: 0,
+      birth: '',
+      tall: '',
+      weight: '',
+      diseaseCheck: 0,
+      disease: '',
+      managerLink:null,
+      managerNo:null
     }
   },
   created() {
@@ -189,6 +199,34 @@ export default {
     }
   },
   mounted() {
+
+    let userInfo = null
+    if (typeof window !== undefined) {
+      userInfo =
+        localStorage != undefined
+          ? JSON.parse(localStorage.getItem('userInfo'))
+          : undefined
+    }
+    
+    if(userInfo!=undefined){
+
+        //측정 하고 넘어온 유저인 경우 회원가입을 유도하기 위해 데이터를 일단 준비하는 과정
+        if(localStorage.getItem('surveyUserInfo')!=null){
+            let surveyUserInfo = JSON.parse(localStorage.getItem('surveyUserInfo'))
+            let surveyResult = JSON.parse(localStorage.getItem('surveyResult'))
+            this.name = surveyUserInfo.name
+            this.gender = surveyUserInfo.gender
+            this.birth = surveyUserInfo.gender
+            this.tall = surveyUserInfo.tall
+            this.weight = surveyUserInfo.weight
+            this.disease = surveyUserInfo.disease
+            this.serializedData = surveyResult
+            this.managerLink = localStorage.getItem('managerLink')
+            this.managerNo = localStorage.getItem('managerNo')
+        }
+    }
+
+
     this.getCityTown(1)
     let year = Number(moment().format('YYYY'))
     for (let i = year; i > 1919; i--) {
@@ -396,6 +434,7 @@ export default {
                   status: res.data[0].status,
                   
                 }
+                this.goNext()
                 localStorage.setItem('loginStatus', true)
                 localStorage.setItem('userInfo', JSON.stringify(userInfo))
                 this.messageOneBtnDialogStatus = true
@@ -411,6 +450,63 @@ export default {
         console.log('false')
         this.showToast()
         // console.log(this.emailCheck())
+      }
+    },
+    goNext(){
+        if(localStorage!=undefined){
+            if(localStorage.getItem('surveyResult')!=undefined){
+                if(localStorage.getItem('managerNo')!=undefined){
+                    this.updateManagerInfo()
+                }
+                
+                this.insertSurveyResult()
+            }else {
+                this.$router.push({ name: 'index' })
+            }
+        }else{
+            this.$router.push({ name: 'index' })
+        }
+    },
+    async updateManagerInfo(){
+        let conditions = [{ q: '=', f: 'no', v: JSON.parse(localStorage.getItem('userInfo')).no}]
+        let formBody = {
+            table: 'user',
+            conditions: conditions,
+            manager_no: this.managerNo,
+            no:JSON.parse(localStorage.getItem('userInfo')).no
+        }
+        try {
+            await this.$axios.post('/api/update', formBody).then((res) => {
+                if (res.data.length > 0) { } 
+            })
+            .catch(function (error) { console.log('에러!!', error) })
+        } catch (err) { console.log('err!! : ' + err) }
+    },
+    async insertSurveyResult(){
+        let formBody = {
+            table: 'survey_result',
+            result:JSON.stringify(this.serializedData),
+            u_no:JSON.parse(localStorage.getItem('userInfo')).no,
+            gender:this.gender,
+            weight:this.weight,
+            tall:this.tall,
+            disease:this.disease,
+        }
+      try {
+        await this.$axios
+          .post('/api/insert', formBody)
+          .then((res) => {
+            let resultNo = res.data[0].no
+            localStorage.removeItem('surveyUserInfo')
+            localStorage.removeItem('surveyResult')
+            //화면 이동
+            this.$router.push({name: 'healthConsultingResult', query: {no: resultNo}})
+          })
+          .catch(function (error) {
+            console.log('에러!!', error)
+          })
+      } catch (err) {
+        console.log('err!! : ' + err)
       }
     },
     emailCheck() {

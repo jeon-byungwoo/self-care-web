@@ -432,6 +432,7 @@ export default {
       indicatorNum: -1,
       serializedData : [],
       managerLink:'',
+      userInfo:[],
       stepList: [
         {
           stepList: [
@@ -539,10 +540,17 @@ export default {
     test[2].style.border = '1px solid #32b783'
     test[2].style.background = '#fff'
 
-
+    if (typeof window !== undefined) {
+      this.userInfo =
+        localStorage != undefined
+          ? JSON.parse(localStorage.getItem('userInfo'))
+          : undefined
+    }
 
     this.managerLink = this.$route.params.link
     console.log('link is', this.managerLink)
+    console.log('no is', this.selectManagerInfo())
+    
   },
   watch: {
     indicatorNum() {},
@@ -612,7 +620,7 @@ export default {
         this.stepNum += 1
         window.scrollTo(0,0)
       } else {
-        if(localStorage!= undefined){//로그인 정보가 있는 경우
+        if(this.userInfo != undefined){//로그인 정보가 있는 경우
             //데이터 준비
             for(let p of this.stepList){//5개의 화면
                 for(let q of p.stepList){
@@ -637,11 +645,29 @@ export default {
                 weight:Number(this.weight),
                 disease:this.disease
             }
+            localStorage.setItem('managerLink', this.managerLink)
+            this.selectManagerInfo()
             localStorage.setItem('surveyResult', JSON.stringify(this.serializedData))
             localStorage.setItem('surveyUserInfo', JSON.stringify(user_info))
             this.$router.replace({ name: 'Login' })
         }
       }
+    },
+    async selectManagerInfo() {
+      let conditions = []
+      conditions.push({"q":"=","f":"url","v":this.managerLink})
+      let param = {
+        table: 'user',
+        conditions: conditions
+      }
+      await this.$axios.post('/api/select', param).then(res => {
+        if (res.data?.length > 0) {
+            localStorage.setItem('managerNo', res.data[0].no)
+            console.log(res.data[0].no)
+        }
+      }).catch(err => {
+        console.log("error : ", err)
+      })
     },
     async insertSurveyResult(){
         let formBody = {
@@ -660,7 +686,9 @@ export default {
           .then((res) => {
             let resultNo = res.data[0].no
             //화면 이동
-            this.$router.push({name: 'healthConsultingResult', query: {no: resultNo}})
+            let str = 100000+resultNo
+            let hexString = str.toString(16);
+            this.$router.push({name: 'healthConsultingResult', query: {no: hexString}})
           })
           .catch(function (error) {
             console.log('에러!!', error)

@@ -114,38 +114,19 @@
             <div class="share-text">공유</div>
           </div>
         </div>
+
         <div class="product-area">
-          <div class="product-item-area">
+          <div v-for="(item, index) in recomandProductList" :key="index" class="product-item-area">
             <div class="product-img-area">
-              <img
+              <v-img
                 class="product-img"
-                src="@/assets/image/img_medicine_test.png"
+                :src="hostUrl+JSON.parse(item.i_list)[0]"
                 draggable="false"
               />
             </div>
-            <div class="product-name">프로바이오틱스</div>
+            <div class="product-name">{{item.name}}</div>
           </div>
-          <div class="product-item-area">
-            <div class="product-img-area">
-              <img
-                class="product-img"
-                src="@/assets/image/img_medicine_test.png"
-                draggable="false"
-              />
-            </div>
-            <div class="product-name">프로바이오틱스</div>
-          </div>
-          <div class="product-item-area">
-            <div class="product-img-area">
-              <img
-                class="product-img"
-                src="@/assets/image/img_medicine_test.png"
-                draggable="false"
-              />
-            </div>
-            <div class="product-name">프로바이오틱스</div>
-          </div>
-          <div class="cart-btn">장바구니에 담기</div>
+          <div @click="onClickCart()" class="cart-btn">장바구니에 담기</div>
         </div>
 
         <div class="consulting-group">
@@ -233,6 +214,7 @@ export default {
   },
   data() {
     return {
+        hostUrl: process.env.BASE_URL,
       score: 2,
       employeeStatus: true,
       navigationStatus: false,
@@ -259,18 +241,21 @@ export default {
       result:[],
       surveyComment:[],
       managerInfo:[],
-
-
+      user:[],
+      recomandProductList:[],
+      cartList:[],
+      cartNo:0,
 
     }
   },
   mounted() {
+    this.hostUrl = process.env.BASE_URL
     this.selectSurveyComment()
+    
     
   },
   methods: {
     onClickShare(){
-        console.log('oncli')
         const shareObject = {
             title: this.name+'님의 검사 결과',
             text: 'self-care',
@@ -298,6 +283,65 @@ export default {
     onClickPhone(){
         window.location.href = 'tel:'+this.managerInfo.phone
     },
+
+    async selectCart(){
+        this.cartList = []
+        let conditions = [{ q: '=', f: 'u_no', v: JSON.parse(localStorage.getItem('userInfo')).no }]
+        let formBody = {
+            table: 'cart',
+            conditions: conditions,
+        }
+        try {
+            await this.$axios.post('/api/select', formBody).then((res) => {
+                if (res.data.length > 0) {
+                    this.cartList = res.data[0]
+                    this.cartNo = this.cartList.no
+
+                    let cartData = JSON.parse(this.cartList.item_list)
+                    for(let one of this.recomandProductList){
+                        let notExistData = true
+                        for(let oneCartData of cartData){
+                            if(oneCartData.product.no==one.no){
+                                oneCartData.cnt++
+                                notExistData = false
+                            }
+                        }
+                        if(notExistData){
+                            cartData.push({cnt:1,product:one})
+                        }
+                    }
+                    let updateConditions = [{ q: '=', f: 'u_no', v: JSON.parse(localStorage.getItem('userInfo')).no}]
+                    let updateFormBody = {
+                        table: 'cart',
+                        conditions: updateConditions,
+                        item_list: JSON.stringify(cartData),
+                        no:this.cartNo
+                    }
+                    this.$axios.post('/api/update', updateFormBody).then((res) => {
+                            if (res.data.length > 0) {
+                                this.$router.push({name: 'cart' })
+                            } 
+                    })
+                    .catch(function (error) { console.log('에러!!', error) })
+
+                    
+                }
+            })
+            .catch(function (error) { console.log('에러!!', error) })
+        } catch (err) { console.log('err!! : ' + err) }
+    },
+
+
+    async onClickCart(){
+        if(localStorage.getItem('userInfo')==null){
+            alert('로그인 정보가 없습니다.')
+        }else{
+            this.selectCart()
+            
+        }
+
+
+    },
     async selectCounselerInfo(){
         let conditions = [{ q: '=', f: 'is_manager', v: 1 }]
         let formBody = {
@@ -308,7 +352,6 @@ export default {
         await this.$axios
           .post('/api/select', formBody)
           .then((res) => {
-            console.log('조회된 데이터:: ', (res.data))
             if (res.data.length > 0) {
                 this.managerInfo = res.data[0]
             } 
@@ -330,7 +373,6 @@ export default {
         await this.$axios
           .post('/api/select', formBody)
           .then((res) => {
-            console.log('조회된 데이터:: ', (res.data))
             if (res.data.length > 0) {
                 this.surveyComment = res.data
                 this.selectItem()
@@ -343,8 +385,81 @@ export default {
         console.log('err!! : ' + err)
       }
     },
+    async selectUser(){
+        let conditions = [{ q: '=', f: 'no', v: this.u_no }]
+        let formBody = {
+        table: 'user',
+        conditions: conditions,
+      }
+      try {
+        await this.$axios
+          .post('/api/select', formBody)
+          .then((res) => {
+            if (res.data.length > 0) {
+                this.user = res.data[0]
+                this.name = this.user.name
+            } 
+          })
+          .catch(function (error) {
+            console.log('에러!!', error)
+          })
+      } catch (err) {
+        console.log('err!! : ' + err)
+      }
+    },
+    async selectAI(){
+        this.recomandProductList = []
+        let conditions = []
+        conditions.push({op:"AND", q: '=', f: 'isIQT', v: 1})
+        conditions.push({op:"AND", q: '=', f: 'part', v: 1})
+        //item10개의 score가 각 상태-> 0,1,2,3
+        for(let i of this.itemList){
+            if(i.score>3){
+                conditions.push({ op:"OR", q: 'JSON_CONTAINS', f: 'survey_recomand', v: i.text })
+            } 
+        }
+        if(conditions.length==2){
+            for(let i of this.itemList){
+                if(i.score>2){
+                    conditions.push({ op:"OR", q: 'JSON_CONTAINS', f: 'survey_recomand', v: i.text })
+                } 
+            } 
+        }
+        if(conditions.length==2){
+            for(let i of this.itemList){
+                if(i.score>1){
+                    conditions.push({ op:"OR", q: 'JSON_CONTAINS', f: 'survey_recomand', v: i.text })
+                } 
+            } 
+        }
+        let formBody = {
+            table: 'product',
+            conditions: conditions,
+        }
+        try {
+            await this.$axios
+            .post('/api/select', formBody)
+            .then((res) => {
+                if (res.data.length > 0) {
+                    for(let one of res.data){
+                        this.recomandProductList.push(one)
+                    }
+                    if(this.recomandProductList.length>5){
+                        this.recomandProductList = this.recomandProductList.slice(0,4)
+                    }
+                } 
+            })
+            .catch(function (error) {
+                console.log('에러!!', error)
+            })
+        } catch (err) {
+            console.log('err!! : ' + err)
+        }
+    },
     async selectItem(){
-        let no = this.$route.query.no
+        let hexString = `${this.$route.query.no}`
+        let str2 = `${parseInt(hexString,16)}`
+        let no = str2.slice(5)
         let conditions = [{ q: '=', f: 'no', v: no}]
         let formBody = {
         table: 'survey_result',
@@ -354,172 +469,152 @@ export default {
         await this.$axios
           .post('/api/select', formBody)
           .then((res) => {
-            console.log('조회된 데이터:: ', (res.data))
             if (res.data.length > 0) {
                 let item = res.data[0]
-                if(item.u_no == JSON.parse(localStorage.getItem('userInfo')).no){
-                    
-                    this.birth = item.birth
-                    this.result = item.result
-                    this.u_no = item.u_no
-                    this.tall = item.tall
-                    this.weight = item.weight
-                    this.gender = item.gender
-                    this.name = JSON.parse(localStorage.getItem('userInfo')).name
-                    this.bmi = (this.weight / ((this.tall/100.0)*(this.tall/100.0)))
-                    this.bmi = this.bmi.toFixed(2)
-                    const today = new Date();
-                    const birthDate = new Date(this.birth, 7, 10); // 2000년 8월 10일
+                this.birth = item.birth
+                this.result = item.result
+                this.u_no = item.u_no
+                this.tall = item.tall
+                this.weight = item.weight
+                this.gender = item.gender
+                this.bmi = (this.weight / ((this.tall/100.0)*(this.tall/100.0)))
+                this.bmi = this.bmi.toFixed(2)
+                const today = new Date();
+                const birthDate = new Date(this.birth, 7, 10); // 2000년 8월 10일
+                this.age = today.getFullYear()
+                        - birthDate.getFullYear()
+                        + 1;
+                this.result = item.result
+                //면역012 / 34 / 567 / 8
+                for(let i=0;i<this.result.length;i++){
+                    if( this.result[i]==1 ){
+                        if(i==0) this.itemList[0].cnt++, this.itemList[1].cnt++, this.itemList[2].cnt++, this.itemList[4].cnt++, this.itemList[5].cnt++
+                        if(i==1) this.itemList[0].cnt++, this.itemList[9].cnt++
+                        if(i==2) this.itemList[2].cnt++, this.itemList[3].cnt++, this.itemList[6].cnt++, this.itemList[7].cnt++
+                        if(i==3) this.itemList[0].cnt++, this.itemList[2].cnt++
+                        if(i==4) this.itemList[1].cnt++, this.itemList[3].cnt++, this.itemList[6].cnt++
+                        if(i==5) this.itemList[3].cnt++, this.itemList[5].cnt++, this.itemList[7].cnt++
+                        if(i==6) this.itemList[0].cnt++, this.itemList[3].cnt++
+                        if(i==7) this.itemList[4].cnt++, this.itemList[5].cnt++
+                        if(i==8) this.itemList[4].cnt++, this.itemList[5].cnt++
+                        if(i==9) this.itemList[0].cnt++, this.itemList[2].cnt++, this.itemList[6].cnt++, this.itemList[9].cnt++
 
-                    this.age = today.getFullYear()
-                            - birthDate.getFullYear()
-                            + 1;
-                    this.result = item.result
+                        if(i==10) this.itemList[1].cnt++, this.itemList[4].cnt++, this.itemList[7].cnt++, this.itemList[9].cnt++
+                        if(i==11) this.itemList[1].cnt++, this.itemList[4].cnt++, this.itemList[6].cnt++, this.itemList[9].cnt++
+                        if(i==12) this.itemList[1].cnt++, this.itemList[4].cnt++, this.itemList[5].cnt++
+                        if(i==13) this.itemList[0].cnt++, this.itemList[2].cnt++
+                        if(i==14) this.itemList[0].cnt++, this.itemList[2].cnt++
+                        if(i==15) this.itemList[0].cnt++, this.itemList[1].cnt++, this.itemList[4].cnt++, this.itemList[5].cnt++, this.itemList[9].cnt++
+                        if(i==16) this.itemList[2].cnt++, this.itemList[3].cnt++, this.itemList[5].cnt++, this.itemList[7].cnt++, this.itemList[8].cnt++, this.itemList[9].cnt++
+                        if(i==17) this.itemList[4].cnt++, this.itemList[5].cnt++
+                        if(i==18) this.itemList[3].cnt++, this.itemList[6].cnt++
+                        if(i==19) this.itemList[3].cnt++, this.itemList[4].cnt++
 
-                    //면역012 / 34 / 567 / 8
-                    for(let i=0;i<this.result.length;i++){
-                        if( this.result[i]==1 ){
-                            if(i==0) this.itemList[0].cnt++, this.itemList[1].cnt++, this.itemList[2].cnt++, this.itemList[4].cnt++, this.itemList[5].cnt++
-                            if(i==1) this.itemList[0].cnt++, this.itemList[9].cnt++
-                            if(i==2) this.itemList[2].cnt++, this.itemList[3].cnt++, this.itemList[6].cnt++, this.itemList[7].cnt++
-                            if(i==3) this.itemList[0].cnt++, this.itemList[2].cnt++
-                            if(i==4) this.itemList[1].cnt++, this.itemList[3].cnt++, this.itemList[6].cnt++
-                            if(i==5) this.itemList[3].cnt++, this.itemList[5].cnt++, this.itemList[7].cnt++
-                            if(i==6) this.itemList[0].cnt++, this.itemList[3].cnt++
-                            if(i==7) this.itemList[4].cnt++, this.itemList[5].cnt++
-                            if(i==8) this.itemList[4].cnt++, this.itemList[5].cnt++
-                            if(i==9) this.itemList[0].cnt++, this.itemList[2].cnt++, this.itemList[6].cnt++, this.itemList[9].cnt++
-
-                            if(i==10) this.itemList[1].cnt++, this.itemList[4].cnt++, this.itemList[7].cnt++, this.itemList[9].cnt++
-                            if(i==11) this.itemList[1].cnt++, this.itemList[4].cnt++, this.itemList[6].cnt++, this.itemList[9].cnt++
-                            if(i==12) this.itemList[1].cnt++, this.itemList[4].cnt++, this.itemList[5].cnt++
-                            if(i==13) this.itemList[0].cnt++, this.itemList[2].cnt++
-                            if(i==14) this.itemList[0].cnt++, this.itemList[2].cnt++
-                            if(i==15) this.itemList[0].cnt++, this.itemList[1].cnt++, this.itemList[4].cnt++, this.itemList[5].cnt++, this.itemList[9].cnt++
-                            if(i==16) this.itemList[2].cnt++, this.itemList[3].cnt++, this.itemList[5].cnt++, this.itemList[7].cnt++, this.itemList[8].cnt++, this.itemList[9].cnt++
-                            if(i==17) this.itemList[4].cnt++, this.itemList[5].cnt++
-                            if(i==18) this.itemList[3].cnt++, this.itemList[6].cnt++
-                            if(i==19) this.itemList[3].cnt++, this.itemList[4].cnt++
-
-                            if(i==20) this.itemList[4].cnt++, this.itemList[5].cnt++
-                            if(i==21) this.itemList[4].cnt++, this.itemList[5].cnt++, this.itemList[8].cnt++
-                            if(i==22) this.itemList[7].cnt++
-                            if(i==23) this.itemList[1].cnt++, this.itemList[4].cnt++, this.itemList[5].cnt++, this.itemList[8].cnt++
-                            if(i==24) this.itemList[0].cnt++, this.itemList[1].cnt++, this.itemList[8].cnt++
-                            if(i==25) this.itemList[0].cnt++, this.itemList[4].cnt++, this.itemList[5].cnt++, this.itemList[8].cnt++
-                            if(i==26) this.itemList[1].cnt++, this.itemList[6].cnt++, this.itemList[8].cnt++
-                            if(i==27) this.itemList[2].cnt++, this.itemList[3].cnt++, this.itemList[5].cnt++, this.itemList[9].cnt++
-                            if(i==28) this.itemList[1].cnt++, this.itemList[3].cnt++, this.itemList[5].cnt++
-                            if(i==29) this.itemList[2].cnt++, this.itemList[3].cnt++, this.itemList[4].cnt++, this.itemList[9].cnt++
-                            
-                            if(i==30) this.itemList[2].cnt++, this.itemList[4].cnt++, this.itemList[5].cnt++
-                            if(i==31) this.itemList[5].cnt++
-                            if(i==32) this.itemList[2].cnt++, this.itemList[8].cnt++
-                            if(i==33) this.itemList[2].cnt++, this.itemList[7].cnt++
-                            if(i==34) this.itemList[1].cnt++, this.itemList[2].cnt++, this.itemList[3].cnt++
-                            if(i==35) this.itemList[4].cnt++, this.itemList[5].cnt++
-                            if(i==36) this.itemList[1].cnt++, this.itemList[3].cnt++
-                            if(i==37) this.itemList[4].cnt++, this.itemList[8].cnt++
-                            if(i==38) this.itemList[0].cnt++, this.itemList[6].cnt++, this.itemList[9].cnt++
-                            if(i==39) this.itemList[4].cnt++, this.itemList[5].cnt++, this.itemList[8].cnt++
-
-                            if(i==40) this.itemList[0].cnt++, this.itemList[4].cnt++, this.itemList[8].cnt++
-                            if(i==41) this.itemList[0].cnt++, this.itemList[2].cnt++, this.itemList[3].cnt++
-                            if(i==42) this.itemList[0].cnt++, this.itemList[2].cnt++, this.itemList[3].cnt++
-                            if(i==43) this.itemList[2].cnt++, this.itemList[7].cnt++, this.itemList[8].cnt++
-                            if(i==44) this.itemList[2].cnt++, this.itemList[4].cnt++
-                            if(i==45) this.itemList[3].cnt++, this.itemList[4].cnt++, this.itemList[5].cnt++
-                            if(i==46) this.itemList[3].cnt++, this.itemList[4].cnt++, this.itemList[5].cnt++, this.itemList[8].cnt++
-                            if(i==47) this.itemList[3].cnt++, this.itemList[6].cnt++
-                            if(i==48) this.itemList[9].cnt++
-                            if(i==49) this.itemList[9].cnt++
-                        }
+                        if(i==20) this.itemList[4].cnt++, this.itemList[5].cnt++
+                        if(i==21) this.itemList[4].cnt++, this.itemList[5].cnt++, this.itemList[8].cnt++
+                        if(i==22) this.itemList[7].cnt++
+                        if(i==23) this.itemList[1].cnt++, this.itemList[4].cnt++, this.itemList[5].cnt++, this.itemList[8].cnt++
+                        if(i==24) this.itemList[0].cnt++, this.itemList[1].cnt++, this.itemList[8].cnt++
+                        if(i==25) this.itemList[0].cnt++, this.itemList[4].cnt++, this.itemList[5].cnt++, this.itemList[8].cnt++
+                        if(i==26) this.itemList[1].cnt++, this.itemList[6].cnt++, this.itemList[8].cnt++
+                        if(i==27) this.itemList[2].cnt++, this.itemList[3].cnt++, this.itemList[5].cnt++, this.itemList[9].cnt++
+                        if(i==28) this.itemList[1].cnt++, this.itemList[3].cnt++, this.itemList[5].cnt++
+                        if(i==29) this.itemList[2].cnt++, this.itemList[3].cnt++, this.itemList[4].cnt++, this.itemList[9].cnt++
                         
+                        if(i==30) this.itemList[2].cnt++, this.itemList[4].cnt++, this.itemList[5].cnt++
+                        if(i==31) this.itemList[5].cnt++
+                        if(i==32) this.itemList[2].cnt++, this.itemList[8].cnt++
+                        if(i==33) this.itemList[2].cnt++, this.itemList[7].cnt++
+                        if(i==34) this.itemList[1].cnt++, this.itemList[2].cnt++, this.itemList[3].cnt++
+                        if(i==35) this.itemList[4].cnt++, this.itemList[5].cnt++
+                        if(i==36) this.itemList[1].cnt++, this.itemList[3].cnt++
+                        if(i==37) this.itemList[4].cnt++, this.itemList[8].cnt++
+                        if(i==38) this.itemList[0].cnt++, this.itemList[6].cnt++, this.itemList[9].cnt++
+                        if(i==39) this.itemList[4].cnt++, this.itemList[5].cnt++, this.itemList[8].cnt++
+
+                        if(i==40) this.itemList[0].cnt++, this.itemList[4].cnt++, this.itemList[8].cnt++
+                        if(i==41) this.itemList[0].cnt++, this.itemList[2].cnt++, this.itemList[3].cnt++
+                        if(i==42) this.itemList[0].cnt++, this.itemList[2].cnt++, this.itemList[3].cnt++
+                        if(i==43) this.itemList[2].cnt++, this.itemList[7].cnt++, this.itemList[8].cnt++
+                        if(i==44) this.itemList[2].cnt++, this.itemList[4].cnt++
+                        if(i==45) this.itemList[3].cnt++, this.itemList[4].cnt++, this.itemList[5].cnt++
+                        if(i==46) this.itemList[3].cnt++, this.itemList[4].cnt++, this.itemList[5].cnt++, this.itemList[8].cnt++
+                        if(i==47) this.itemList[3].cnt++, this.itemList[6].cnt++
+                        if(i==48) this.itemList[9].cnt++
+                        if(i==49) this.itemList[9].cnt++
                     }
-
-
-                    for(let i=0;i<this.itemList.length;i++){
-                        if(i==0) {//면역
-
-                        console.log(this.surveyComment[0])
-                        console.log(this.surveyComment[0].content)
-
-                            if(this.itemList[i].cnt<=2) this.itemList[i].score=0, this.itemList[i]['comment'] = this.surveyComment[0].content
-                            else if(this.itemList[i].cnt<=4) this.itemList[i].score=1, this.itemList[i]['comment'] = this.surveyComment[1].content
-                            else if(this.itemList[i].cnt<=7) this.itemList[i].score=2, this.itemList[i]['comment'] = this.surveyComment[2].content
-                            else this.itemList[i].score=3, this.itemList[i]['comment'] = this.surveyComment[3].content
-                        }
-                        if(i==1) {//순환
-                            if(this.itemList[i].cnt<=2) this.itemList[i].score=0, this.itemList[i]['comment'] = this.surveyComment[4].content
-                            else if(this.itemList[i].cnt<=3) this.itemList[i].score=1, this.itemList[i]['comment'] = this.surveyComment[5].content
-                            else if(this.itemList[i].cnt<=7) this.itemList[i].score=2, this.itemList[i]['comment'] = this.surveyComment[6].content
-                            else this.itemList[i].score=3, this.itemList[i]['comment'] = this.surveyComment[7].content
-                        }
-                        if(i==2) {//소화
-                            if(this.itemList[i].cnt<=2) this.itemList[i].score=0, this.itemList[i]['comment'] = this.surveyComment[8].content
-                            else if(this.itemList[i].cnt<=4) this.itemList[i].score=1, this.itemList[i]['comment'] = this.surveyComment[9].content
-                            else if(this.itemList[i].cnt<=9) this.itemList[i].score=2, this.itemList[i]['comment'] = this.surveyComment[10].content
-                            else this.itemList[i].score=3, this.itemList[i]['comment'] = this.surveyComment[11].content
-                        }
-                        if(i==3) {//장관
-                            if(this.itemList[i].cnt<=2) this.itemList[i].score=0, this.itemList[i]['comment'] = this.surveyComment[12].content
-                            else if(this.itemList[i].cnt<=4) this.itemList[i].score=1, this.itemList[i]['comment'] = this.surveyComment[13].content
-                            else if(this.itemList[i].cnt<=9) this.itemList[i].score=2, this.itemList[i]['comment'] = this.surveyComment[14].content
-                            else this.itemList[i].score=3, this.itemList[i]['comment'] = this.surveyComment[15].content
-                        }
-                        if(i==4) {//뇌신경
-                            if(this.itemList[i].cnt<=2) this.itemList[i].score=0, this.itemList[i]['comment'] = this.surveyComment[16].content
-                            else if(this.itemList[i].cnt<=5) this.itemList[i].score=1, this.itemList[i]['comment'] = this.surveyComment[17].content
-                            else if(this.itemList[i].cnt<=10) this.itemList[i].score=2, this.itemList[i]['comment'] = this.surveyComment[18].content
-                            else this.itemList[i].score=3, this.itemList[i]['comment'] = this.surveyComment[19].content
-                        }
-                        if(i==5) {//호르몬
-                            if(this.itemList[i].cnt<=2) this.itemList[i].score=0, this.itemList[i]['comment'] = this.surveyComment[20].content
-                            else if(this.itemList[i].cnt<=3) this.itemList[i].score=1, this.itemList[i]['comment'] = this.surveyComment[21].content
-                            else if(this.itemList[i].cnt<=10) this.itemList[i].score=2, this.itemList[i]['comment'] = this.surveyComment[22].content
-                            else this.itemList[i].score=3, this.itemList[i]['comment'] = this.surveyComment[23].content
-                        }
-                        if(i==6) {//호흡
-                            if(this.itemList[i].cnt<=0) this.itemList[i].score=0, this.itemList[i]['comment'] = this.surveyComment[24].content
-                            else if(this.itemList[i].cnt<=1) this.itemList[i].score=1, this.itemList[i]['comment'] = this.surveyComment[25].content
-                            else if(this.itemList[i].cnt<=4) this.itemList[i].score=2, this.itemList[i]['comment'] = this.surveyComment[26].content
-                            else this.itemList[i].score=3, this.itemList[i]['comment'] = this.surveyComment[27].content
-                        }
-                        if(i==7) {//비뇨
-                            if(this.itemList[i].cnt<=0) this.itemList[i].score=0, this.itemList[i]['comment'] = this.surveyComment[28].content
-                            else if(this.itemList[i].cnt<=1) this.itemList[i].score=1, this.itemList[i]['comment'] = this.surveyComment[29].content
-                            else if(this.itemList[i].cnt<=4) this.itemList[i].score=2, this.itemList[i]['comment'] = this.surveyComment[30].content
-                            else this.itemList[i].score=3, this.itemList[i]['comment'] = this.surveyComment[31].content
-                        }
-                        if(i==8) {//골격
-                            if(this.itemList[i].cnt<=1) this.itemList[i].score=0, this.itemList[i]['comment'] = this.surveyComment[32].content
-                            else if(this.itemList[i].cnt<=3) this.itemList[i].score=1, this.itemList[i]['comment'] = this.surveyComment[33].content
-                            else if(this.itemList[i].cnt<=7) this.itemList[i].score=2, this.itemList[i]['comment'] = this.surveyComment[34].content
-                            else this.itemList[i].score=3, this.itemList[i]['comment'] = this.surveyComment[35].content
-                        }
-                        if(i==9) {//피부모발
-                            if(this.itemList[i].cnt<=1) this.itemList[i].score=0, this.itemList[i]['comment'] = this.surveyComment[36].content
-                            else if(this.itemList[i].cnt<=3) this.itemList[i].score=1, this.itemList[i]['comment'] = this.surveyComment[37].content
-                            else if(this.itemList[i].cnt<=6) this.itemList[i].score=2, this.itemList[i]['comment'] = this.surveyComment[38].content
-                            else this.itemList[i].score=3, this.itemList[i]['comment'] = this.surveyComment[39].content
-                        }
-
-                    }
-
-                    //추천 상품 목록 만들기
-                    //불량>경계>보통인 상품 순으로 항목 상품을 담기
-                    //모든 파트가 양호인 경우 추천 상품을 하드코딩
-                    //상품 파트 제작 완료 시 이 부분 개선 필요
-
-
-                    //상담사 정보 가져오기
-                    this.selectCounselerInfo()
-
-
-                }else{
-                    alert('잘못된 접근입니다.')
                 }
-                
+                for(let i=0;i<this.itemList.length;i++){
+                    if(i==0) {//면역
+                        if(this.itemList[i].cnt<=2) this.itemList[i].score=0, this.itemList[i]['comment'] = this.surveyComment[0].content
+                        else if(this.itemList[i].cnt<=4) this.itemList[i].score=1, this.itemList[i]['comment'] = this.surveyComment[1].content
+                        else if(this.itemList[i].cnt<=7) this.itemList[i].score=2, this.itemList[i]['comment'] = this.surveyComment[2].content
+                        else this.itemList[i].score=3, this.itemList[i]['comment'] = this.surveyComment[3].content
+                    }
+                    if(i==1) {//순환
+                        if(this.itemList[i].cnt<=2) this.itemList[i].score=0, this.itemList[i]['comment'] = this.surveyComment[4].content
+                        else if(this.itemList[i].cnt<=3) this.itemList[i].score=1, this.itemList[i]['comment'] = this.surveyComment[5].content
+                        else if(this.itemList[i].cnt<=7) this.itemList[i].score=2, this.itemList[i]['comment'] = this.surveyComment[6].content
+                        else this.itemList[i].score=3, this.itemList[i]['comment'] = this.surveyComment[7].content
+                    }
+                    if(i==2) {//소화
+                        if(this.itemList[i].cnt<=2) this.itemList[i].score=0, this.itemList[i]['comment'] = this.surveyComment[8].content
+                        else if(this.itemList[i].cnt<=4) this.itemList[i].score=1, this.itemList[i]['comment'] = this.surveyComment[9].content
+                        else if(this.itemList[i].cnt<=9) this.itemList[i].score=2, this.itemList[i]['comment'] = this.surveyComment[10].content
+                        else this.itemList[i].score=3, this.itemList[i]['comment'] = this.surveyComment[11].content
+                    }
+                    if(i==3) {//장관
+                        if(this.itemList[i].cnt<=2) this.itemList[i].score=0, this.itemList[i]['comment'] = this.surveyComment[12].content
+                        else if(this.itemList[i].cnt<=4) this.itemList[i].score=1, this.itemList[i]['comment'] = this.surveyComment[13].content
+                        else if(this.itemList[i].cnt<=9) this.itemList[i].score=2, this.itemList[i]['comment'] = this.surveyComment[14].content
+                        else this.itemList[i].score=3, this.itemList[i]['comment'] = this.surveyComment[15].content
+                    }
+                    if(i==4) {//뇌신경
+                        if(this.itemList[i].cnt<=2) this.itemList[i].score=0, this.itemList[i]['comment'] = this.surveyComment[16].content
+                        else if(this.itemList[i].cnt<=5) this.itemList[i].score=1, this.itemList[i]['comment'] = this.surveyComment[17].content
+                        else if(this.itemList[i].cnt<=10) this.itemList[i].score=2, this.itemList[i]['comment'] = this.surveyComment[18].content
+                        else this.itemList[i].score=3, this.itemList[i]['comment'] = this.surveyComment[19].content
+                    }
+                    if(i==5) {//호르몬
+                        if(this.itemList[i].cnt<=2) this.itemList[i].score=0, this.itemList[i]['comment'] = this.surveyComment[20].content
+                        else if(this.itemList[i].cnt<=3) this.itemList[i].score=1, this.itemList[i]['comment'] = this.surveyComment[21].content
+                        else if(this.itemList[i].cnt<=10) this.itemList[i].score=2, this.itemList[i]['comment'] = this.surveyComment[22].content
+                        else this.itemList[i].score=3, this.itemList[i]['comment'] = this.surveyComment[23].content
+                    }
+                    if(i==6) {//호흡
+                        if(this.itemList[i].cnt<=0) this.itemList[i].score=0, this.itemList[i]['comment'] = this.surveyComment[24].content
+                        else if(this.itemList[i].cnt<=1) this.itemList[i].score=1, this.itemList[i]['comment'] = this.surveyComment[25].content
+                        else if(this.itemList[i].cnt<=4) this.itemList[i].score=2, this.itemList[i]['comment'] = this.surveyComment[26].content
+                        else this.itemList[i].score=3, this.itemList[i]['comment'] = this.surveyComment[27].content
+                    }
+                    if(i==7) {//비뇨
+                        if(this.itemList[i].cnt<=0) this.itemList[i].score=0, this.itemList[i]['comment'] = this.surveyComment[28].content
+                        else if(this.itemList[i].cnt<=1) this.itemList[i].score=1, this.itemList[i]['comment'] = this.surveyComment[29].content
+                        else if(this.itemList[i].cnt<=4) this.itemList[i].score=2, this.itemList[i]['comment'] = this.surveyComment[30].content
+                        else this.itemList[i].score=3, this.itemList[i]['comment'] = this.surveyComment[31].content
+                    }
+                    if(i==8) {//골격
+                        if(this.itemList[i].cnt<=1) this.itemList[i].score=0, this.itemList[i]['comment'] = this.surveyComment[32].content
+                        else if(this.itemList[i].cnt<=3) this.itemList[i].score=1, this.itemList[i]['comment'] = this.surveyComment[33].content
+                        else if(this.itemList[i].cnt<=7) this.itemList[i].score=2, this.itemList[i]['comment'] = this.surveyComment[34].content
+                        else this.itemList[i].score=3, this.itemList[i]['comment'] = this.surveyComment[35].content
+                    }
+                    if(i==9) {//피부모발
+                        if(this.itemList[i].cnt<=1) this.itemList[i].score=0, this.itemList[i]['comment'] = this.surveyComment[36].content
+                        else if(this.itemList[i].cnt<=3) this.itemList[i].score=1, this.itemList[i]['comment'] = this.surveyComment[37].content
+                        else if(this.itemList[i].cnt<=6) this.itemList[i].score=2, this.itemList[i]['comment'] = this.surveyComment[38].content
+                        else this.itemList[i].score=3, this.itemList[i]['comment'] = this.surveyComment[39].content
+                    }
+                }
+                //추천 상품 목록 만들기
+                //불량>경계>보통인 상품 순으로 항목 상품을 담기
+                //모든 파트가 양호인 경우 추천 상품을 하드코딩
+                //상품 파트 제작 완료 시 이 부분 개선 필요
+                this.selectUser()
+                //AI추천 영양성분 결과
+                this.selectAI()
+                //상담사 정보 가져오기
+                this.selectCounselerInfo()
             } 
           })
           .catch(function (error) {
@@ -816,7 +911,7 @@ export default {
         border: 1px solid #ddd;
         margin-right: 13px;
         .product-img-area {
-          width: 54px;
+          width: 90px;
           height: 54px;
           border-radius: 27px;
           background-color: #efefef;
@@ -1306,7 +1401,7 @@ export default {
           margin-right: 0px;
           padding: 0px 5px;
           .product-img-area {
-            width: 40px;
+            width: 70px;
             height: 40px;
             border-radius: 27px;
             background-color: #efefef;

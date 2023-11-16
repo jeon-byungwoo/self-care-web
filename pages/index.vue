@@ -153,14 +153,11 @@ export default {
   },
   methods: {
     coalitionDialogClose() {
-      console.log('action')
       this.coalitionDialogStatus = false
     },
     coalitionDialogSendData(nowPw, newPw, confirmPw) {
-      console.log('nowPw: ' + nowPw)
     },
     footerSendData(status) {
-      console.log(status)
       //status 1 - 브랜드 스토리, 2 - 제휴/입점 문의, 3 - 이용약관, 4 - 개인정보, 5 - 고객센터
       if (status == 1) {
         this.$router.push({name: 'brandStory'})
@@ -245,10 +242,8 @@ export default {
         await this.$axios
           .post('/api/select', formBody)
           .then((res) => {
-            console.log('조회된 데이터:: ', (res.data))
             if (res.data.length > 0) {
                 this.magazineList = res.data
-                console.log(this.magazineList)
             } 
           })
           .catch(function (error) {

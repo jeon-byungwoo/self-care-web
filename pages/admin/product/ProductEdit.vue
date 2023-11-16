@@ -428,7 +428,7 @@ export default {
             ],
             IQTObj: [
                 {text:"해당", value: 1},
-                {text:"미해당", value: 0},
+                {text:"미해당", value: 2},
             ],
             questionsObj: [
                 "면역",
@@ -588,7 +588,7 @@ export default {
                 table: 'product',
             }
             
-            for (const [key, value] of Object.entries(param)) {    
+            for (const [key, value] of Object.entries(param)) {
                 if (this.validateVariableExist(value)) delete param[key]
             }
             this.$axios.post('/admin/insert', param).then(async res => {
@@ -627,7 +627,9 @@ export default {
                 table: 'product',
                 conditions:[{q:"=",f:"no",v:this.productObj.no}]
             }
+            console.log('isIQT ',this.productObj.isIQT)
             for (const [key, value] of Object.entries(param)) {    
+                console.log(value)
                 if (this.validateVariableExist(value)) delete param[key]
             }
             console.log(param.hashtag)
