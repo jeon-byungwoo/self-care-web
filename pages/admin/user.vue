@@ -172,6 +172,7 @@ export default {
             }
             this.$axios.post('/api/findPW', param).then(res => {
                 console.log("send Email : ", res)
+                alert('임시 비밀번호가 메일로 발송되었습니다.')
             }).catch(err => {
                 console.log("send Email err : ", err)
             })
