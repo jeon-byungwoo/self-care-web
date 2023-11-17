@@ -318,7 +318,7 @@ export default {
         }
     },
     async mobileOrder(){
-        const { data: info } = await newOrder();
+        const { data: info } = await this.newOrder();
         const { status, data } = info;
         if (status === 'success') {
             this.orderNumber = data;
@@ -329,7 +329,7 @@ export default {
                 if (status === 'success') {
                     const form = document.createElement('form');
                     form.method = 'post';
-                    form.acceptCharset = 'UTF-8';
+                    form.acceptCharset = 'euc-kr';
                     form.hidden = true;
                     form.id = 'pay_form';
                     form.action = 'https://mobile.inicis.com/smart/payment/';

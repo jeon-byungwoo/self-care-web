@@ -903,12 +903,14 @@ export default {
             display: flex;
           }
           .title-contents-area {
+            display: block;
             margin-left: 30px;
 
             .title {
               color: #333;
               font-size: 18px;
               font-family: 'score6';
+
             }
             .contents {
               color: #666;
@@ -1231,10 +1233,11 @@ export default {
             background-color: #fff;
             padding: 20px;
             display: flex;
+            flex-direction: column;
             .rep-img-area {
               border: 1px solid #ddd;
               background-color: #fff;
-              width: 30%;
+              width: 100%;
               height: auto;
               display: flex;
               align-items: center;
@@ -1255,7 +1258,7 @@ export default {
             }
             .title-contents-area {
               margin-left: 20px;
-              display: flex;
+              
               flex-direction: column;
               align-items: flex-start;
               .title {
