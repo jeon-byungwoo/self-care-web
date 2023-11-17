@@ -141,7 +141,7 @@ export default {
             this.$emit('click-close', 'board')
         },
         validateVariableExist(value) {
-            return (value == null || value == undefined || value == '' || value == '[]')
+            return (value == null || value == undefined || value == '[]' || ( value != null && typeof value == "object" && !Object.keys(value).length ))
         },
         insert () {
             let param = {

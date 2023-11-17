@@ -567,7 +567,7 @@ export default {
             else return src
         },
         validateVariableExist(value) {
-            return (value == null || value == undefined || value == '' || value == "[]" || value == [])
+            return (value == null || value == undefined || value == '[]' || ( value != null && typeof value == "object" && !Object.keys(value).length ))
         },
         insertProduct () {
             let param = {
@@ -627,9 +627,7 @@ export default {
                 table: 'product',
                 conditions:[{q:"=",f:"no",v:this.productObj.no}]
             }
-            console.log('isIQT ',this.productObj.isIQT)
             for (const [key, value] of Object.entries(param)) {    
-                console.log(value)
                 if (this.validateVariableExist(value)) delete param[key]
             }
             console.log(param.hashtag)

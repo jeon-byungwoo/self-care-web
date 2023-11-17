@@ -120,6 +120,7 @@
                         mandatory
                         dense
                         rounded
+                        
                     >
                         <v-btn 
                             v-for="(obj, index) in genderObj"
@@ -213,10 +214,10 @@
                         </v-col>
                         <v-btn-toggle
                             class="basic_btn_toggle"
-                            v-model="userObj.is_manager"
-                            mandatory
                             dense
                             rounded
+                            mandatory
+                            v-model="userObj.is_manager"
                         >
                             <v-btn 
                                 v-for="(obj, index) in managerObj"
@@ -532,7 +533,7 @@ export default {
             else return this.hostUrl+url
         },
         validateVariableExist(value) {
-            return (value == null || value == undefined || value == '' || value == '[]')
+            return (value == null || value == undefined || value == '[]' || ( value != null && typeof value == "object" && !Object.keys(value).length ))
         },
         async insert() {
             let isOverlap = await this.isOverlapEmail()
@@ -557,13 +558,7 @@ export default {
                 city: this.userObj.city,
                 town: this.userObj.town,
                 birth: this.userObj.birth,
-                last_test: null,
-                point: null,
-                status: null,
                 viral_url: this.userObj.viral_url,
-                memo: null,
-                auth: null,
-                cart: null,
                 url: this.userObj.url,
                 table: 'user',
             }
@@ -575,7 +570,7 @@ export default {
             this.$axios.post('/admin/insert', param).then(async res => {
                 if (res.data.length > 0) {
                     this.userObj = _.cloneDeep(res.data[0])
-                    if (!this.validateVariableExist(this.profileImage)) {
+                    if (this.profileImage != null) {
                         await this.updateImage(this.profileImage, 'profile_url')
                     } 
                     alert('저장되었습니다.')
@@ -603,30 +598,31 @@ export default {
                 token: this.userObj.token,
                 name: this.userObj.name,
                 phone: this.userObj.phone,
-                is_manager: 0, 
-                is_admin: 0,
-                is_counsel: 0,
-                is_inqten: 0, 
-                is_autoship: 0, 
+                is_manager: this.userObj.is_manager, 
+                is_admin: this.userObj.is_admin,
+                is_counsel: this.userObj.is_counsel,
+                is_inqten: this.userObj.is_inqten, 
+                is_autoship: this.userObj.is_autoship, 
                 city: this.userObj.city,
                 town: this.userObj.town,
                 birth: this.userObj.birth,
-                last_test: null,
-                point: null,
-                status: null,
+                last_test: this.userObj.last_test,
+                point: this.userObj?.point,
+                status: this.userObj?.status,
                 viral_url: this.userObj.viral_url,
-                memo: null,
-                auth: null,
-                cart: null,
-                url: null,
+                memo: this.userObj?.memo ?? null,
+                auth: this.userObj?.auth,
+                cart: this.userObj?.cart,
+                url: this.userObj?.url,
                 table: 'user',
                 conditions:[{q:"=",f:"no",v:this.userObj.no}]
             }
-            for (const [key, value] of Object.entries(param)) {    
+            for (const [key, value] of Object.entries(param)) {   
                 if (this.validateVariableExist(value)) delete param[key]
             }
+            
             this.$axios.post('/admin/update', param).then(async res => {
-                if (!this.validateVariableExist(this.profileImage)) {
+                if (this.profileImage != null) {
                     await this.updateImage(this.profileImage, 'profile_url')
                 } 
                 alert('저장되었습니다.')
@@ -652,8 +648,6 @@ export default {
             await this.$axios.post('/admin/updateMultipart', formData, {
                 headers: {'Content-Type': 'multipart/form-data'}
             }).then(res => {
-                // alert('저장되었습니다.');
-                // this.clickCancel()
             }).catch(err => {
                 console.log("multipart error : ", err);
             })

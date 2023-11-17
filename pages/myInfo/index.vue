@@ -12,6 +12,12 @@
         :obj="selectedUser"
         :popup="historyPopup"
     ></UserSurveyPopup>
+    <UserEditPopup
+      v-if="userEditPopup"
+        @click-close="closePopup"
+        :obj="selectedUser"
+        :popup="userEditPopup"
+    ></UserEditPopup>
     <UserTestPopup
       v-if="testPopup"
         @click-close="closePopup"
@@ -32,7 +38,7 @@
     ></messageTwoBtnDialog>
     <Header @update="onChildUpdate"> </Header>
     <div :class="navigationStatus == false ? 'main' : 'mobile-main'">
-      <div class="body">
+      <div class="body" v-if="!isManager">
         <div class="title">내 정보 관리</div>
         <div class="tab-group">
           <div
@@ -206,15 +212,150 @@
           </div>
         </div>
       </div>
-
+      <div class="body" v-else>
+        <div class="manager-container">
+          <div class="manager-info-edit">
+            <div class="manager-title">내 고객 관리</div>
+            <div class="manager-profile-edit">
+              <img :src="profileImage" class="manager-profile-image" />
+              <!-- <input type="button" class="manager-profile-edit-button" value="내 정보 수정" @click="userEditPopup = false"/> -->
+              <v-btn class="ma-0 pa-0 manager-profile-edit-button"  @click="userEditPopup = true">내 정보 수정</v-btn>
+            </div>
+            <div class="my-url-container" v-if="myUrl">
+              <div>나의 URL</div>
+              <div >{{myUrl ? myUrl : ''}}</div>
+              <v-btn class="my-url-copy-button" @click="copyUrl">복사하기</v-btn>
+            </div>
+          </div>
+          <v-divider inset vertical color="#333"/>
+          <div class="manager-userlist" v-if="!selectUser">
+            <input
+              v-model="searchText"
+              class="manager-userlist-searchbar"
+              type="text"
+              placeholder="환자를 검색해주세요"
+              autocomplete="off"
+              @change="searchUser"
+            />
+            <v-data-table 
+              :items="searchedUserList"
+              :headers="userListHeaders"
+              disable-sort
+              item-key="no"
+              class="manager-table"
+            >
+              <template v-slot:item="{item}" >
+                <tr>
+                  <td class="ma-0 pa-0" style="width:40%">
+                    <v-col class="ma-0 pa-0 manager-info">
+                      <div class="name">{{item?.name}}</div>
+                      <div class="email">{{item?.email}}</div>
+                      <div class="phone">{{item?.phone}}</div>
+                    </v-col>
+                  </td>
+                  <td style="width:40%">
+                    {{item?.memo}}
+                  </td>
+                  <td class="align-center" style="width:20%">
+                    <div class="list-buttons">
+                      <input type="button"
+                        @click="callToUser(item)"
+                        class="list-call-button"
+                        value="전화하기"
+                      />
+                      <input type="button"
+                        class="list-show-info-button"
+                        @click="showUserInfo(item)"
+                        value="정보"
+                      />
+                    </div>
+                  </td>
+                </tr>
+              </template>
+              <!-- <template v-slot:[`item.userInfo`]="{item}">
+                <v-col class="ma-0 pa-0 manager-info">
+                  <div class="name">{{item?.name}}</div>
+                  <div class="email">{{item?.email}}</div>
+                  <div class="phone">{{item?.phone}}</div>
+                </v-col>
+              </template>
+              <template v-slot:[`item.memo`]="{item}">
+                <div>{{item?.memo}}</div>
+              </template>
+              <template v-slot:[`item.etc`]="{item}">
+                <v-row class="ma-0 pa-0" >
+                  <v-spacer/>
+                  <v-btn 
+                    @click="callToUser(item)"
+                    class="list-call-button"
+                  >
+                    전화하기
+                  </v-btn>
+                  <v-btn 
+                    class="list-show-info-button"
+                    @click="showUserInfo(item)"
+                  >
+                    정보
+                  </v-btn>
+                </v-row>
+              </template> -->
+            </v-data-table>
+          </div>
+          <div v-else class="user-info-container">
+            <div class="user-info-back-row-cover">
+              <v-icon class="user-info-back-icon" @click="selectUser = null">mdi-keyboard-backspace</v-icon>
+              <v-btn style="background-color: #4589c8; color:white;" @click="saveUserMemo">저장</v-btn>
+            </div>
+            <div class="user-info-row-cover">
+              <div class="user-info-title">회원 명</div>
+              <div class="user-info-content">{{selectUser?.name}}</div>
+            </div>
+            <div class="user-info-row-cover">
+              <div class="user-info-title">나이/성별</div>
+              <div class="user-info-content">{{selectUser?.age}}/{{selectUser?.gender == 0 ? '남' : '여'}}</div>
+            </div>
+            <div class="user-info-row-cover">
+              <div class="user-info-title">가입일자</div>
+              <div class="user-info-content">{{selectUser.cd}}</div>
+            </div>
+            <div class="user-info-row-cover">
+              <div class="user-info-title">전화번호</div>
+              <div class="user-info-content">{{selectUser.phone}}</div>
+            </div>
+            <div class="user-info-row-cover">
+              <div class="user-info-title">이메일</div>
+              <div class="user-info-content">{{selectUser.email}}</div>
+            </div>
+            <div class="user-info-divider"/>
+            <div class="user-info-column-cover">
+              <div class="user-info-title">회원 메모</div>
+              <v-textarea 
+                height="200"
+                class="ma-0 pa-0"
+                outlined
+                hide-details
+                no-resize
+                dense
+                v-model="selectUser.memo"
+              />
+            </div>
+            <div class="user-info-divider"/>
+            <div class="user-info-column-cover">
+              <div class="user-info-title">설문내역({{surveyList?.length}})</div>
+              <v-data-table :items="surveyList" disable-sort
+                item-key="no" 
+              >
+                <template v-slot:item="{item}" >
+                  <tr @click="historyPopup=true">
+                      <div class="list-row" >{{item.title}}</div>
+                  </tr>
+                </template>
+              </v-data-table>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-    <!-- <v-dialog
-        v-model="historyPopup"
-        max-width="1000"
-        persistent
-    >
-        
-    </v-dialog> -->
   </div>
 </template>
 
@@ -225,9 +366,10 @@ import messageOneBtnDialog from '~/components/messageOneBtnDialog.vue'
 import messageTwoBtnDialog from '~/components/messageTwoBtnDialog.vue'
 import UserSurveyPopup from '@/components/userSurveyPopup'
 import UserTestPopup from '@/components/userTestPopup'
+import UserEditPopup from '@/components/userEditPopup'
 
 import Moment from 'moment'
-
+import _ from 'lodash'
 export default {
   layout: 'default',
   name: 'IndexPage',
@@ -238,6 +380,7 @@ export default {
     messageTwoBtnDialog,
     UserSurveyPopup,
     UserTestPopup,
+    UserEditPopup
   },
   created() {
     if (this.$route.params.tabs != undefined) {
@@ -315,7 +458,6 @@ export default {
       reviewShowLimit: 5,
       reviewBlockNum: 0,
       filterReviewList: [],
-      userInfo:[],
       buyList:[],
       healthCheckList:[],
       testList:[],
@@ -331,6 +473,21 @@ export default {
       testPopup:false,
       selectedTestResult:null,
 
+      userList: [],
+      searchedUserList: [],
+      isManager: false,
+      profileImage: null,
+      myUrl: null,
+      userListHeaders: [
+        {text:"회원정보",value:"userInfo", width:"30%"},
+        {text:"메모",value:"memo", width:"40%"},
+        {text:"기타",value:"etc", width:"30%"},
+      ],
+      searchText: null,
+      selectUser: null,
+      surveyList: [],
+      selectSurvey: null,
+      userEditPopup: false,
     }
   },
   mounted() {
@@ -360,18 +517,94 @@ export default {
     }
   },
   methods: {
+    saveUserMemo() {
+      if (!this.selectUser?.memo) {return}
+      let param = {
+        memo: this.selectUser?.memo,
+        no: this.selectUser?.no,
+        table: 'user',
+        conditions:[{q:"=",f:"no",v:this.selectUser?.no}]
+      }
+      this.$axios.post('/api/update', param).then(async res => {
+          alert('저장되었습니다.')
+      }).catch(err => {
+          console.log("update err : ", err)
+      })
+    },
     onClickTestPop(item){
-        console.log(item)
         this.testPopup=true
         this.selectedTestResult = item
     },
     closePopup(type) {
         if (type == 'history')this.historyPopup = !this.historyPopup
+        else if (type == 'edit') {this.userEditPopup = !this.userEditPopup; this.selectUserInfo(this.userInfo.no)}
         else this.testPopup = !this.testPopup
+    },
+    async copyUrl() {
+        if (this.myUrl) {
+            let text = this.myUrl
+            await window.navigator.clipboard.writeText(text).then(() => {
+                alert('복사되었습니다.')
+            })
+        }
+    },
+    async selectHealthCheckList() {
+      let sConditions = [{ q: '=', f: 'u_no', v: this.selectUser.no },{ q: 'order', f: 'cd', o: 'DESC' }]
+        let surveyFormBody = {
+            table: 'survey_result',
+            conditions: sConditions,
+        }
+        await this.$axios
+        .post('/api/select', surveyFormBody)
+        .then((res) => {
+            if (res.data.length > 0) {
+                this.surveyList = res.data
+                for(let one of this.surveyList){
+                    one.title = Moment(one.cd).format('YY년MM월DD일')+"의 건강설문 결과"
+                    one.cd = Moment(one.cd).format('YY-MM-DD HH:mm')
+                }
+            } 
+        })
+        .catch(function (error) {
+            console.log('에러!!', error)
+        })
+    },
+    searchUser() {
+      this.searchedUserList = _.filter(this.userList, item => {
+        return item?.name?.includes(this.searchText)
+      })
+    },
+    callToUser(item) {
+      if (item?.phone)
+        window.location.href=`tel:${item?.phone}`
+    },
+    showUserInfo(item) {
+      this.selectUser = item
+      if (this.selectUser.birth && Number(this.selectUser?.birth)) {
+        const today = new Date();
+        const birthDate = new Date(this.selectUser.birth, 7, 10); // 2000년 8월 10일
+
+        this.selectUser.age = today.getFullYear() - birthDate.getFullYear() + 1;
+      }
+      this.selectUser.cd = Moment(this.selectUser.cd).format('YYYY-MM-DD HH:mm')
+      this.selectedUser = item
+      this.selectHealthCheckList()
     },
     callToManager(){
       if (managerObj?.phone)
         window.location.href=`tel:${managerObj?.phone}`
+    },
+    profileImageUrl(url) {
+        if(url?.includes('http')) return url
+        else return this.hostUrl+url
+    },
+    async convertUrl(url){
+        const response =  await fetch(url);
+        const data =  await response.blob();
+        const ext = await url.split(".").pop();
+        const filename = await url.split("/").pop()
+        const metadata = { type: `image/${ext}` };
+        return new File([data], filename, metadata);
     },
     async selectUserInfo(no) {
       let conditions = []
@@ -380,15 +613,61 @@ export default {
         table: 'user',
         conditions: conditions
       }
-      await this.$axios.post('/api/select', param).then(res => {
+      await this.$axios.post('/api/select', param).then(async res => {
         if (res.data?.length > 0) {
             this.selectedUser = res.data[0]
+            this.setLocalItem()
           if (res.data[0]?.manager_no) {
             this.selectManagerInfo(res.data[0]?.manager_no)
+          }
+          if (res.data[0]?.profile_url) {
+            let profileUrl = JSON.parse(res.data[0]?.profile_url)?.length > 0 ? JSON.parse(res.data[0]?.profile_url)[0] : null
+            
+            this.selectedUser.profile_url = profileUrl
+            this.profileImage = this.profileImageUrl(profileUrl)
+          }
+          if (res.data[0]?.url) {
+            this.myUrl = res.data[0]?.url
+          }
+          if (res.data[0]?.is_manager == 1) {
+            this.isManager = true
+            this.selectManagedUserList(no)
           }
         }
       }).catch(err => {
         console.log("error : ", err)
+      })
+    },
+    setLocalItem() {
+      let userInfo = {
+        no: this.selectedUser.no,
+        type: this.selectedUser.type,
+        email: this.selectedUser.email,
+        gender: this.selectedUser.gender,
+        token: this.selectedUser.token,
+        name: this.selectedUser.name,
+        phone: this.selectedUser.phone,
+        email: this.selectedUser.email,
+        status: this.selectedUser.status,
+      }
+      localStorage.setItem('userInfo', JSON.stringify(userInfo))
+      this.userInfo = JSON.parse(localStorage.getItem('userInfo'))
+    },
+    async selectManagedUserList(no) {
+      let conditions = []
+      conditions.push({"q":"=","f":"manager_no","v":no})
+      conditions.push({ q: 'order', f: 'cd', o: 'DESC' })
+      let param = {
+        table: 'user',
+        conditions: conditions
+      }
+      await this.$axios.post('/api/select', param).then(res => {
+        if (res.data?.length > 0) {
+          this.userList = res.data
+          this.searchedUserList = this.userList
+        }
+      }).catch(err => {
+        console.log("selectManagedUserList error : ", err)
       })
     },
     async selectManagerInfo(no) {
@@ -1010,6 +1289,181 @@ export default {
         }
       }
     }
+    .manager-container {
+      display:flex;
+      flex-direction: row;
+      .manager-info-edit {
+        flex-direction: column;
+        display:flex;
+        width: 25%;
+        overflow-y: auto;
+        .manager-title {
+          display: flex;
+          align-items: center;
+          color: #333;
+          font-size: 36px;
+          font-family: 'score7';
+        }
+        .manager-profile-edit {
+          padding:20px 0px;
+          flex-direction: row;
+          display:flex;
+          .manager-profile-image {
+            width: 120px;
+            height: 120px;
+            max-height: 120px;
+            border: solid 1px #333;
+          }
+          .manager-profile-edit-button {
+            align-items: center;
+            justify-content: center;
+            background-color: #4589c8;
+            color: white;
+            display: flex;
+            margin: auto;
+            padding: 8px;
+            border-radius: 8px;
+          }
+        }
+        .my-url-container {
+          flex-direction: column;
+          display: flex;
+          .my-url-copy-button {
+            align-items: center;
+            background-color: #4589c8;
+            color: white;
+            display: flex;
+            margin: 16px auto;
+            padding: 8px;
+            border-radius: 8px;
+          }
+        }
+        .ask-admin-button {
+            background-color: #4589c8;
+            color: white;
+            display: flex;
+            margin: 16px auto;
+            padding: 16px;
+            border-radius: 8px;
+        }
+      }
+      .manager-userlist {
+        flex-direction: column;
+        display: flex;
+        width: 75%;
+        padding: 0px 16px;
+        .manager-userlist-searchbar {
+          padding: 8px;
+          height: 50px;
+          border: 1px solid #dddddd;
+          background-color: #fff;
+          color: #999999;
+          letter-spacing: -0.6px;
+          border-radius: 1px;
+          font-size: 16px;
+          font-family: 'score2';
+          padding: 12px;
+          border-radius: 25px;
+        }
+        .manager-table {
+          padding: 16px 16px;
+        }
+        .manager-info {
+          align-items: center;
+          color: #333;
+          .name {
+            font-size: 16px;
+            font-family: 'score6';
+          }
+          .email {
+            font-size: 14px;
+            font-family: 'score4';
+          }
+          .phone {
+            font-size: 14px;
+            font-family: 'score4';
+          }
+        }
+        .list-buttons {
+          display:flex;
+          flex-direction: row;
+          .list-call-button {
+            background-color: #35a74c;
+            color:white;
+            font-size: 14px;
+            font-family: 'score4';
+            padding: 8px 16px;
+            border-radius: 8px;
+          }
+          .list-show-info-button {
+            background-color: #4589c8;
+            margin-left: 16px;
+            color:white;
+            font-size: 14px;
+            font-family: 'score4';
+            padding: 8px 16px;
+            border-radius: 8px;
+          }
+        }
+      }
+      .user-info-container {
+        width: 75%;
+        padding: 0px 16px;
+        display:flex;
+        flex-direction: column;
+        .user-info-back-row-cover {
+          flex-direction: row;
+          display:flex;
+          margin: 12px 0px;
+          align-items: center;
+          justify-content: space-between;
+        }
+        .user-info-row-cover {
+          flex-direction: row;
+          display:flex;
+          margin: 12px 0px;
+          .user-info-back-icon {
+            color: black;
+            width: 50px;
+            height: 50px;
+          }
+          .user-info-title {
+            font-size: 17px;
+            font-family: 'score5';
+            width: 120px
+          }
+          .user-info-content {
+            font-size: 17px;
+            font-family: 'score4';
+          }
+        }
+        .user-info-divider {
+          height:0.5px;
+          background-color:#adadad;
+          margin: 16px 0px;
+        }
+        .user-info-column-cover {
+          flex-direction: column;
+          display:flex;
+          margin: 12px 0px;
+
+          .user-info-title {
+            font-size: 17px;
+            font-family: 'score5';
+            margin-bottom: 16px;
+          }
+          .list-row{
+              width: 100%;
+              border-bottom: solid #d3d3d3 0.5px;
+              height: 40px;
+              display: flex;
+              padding-left:20px;
+              align-items: center;
+              justify-content: flex-start;
+          }
+        }
+      }
+    }
   }
 }
 @media (max-width: 720px) {
@@ -1362,6 +1816,184 @@ export default {
           }
           .paging-num:hover {
             color: none;
+          }
+        }
+      }
+      .manager-container {
+        display:flex;
+        flex-direction: column;
+        .manager-info-edit {
+          flex-direction: column;
+          display:flex;
+          width: 100%;
+          overflow-y: auto;
+          .manager-title {
+            display: flex;
+            align-items: center;
+            color: #333;
+            font-size: 36px;
+            font-family: 'score7';
+          }
+          .manager-profile-edit {
+            padding:20px 0px;
+            flex-direction: row;
+            display:flex;
+            .manager-profile-image {
+              width: 120px;
+              height: 120px;
+              max-height: 120px;
+              border: solid 1px #333;
+            }
+            .manager-profile-edit-button {
+              align-items: center;
+              justify-content: center;
+              background-color: #4589c8;
+              color: white;
+              display: flex;
+              margin: auto;
+              padding: 8px;
+              border-radius: 8px;
+            }
+          }
+          .my-url-container {
+            flex-direction: column;
+            display: flex;
+            margin:16px;
+            .my-url-copy-button {
+              align-items: center;
+              background-color: #4589c8;
+              color: white;
+              display: flex;
+              margin: auto;
+              padding: 8px;
+              border-radius: 8px;
+            }
+          }
+          .ask-admin-button {
+              background-color: #4589c8;
+              color: white;
+              display: flex;
+              margin: 16px auto;
+              padding: 16px;
+              border-radius: 8px;
+          }
+        }
+        .manager-userlist {
+          flex-direction: column;
+          display: flex;
+          width: 100%;
+          padding: 0px;
+          .manager-userlist-searchbar {
+            padding: 8px;
+            height: 50px;
+            border: 1px solid #dddddd;
+            background-color: #fff;
+            color: #999999;
+            letter-spacing: -0.6px;
+            border-radius: 1px;
+            font-size: 16px;
+            font-family: 'score2';
+            padding: 12px;
+            border-radius: 25px;
+          }
+          .manager-table {
+            padding: 16px 0px;
+          }
+          .manager-info {
+            align-items: center;
+            color: #333;
+            margin: 0px;
+            padding: 4px;
+            .name {
+              font-size: 12px;
+              font-family: 'score6';
+            }
+            .email {
+              font-size: 10px;
+              font-family: 'score4';
+            }
+            .phone {
+              font-size: 10px;
+              font-family: 'score4';
+            }
+          }
+          .list-buttons {
+            display:flex;
+            flex-direction: column;
+            .list-call-button {
+              background-color: #35a74c;
+              color:white;
+              font-size: 10px;
+              font-family: 'score4';
+              padding: 4px 8px;
+              border-radius: 4px;
+            }
+            .list-show-info-button {
+              background-color: #4589c8;
+              color:white;
+              font-size: 10px;
+              font-family: 'score4';
+              padding: 4px 8px;
+              margin: 4px 0px;
+              border-radius: 4px;
+            }
+          }
+        }
+        .user-info-container {
+          width: 100%;
+          padding: 0px 16px;
+          display:flex;
+          flex-direction: column;
+          .user-info-back-row-cover {
+            flex-direction: row;
+            display:flex;
+            margin: 12px 0px;
+            align-items: center;
+            justify-content: space-between;
+          }
+          .user-info-row-cover {
+            flex-direction: row;
+            display:flex;
+            margin: 12px 0px;
+            .user-info-back-icon {
+              color: black;
+              width: 50px;
+              height: 50px;
+            }
+            .user-info-title {
+              font-size: 17px;
+              font-family: 'score5';
+              width: 120px
+            }
+            .user-info-content {
+              font-size: 17px;
+              font-family: 'score4';
+            }
+          }
+          .user-info-divider {
+            height:0.5px;
+            background-color:#adadad;
+            margin: 16px 0px;
+          }
+          .user-info-column-cover {
+            flex-direction: column;
+            display:flex;
+            margin: 12px 0px;
+
+            .user-info-title {
+              font-size: 17px;
+              font-family: 'score5';
+              margin-bottom: 16px;
+            }
+            .list-row{
+                width: 100%;
+                border-bottom: solid #d3d3d3 0.5px;
+                height: 40px;
+                display: flex;
+                padding-left:20px;
+                align-items: center;
+                justify-content: flex-start;
+            }
           }
         }
       }
