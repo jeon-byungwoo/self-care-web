@@ -432,7 +432,7 @@ export default {
       indicatorNum: -1,
       serializedData : [],
       managerLink:'',
-      userInfo:[],
+      userInfo:null,
       stepList: [
         {
           stepList: [
@@ -547,9 +547,14 @@ export default {
           : undefined
     }
 
+    console.log('this.userInfo',this.userInfo)
+    if(this.userInfo !=null){
+        console.log(this.userInfo)
+        this.name = this.userInfo.name
+        this.birth = this.userInfo.birth
+        this.userInfo.gender==0?this.gender=1:this.gender=2
+    }
     this.managerLink = this.$route.params.link
-    console.log('link is', this.managerLink)
-    console.log('no is', this.selectManagerInfo())
     
   },
   watch: {
@@ -670,12 +675,14 @@ export default {
       })
     },
     async insertSurveyResult(){
+        let now = new Date()
         let formBody = {
             table: 'survey_result',
             result:JSON.stringify(this.serializedData),
             u_no:JSON.parse(localStorage.getItem('userInfo')).no,
             gender:this.gender,
             birth:Number(this.birth),
+            age:(now.getFullYear() -  Number(this.birth)),
             weight:Number(this.weight),
             tall:Number(this.tall),
             disease:this.disease,

@@ -206,7 +206,7 @@ export default {
             this.reviewObjObj.image = null
         },
         validateVariableExist(value) {
-            return (value == null || value == undefined || value == '[]' || ( value != null && typeof value == "object" && !Object.keys(value).length ))
+             return (value == null || value == undefined || value == '[]')
         },
         update() {
             let param = {

@@ -207,6 +207,7 @@ export default {
       //this.$router.push({ name: 'productDetail' })
         this.$router.push({name: 'productDetail', query: {no: item.no}});
     },
+
     async selectItem(){
       let conditions = [{ q: '=', f: '1', v: 1 },{ q: 'page', limit: '8', offset: 0 }]
       let formBody = {

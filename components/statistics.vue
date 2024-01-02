@@ -5,18 +5,23 @@
         <div class="statics-header-group">
           <div class="statics-header-title-text">기준 건강 설문 통계</div>
           <div>
-            <select class="round">
+            <select v-model="gender" @change="onChangeGender()" class="round">
                 <option>전체</option>
                 <option>남성</option>
                 <option>여성</option>
             </select>
           </div>
           <div style="margin-left:10px;">
-            <select class="round">
+            <select v-model="age" @change="onChangeAge()" class="round">
                 <option>전체</option>
-                <option>10대 미만</option>
+                <option>~ 10대</option>
                 <option>20대</option>
                 <option>30대</option>
+                <option>40대</option>
+                <option>50대</option>
+                <option>60대</option>
+                <option>70대</option>
+                <option>80대 이상</option>
             </select>
           </div>
         </div>
@@ -78,6 +83,8 @@ export default {
   },
   data() {
     return {
+        gender:'전체',
+        age:'전체',
       chartData: {
         labels: [
           '면역',
@@ -173,6 +180,72 @@ export default {
   },
   methods: {
     preClick() {},
+    onChangeAge(){
+        this.selectStastics()
+    },
+    onChangeGender(){
+        this.selectStastics()
+    },
+    async selectStastics(){
+
+      let conditions = [
+        { q: '=', f: '1', v: 1 },
+      ]
+
+        if(this.age!='전체'){
+            if(this.age=='~ 10대'){
+                conditions.push({ op:"AND", q: '<', f: 'age', v: 20 })
+            }else if(this.age=='20대'){
+                conditions.push({ op:"AND", q: '>', f: 'age', v: 20 })
+                conditions.push({ op:"AND", q: '<', f: 'age', v: 30 })
+            }else if(this.age=='30대'){
+                conditions.push({ op:"AND", q: '>', f: 'age', v: 30 })
+                conditions.push({ op:"AND", q: '<', f: 'age', v: 40 })
+            }else if(this.age=='40대'){
+                conditions.push({ op:"AND", q: '>', f: 'age', v: 40 })
+                conditions.push({ op:"AND", q: '<', f: 'age', v: 50 })
+            }else if(this.age=='50대'){
+                conditions.push({ op:"AND", q: '>', f: 'age', v: 50 })
+                conditions.push({ op:"AND", q: '<', f: 'age', v: 60 })
+            }else if(this.age=='60대'){
+                conditions.push({ op:"AND", q: '>', f: 'age', v: 60 })
+                conditions.push({ op:"AND", q: '<', f: 'age', v: 70 })
+            }else if(this.age=='70대'){
+                conditions.push({ op:"AND", q: '>', f: 'age', v: 70 })
+                conditions.push({ op:"AND", q: '<', f: 'age', v: 80 })
+            }else if(this.age=='80대'){
+                conditions.push({ op:"AND", q: '>', f: 'age', v: 80 })
+                conditions.push({ op:"AND", q: '<', f: 'age', v: 90 })
+            }
+        }
+        if(this.gender!='전체'){
+            if(this.gender=='남성'){
+                conditions.push({ op:"AND", q: '=', f: 'gender', v: 1 })
+            }else if(this.gender=='여성'){
+                conditions.push({ op:"AND", q: '=', f: 'gender', v: 2 })
+            }
+        }
+
+      let formBody = {
+        table: 'survey_result',
+        conditions: conditions,
+      }
+      try {
+        await this.$axios
+          .post('/api/select', formBody)
+          .then((res) => {
+            if (res.data.length > 0) {
+                console.log(res.data)
+                
+            } 
+          })
+          .catch(function (error) {
+            console.log('에러!!', error)
+          })
+      } catch (err) {
+        console.log('err!! : ' + err)
+      }
+    },
   },
 }
 </script>

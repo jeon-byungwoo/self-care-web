@@ -107,7 +107,8 @@ export default {
     font-family: 'score6';
 }
 .abs-position{
-    justify-content: center;
+    flex-wrap: wrap;
+    justify-content: flex-start;
     align-items: flex-end;
     margin-bottom: 10px;
     display: flex;
@@ -136,7 +137,7 @@ export default {
     display: flex;
     flex-direction: row;
     width: 100%;
-    height: 400px;
+    min-height: 200px;
     background-position: center;
     background-size: contain;
     justify-content: center;

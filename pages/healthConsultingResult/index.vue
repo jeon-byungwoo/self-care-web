@@ -9,6 +9,15 @@
             <span class="regular-text">님의</span>
             <div class="regular-text">라이프 스타일 결과 입니다.</div>
           </div>
+            <div class="share-area" @click="onClickLinkShare()">
+                <img
+                class="share-icon"
+                src="@/assets/image/ic_share.png"
+                draggable="false"
+                
+                />
+                <div class="share-text">검사 링크 공유</div>
+            </div>
         </div>
         <div class="first-box-group">
           <div class="black-line"></div>
@@ -39,6 +48,26 @@
             </div>
           </div>
           <div class="line"></div>
+        </div>
+
+        <div class="bmi-wrap">
+            <div class="bmi-chart-wrap">
+                <div class="chart-area">
+                    <div class="lv1">저체중</div>
+                    <div class="lv2">정상</div>
+                    <div class="lv3">과체중</div>
+                    <div class="lv4">1단계 비만</div>
+                    <div class="lv5">2단계 비만</div>
+                    <div class="lv6">고도 비만</div>
+                </div>
+                <div class="bmi-arrow-area">
+                    <div id="marker" class="marker"></div>
+                </div>
+            </div>
+            <div class="bmi-comment-wrap">
+                BMI 값이 18.5 미만이면 저체중이며, 23 이상 24.9 이하일 때는 비만 전 단계인 과체중이다. 
+                25 이상은 비만에 속한다. 특히 비만 중에서도 25 이상 29.9 이하를 1단계 비만, 30 이상 34.9 이하를 2단계 비만, 35 이상을 3단계(고도) 비만으로 규정하고 있다. 
+            </div>
         </div>
 
         <div class="second-box-group">
@@ -83,15 +112,24 @@
                 <img class="icon" :src="require(`@/assets/image/${item.image}`)" draggable="false"/>
                 <div class="text">{{item.text}}</div>
             </div>
-            <div class="middle-right-group">
-                <div class="middle-score-area">
+            <div class="m-middle-score-area">
+                <div class="m-left-icon-text-area">
+                    <img class="icon" :src="require(`@/assets/image/${item.image}`)" draggable="false"/>
+                    <div class="text">{{item.text}}</div>
+                </div>
                 <div :class="item.score == 0? 'score-good': item.score == 1? 'score-basic': item.score == 2? 'score-bad': 'score-worst'"> 
                     {{item.score == 0? '양호': item.score == 1? '보통': item.score == 2? '경계': '불량'}}
                 </div>
+            </div>
+            <div class="middle-right-group">
+                <div class="middle-score-area">
+                    <div :class="item.score == 0? 'score-good': item.score == 1? 'score-basic': item.score == 2? 'score-bad': 'score-worst'"> 
+                        {{item.score == 0? '양호': item.score == 1? '보통': item.score == 2? '경계': '불량'}}
+                    </div>
                 </div>
                 <div class="right-info-area">
-                <div v-if="surveyComment.length>0" class="info" v-html="item.comment">
-                </div>
+                    <div v-if="surveyComment.length>0" class="info" v-html="item.comment">
+                    </div>
                 </div>
             </div>
           </div>
@@ -111,7 +149,7 @@
               draggable="false"
               
             />
-            <div class="share-text">공유</div>
+            <div class="share-text">검사 결과 공유</div>
           </div>
         </div>
 
@@ -255,23 +293,61 @@ export default {
     
   },
   methods: {
-    onClickShare(){
+
+    onClickLinkShare(){
         const shareObject = {
-            title: this.name+'님의 검사 결과',
-            text: 'self-care',
-            url: window.location.href,
+            title: '셀프케어 건강설문 진행',
+            text: 'AI 건강 설문 진행하기',
+            url: 'https://self-care.kr/healthConsulting',
         };
-        if (navigator.share) { // Navigator를 지원하는 경우만 실행
-            navigator
+        if (window.navigator.share) { // Navigator를 지원하는 경우만 실행
+            window.navigator
             .share(shareObject)
             .then(() => {
                 // 정상 동작할 경우 실행
             })
             .catch((error) => {
-                alert('에러가 발생했습니다.')
+                //alert('에러가 발생했습니다.')
             })
         } else { // navigator를 지원하지 않는 경우
-            alert('페이지 공유를 지원하지 않습니다.')
+            let url = ''
+            const textarea = document.createElement("textarea");
+            document.body.appendChild(textarea)
+            url = 'https://self-care.kr/healthConsulting'
+            textarea.value = url
+            textarea.select()
+            document.execCommand("copy")
+            document.body.removeChild(textarea)
+            alert('링크가 복사되었습니다.')
+        }
+    },
+
+
+    onClickShare(){
+        const shareObject = {
+            title: this.name+'님의 건강설문 결과',
+            text: 'AI 건강 설문 결과',
+            url: window.location.href,
+        };
+        if (window.navigator.share) { // Navigator를 지원하는 경우만 실행
+            window.navigator
+            .share(shareObject)
+            .then(() => {
+                // 정상 동작할 경우 실행
+            })
+            .catch((error) => {
+                //alert('에러가 발생했습니다.')
+            })
+        } else { // navigator를 지원하지 않는 경우
+            let url = '';
+            const textarea = document.createElement("textarea");
+            document.body.appendChild(textarea);
+            url = window.document.location.href;
+            textarea.value = url;
+            textarea.select();
+            document.execCommand("copy");
+            document.body.removeChild(textarea);
+            alert('링크가 복사되었습니다.')
         }
     },
     onChildUpdate(newValue) {
@@ -397,7 +473,7 @@ export default {
           .then((res) => {
             if (res.data.length > 0) {
                 this.user = res.data[0]
-                this.name = this.user.name
+                this.name = this.maskingName(this.user.name)
             } 
           })
           .catch(function (error) {
@@ -456,6 +532,20 @@ export default {
             console.log('err!! : ' + err)
         }
     },
+    maskingName(strName){
+        if (strName.length > 2) {
+            var originName = strName.split('');
+            originName.forEach(function(name, i) {
+            if (i === 0 || i === originName.length - 1) return;
+            originName[i] = '*';
+            });
+            var joinName = originName.join();
+            return joinName.replace(/,/g, '');
+        } else {
+            var pattern = /.$/; // 정규식
+            return strName.replace(pattern, '*');
+        }
+    },
     async selectItem(){
         let hexString = `${this.$route.query.no}`
         let str2 = `${parseInt(hexString,16)}`
@@ -479,11 +569,16 @@ export default {
                 this.gender = item.gender
                 this.bmi = (this.weight / ((this.tall/100.0)*(this.tall/100.0)))
                 this.bmi = this.bmi.toFixed(2)
+                
+                let score = (this.bmi/40)
+                document.getElementById("marker").style.left=`calc(20px + (100% - 40px) * ${score})`
+                console.log(item)
+                this.age = item.age
                 const today = new Date();
                 const birthDate = new Date(this.birth, 7, 10); // 2000년 8월 10일
-                this.age = today.getFullYear()
-                        - birthDate.getFullYear()
-                        + 1;
+                // this.age = today.getFullYear()
+                //         - birthDate.getFullYear()
+                //         + 1;
                 this.result = item.result
                 //면역012 / 34 / 567 / 8
                 for(let i=0;i<this.result.length;i++){
@@ -629,14 +724,95 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.share-area {
+display: flex;
+align-items: center;
+justify-content: center;
+border-radius: 20px;
+width: 140px;
+height: 40px;
+border: 1px solid #dddddd;
+background-color: #fff;
+margin-left: auto;
+cursor: pointer;
+.share-icon {
+    width: 15px;
+    height: 20px;
+}
+.share-text {
+    margin-left: 10px;
+    color: #333;
+    font-size: 14px;
+    font-family: 'score2';
+}
+}
+.bmi-wrap{
+    width: 100%;
+    height: 100px;
+    display: flex;
+    flex-direction: row;
+}
+.bmi-chart-wrap{
+    display: flex;
+    height: 100%;
+    flex: 1;
+    padding: 20px;
+    flex-direction: column;
+    .chart-area{ display: flex; height: 50%; flex: 1; flex-direction: row; }
+    .bmi-arrow-area{ display: flex; height: 50%; min-height: 30px; flex: 1; flex-direction: row;}
+}
+.marker {
+  transform: perspective(45px) rotateX(20deg) rotateZ(-225deg);
+  transform-origin: 50% 50%;
+  border-radius: 50% 50% 50% 0;
+  position:relative;
+  padding: 0 3px 3px 0;
+  width: 30px;
+  height: 30px;
+  background: #ed1f34;
+  -webkit-box-shadow: -1px 1px 4px rgba(0, 0, 0, .5);
+  -moz-box-shadow: -1px 1px 4px rgba(0, 0, 0, .5);
+  box-shadow: -1px 1px 4px rgba(0, 0, 0, .5);
+}
+.lv1{ display: flex; height: 100%; flex: 1; background-color: #8291cf; border-radius: 20px 0px 0px 20px; justify-content: center; align-items: center; font-family: 'score2';font-size: 0.8em;font-weight: bold;}
+.lv2{ display: flex; height: 100%; flex: 1; background-color: #66ff00; justify-content: center; align-items: center; font-family: 'score2';font-size: 0.8em;font-weight: bold;}
+.lv3{ display: flex; height: 100%; flex: 1; background-color: #ffff00; justify-content: center; align-items: center; font-family: 'score2';font-size: 0.8em;font-weight: bold;}
+.lv4{ display: flex; height: 100%; flex: 1; background-color: #ff9900; justify-content: center; align-items: center; font-family: 'score2';font-size: 0.8em;font-weight: bold;}
+.lv5{ display: flex; height: 100%; flex: 1; background-color: #ff0051; justify-content: center; align-items: center; font-family: 'score2';font-size: 0.8em;font-weight: bold;}
+.lv6{ display: flex; height: 100%; flex: 1; background-color: #ff0000;border-radius: 0px 20px 20px 0px; justify-content: center; align-items: center; font-family: 'score2';font-size: 0.8em;font-weight: bold;}
+
+.bmi-comment-wrap{
+    display: flex;
+    justify-content: center; align-items: center; font-family: 'score2';font-size: 0.8em;font-weight: bold;
+    height: 100%;
+    flex: 1;
+    padding: 20px;
+}
+
+.m-left-icon-text-area{
+    display: none;
+}
+.m-middle-score-area{
+    .icon {
+        width: 16px;
+        height: 18px;
+    }
+    .text {
+        margin-left: 4px;
+        color: #333333;
+        font-size: 16px;
+        font-family: 'score5';
+    }
+    display: none;
+}
 .main {
   width: 100%;
-  margin-top: 40px;
+  margin-top: 20px;
   .body {
     width: 100%;
     max-width: 1200px;
     margin: auto;
-    padding: 50px 0px;
+    padding: 10px 0px;
     .title-area {
       display: flex;
     }
@@ -793,7 +969,7 @@ export default {
     }
 
     .second-box-group {
-      margin-top: 72px;
+      margin-top: 30px;
       .one-group {
         display: flex;
       }
@@ -836,6 +1012,7 @@ export default {
         justify-content: center;
         align-items: center;
         padding: 5px 0 5px 0px;
+        border-bottom: solid #d0d0d0 1px;
       }
       .left-icon-text-area {
         display: flex;
@@ -880,7 +1057,7 @@ export default {
         align-items: center;
         justify-content: center;
         border-radius: 20px;
-        width: 100px;
+        width: 140px;
         height: 40px;
         border: 1px solid #dddddd;
         background-color: #fff;
@@ -1103,13 +1280,52 @@ export default {
   }
 }
 @media (max-width: 720px) {
+.bmi-wrap{
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+}
+.bmi-chart-wrap{
+    display: flex;
+    flex: 1;
+    padding: 20px;
+    flex-direction: column;
+    .chart-area{ display: flex;flex: 1; flex-direction: row; }
+    .bmi-arrow-area{ display: flex;}
+}
+.lv1{ display: flex; height: 40px; flex: 1; background-color: #8291cf; border-radius: 20px 0px 0px 20px; justify-content: center; align-items: center; font-family: 'score2';font-size: 0.7em;font-weight: bold;}
+.lv2{ display: flex; height: 40px; flex: 1; background-color: #66ff00; justify-content: center; align-items: center; font-family: 'score2';font-size: 0.7em;font-weight: bold;}
+.lv3{ display: flex; height: 40px; flex: 1; background-color: #ffff00; justify-content: center; align-items: center; font-family: 'score2';font-size: 0.7em;font-weight: bold;}
+.lv4{ display: flex; height: 40px; flex: 1; background-color: #ff9900; justify-content: center; align-items: center; font-family: 'score2';font-size: 0.6em;font-weight: bold;}
+.lv5{ display: flex; height: 40px; flex: 1; background-color: #ff0051; justify-content: center; align-items: center; font-family: 'score2';font-size: 0.6em;font-weight: bold;}
+.lv6{ display: flex; height: 40px; flex: 1; background-color: #ff0000;border-radius: 0px 20px 20px 0px; justify-content: center; align-items: center; font-family: 'score2';font-size: 0.7em;font-weight: bold;}
+
+.bmi-comment-wrap{
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+.m-left-icon-text-area{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.m-middle-score-area{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    flex:1
+}
+
   .main {
     width: 100%;
-    margin-top: 30px;
+    margin-top: 20px;
     .body {
       width: 100%;
       margin: auto;
-      padding: 30px 20px;
+      padding: 10px 10px;
       .title-area {
         display: flex;
       }
@@ -1278,7 +1494,7 @@ export default {
         width: 100%;
         .one-group {
           width: 100%;
-          display: flex;
+          display: none;
           flex-wrap: wrap;
         }
         .one-list-item {
@@ -1310,7 +1526,7 @@ export default {
       }
       .third-box-group {
         margin-top: 40px;
-        padding: 20px;
+        padding: 0px;
         background-color: #fbfbfd;
         border: 1px solid #ddd;
         display: block;
@@ -1321,10 +1537,10 @@ export default {
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 5px 0 5px 0px;
+            padding: 10px 10px;
         }
         .left-icon-text-area {
-          display: flex;
+          display: none;
           flex: 0.2;
           .icon {
             width: 16px;
@@ -1342,7 +1558,9 @@ export default {
           flex-direction: row;
           align-items: flex-start;
           margin-top: 6px;
+          flex: 4;
           .middle-score-area {
+            display: none;
             width: 89px;
             height: 40px;
           }
@@ -1367,7 +1585,7 @@ export default {
           align-items: center;
           justify-content: center;
           border-radius: 20px;
-          width: 80px;
+          width: 120px;
           height: 35px;
           border: 1px solid #dddddd;
           background-color: #fff;

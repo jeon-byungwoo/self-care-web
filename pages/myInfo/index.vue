@@ -218,8 +218,11 @@
             <div class="manager-title">내 고객 관리</div>
             <div class="manager-profile-edit">
               <img :src="profileImage" class="manager-profile-image" />
-              <!-- <input type="button" class="manager-profile-edit-button" value="내 정보 수정" @click="userEditPopup = false"/> -->
-              <v-btn class="ma-0 pa-0 manager-profile-edit-button"  @click="userEditPopup = true">내 정보 수정</v-btn>
+              <div style="display:flex;flex-direction:column;margin-left:20px;">
+                <v-btn class="ma-0 pa-0 manager-profile-edit-button"  @click="userEditPopup = true">내 정보 수정</v-btn>
+              <v-btn class="ma-0 pa-0 manager-profile-edit-button"  @click="twoDialogClick('logout')">로그아웃</v-btn>
+              </div>
+              
             </div>
             <div class="my-url-container" v-if="myUrl">
               <div>나의 URL</div>
@@ -272,33 +275,6 @@
                   </td>
                 </tr>
               </template>
-              <!-- <template v-slot:[`item.userInfo`]="{item}">
-                <v-col class="ma-0 pa-0 manager-info">
-                  <div class="name">{{item?.name}}</div>
-                  <div class="email">{{item?.email}}</div>
-                  <div class="phone">{{item?.phone}}</div>
-                </v-col>
-              </template>
-              <template v-slot:[`item.memo`]="{item}">
-                <div>{{item?.memo}}</div>
-              </template>
-              <template v-slot:[`item.etc`]="{item}">
-                <v-row class="ma-0 pa-0" >
-                  <v-spacer/>
-                  <v-btn 
-                    @click="callToUser(item)"
-                    class="list-call-button"
-                  >
-                    전화하기
-                  </v-btn>
-                  <v-btn 
-                    class="list-show-info-button"
-                    @click="showUserInfo(item)"
-                  >
-                    정보
-                  </v-btn>
-                </v-row>
-              </template> -->
             </v-data-table>
           </div>
           <div v-else class="user-info-container">
@@ -1319,11 +1295,12 @@ export default {
           .manager-profile-edit-button {
             align-items: center;
             justify-content: center;
-            background-color: #4589c8;
+            background-color: #9ad144;
             color: white;
             display: flex;
             margin: auto;
             padding: 8px;
+            min-width:120px;
             border-radius: 8px;
           }
         }
@@ -1850,7 +1827,6 @@ export default {
             .manager-profile-edit-button {
               align-items: center;
               justify-content: center;
-              background-color: #4589c8;
               color: white;
               display: flex;
               margin: auto;

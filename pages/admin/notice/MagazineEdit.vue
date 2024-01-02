@@ -215,7 +215,7 @@ export default {
             this.magazineObj.image = null
         },
         validateVariableExist(value) {
-            return (value == null || value == undefined || value == '[]' || ( value != null && typeof value == "object" && !Object.keys(value).length ))
+             return (value == null || value == undefined || value == '[]')
         },
         insert () {
             let param = {

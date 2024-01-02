@@ -567,7 +567,7 @@ export default {
             else return src
         },
         validateVariableExist(value) {
-            return (value == null || value == undefined || value == '[]' || ( value != null && typeof value == "object" && !Object.keys(value).length ))
+             return (value == null || value == undefined || value == '[]')
         },
         insertProduct () {
             let param = {

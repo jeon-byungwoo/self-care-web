@@ -533,7 +533,7 @@ export default {
             else return this.hostUrl+url
         },
         validateVariableExist(value) {
-            return (value == null || value == undefined || value == '[]' || ( value != null && typeof value == "object" && !Object.keys(value).length ))
+             return (value == null || value == undefined || value == '[]')
         },
         async insert() {
             let isOverlap = await this.isOverlapEmail()

@@ -21,7 +21,7 @@
             <v-img  class="rolling-banner-m" 
                 @click="onClickBanner(item)"
                 :src="item.m_image"
-                cover
+                contain
             />
         </slide>
       </hooper>
@@ -247,7 +247,7 @@ export default {
         background-size: cover;
         display: block;
         width: 100%;
-        height: calc(100vw * 80 / 144);
+        height: auto;
         min-height: 200px;
         
       }

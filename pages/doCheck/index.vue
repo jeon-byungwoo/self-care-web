@@ -14,26 +14,28 @@
         <div class="survey-wrap">
             <div class="survey-list-item" v-for="(i, index) in survey" :key="index">
                 <div class="survey-item-row">
-                    <div class="survey-item-title">{{i.content}}</div>
-                    <div v-if="i.selection1.text" class="survey-item-selection" @click="onSelect(i,1)" :style=" 'background-color: ' + (i.selection1.selected == 1 ? '#9AD144;' : '#fff;') + 'color: ' + (i.selection1.selected == 1 ? '#fff' : '#333')">
-                        <div class="survey-item-text">{{i.selection1.text}}</div>
-                        <div class="survey-item-value">{{i.selection1.value}}</div>
-                    </div>
-                    <div v-if="i.selection2.text" class="survey-item-selection" @click="onSelect(i,2)" :style=" 'background-color: ' + (i.selection2.selected == 1 ? '#9AD144;' : '#fff;') + 'color: ' + (i.selection2.selected == 1 ? '#fff' : '#333')">
-                        <div class="survey-item-text">{{i.selection2.text}}</div>
-                        <div class="survey-item-value">{{i.selection2.value}}</div>
-                    </div>
-                    <div v-if="i.selection3.text" class="survey-item-selection" @click="onSelect(i,3)" :style=" 'background-color: ' + (i.selection3.selected == 1 ? '#9AD144;' : '#fff;') + 'color: ' + (i.selection3.selected == 1 ? '#fff' : '#333')">
-                        <div class="survey-item-text">{{i.selection3.text}}</div>
-                        <div class="survey-item-value">{{i.selection3.value}}</div>
-                    </div>
-                    <div v-if="i.selection4.text" class="survey-item-selection" @click="onSelect(i,4)" :style=" 'background-color: ' + (i.selection4.selected == 1 ? '#9AD144;' : '#fff;') + 'color: ' + (i.selection4.selected == 1 ? '#fff' : '#333')">
-                        <div class="survey-item-text">{{i.selection4.text}}</div>
-                        <div class="survey-item-value">{{i.selection4.value}}</div>
-                    </div>
-                    <div v-if="i.selection5.text" class="survey-item-selection" @click="onSelect(i,5)" :style=" 'background-color: ' + (i.selection5.selected == 1 ? '#9AD144;' : '#fff;') + 'color: ' + (i.selection5.selected == 1 ? '#fff' : '#333')">
-                        <div class="survey-item-text">{{i.selection5.text}}</div>
-                        <div class="survey-item-value">{{i.selection5.value}}</div>
+                    <div class="survey-item-title">{{index+1}}.  {{i.content}}</div>
+                    <div class="survey-item-selection-wrap">
+                        <div v-if="i.selection1.text" class="survey-item-selection" @click="onSelect(i,1)" :style=" 'background-color: ' + (i.selection1.selected == 1 ? '#9AD144;' : '#fff;') + 'color: ' + (i.selection1.selected == 1 ? '#fff' : '#333')">
+                            <div class="survey-item-text">{{i.selection1.text}}</div>
+                            <div class="survey-item-value">{{i.selection1.value}}</div>
+                        </div>
+                        <div v-if="i.selection2.text" class="survey-item-selection" @click="onSelect(i,2)" :style=" 'background-color: ' + (i.selection2.selected == 1 ? '#9AD144;' : '#fff;') + 'color: ' + (i.selection2.selected == 1 ? '#fff' : '#333')">
+                            <div class="survey-item-text">{{i.selection2.text}}</div>
+                            <div class="survey-item-value">{{i.selection2.value}}</div>
+                        </div>
+                        <div v-if="i.selection3.text" class="survey-item-selection" @click="onSelect(i,3)" :style=" 'background-color: ' + (i.selection3.selected == 1 ? '#9AD144;' : '#fff;') + 'color: ' + (i.selection3.selected == 1 ? '#fff' : '#333')">
+                            <div class="survey-item-text">{{i.selection3.text}}</div>
+                            <div class="survey-item-value">{{i.selection3.value}}</div>
+                        </div>
+                        <div v-if="i.selection4.text" class="survey-item-selection" @click="onSelect(i,4)" :style=" 'background-color: ' + (i.selection4.selected == 1 ? '#9AD144;' : '#fff;') + 'color: ' + (i.selection4.selected == 1 ? '#fff' : '#333')">
+                            <div class="survey-item-text">{{i.selection4.text}}</div>
+                            <div class="survey-item-value">{{i.selection4.value}}</div>
+                        </div>
+                        <div v-if="i.selection5.text" class="survey-item-selection" @click="onSelect(i,5)" :style=" 'background-color: ' + (i.selection5.selected == 1 ? '#9AD144;' : '#fff;') + 'color: ' + (i.selection5.selected == 1 ? '#fff' : '#333')">
+                            <div class="survey-item-text">{{i.selection5.text}}</div>
+                            <div class="survey-item-value">{{i.selection5.value}}</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -189,12 +191,19 @@ export default {
     float: right;
     margin-bottom: 40px;
 }
+.survey-item-selection-wrap{
+    display: flex;
+    flex-direction: row;
+    flex: 2;
+}
+
 .do-check-wrap{
     max-width: 1200px;
     margin: auto;
+    font-family: 'score2';
     .title-wrap{
         display: flex;
-        padding: 30px 10px 30px 10px;
+        padding: 10px 10px 10px 10px;
         .title-text{
             display: flex;
             flex: 2;
@@ -216,6 +225,9 @@ export default {
     }
     .content-wrap{
         padding: 10px;
+        img{
+            width:100%
+        }
     }
     .survey-wrap{
         display: flex;
@@ -227,11 +239,12 @@ export default {
             width:100%;
             border: solid;
             border-width: 2px;
-		    border-color: #9AD143;
+		    border-color: #e4e4e4;
             border-radius: 10px;
             padding: 5px;
             margin: 2px;
             .survey-item-row{
+                font-weight: bold;
                 display: flex;
                 width:100%;
                 .survey-item-title{
@@ -248,8 +261,9 @@ export default {
                     border-color: #33CD43;
                     color:#FFFFFF;
                     border-radius: 10px;
-                    padding: 2px;
                     margin: 2px;
+                    font-size: 0.8em;
+                    cursor: pointer;
                     .survey-item-text{
                         display: flex;
                         flex: 2;
@@ -268,10 +282,33 @@ export default {
     }
     .summary{
         margin: 15px;
-        font-size: 20px;
+        font-size: 40px;
     }
     .survey-comment-wrap{
         margin: 10px;
+        img{
+            width:100%;
+        }
     }
+}
+@media (max-width: 720px) {
+    .survey-item-row{
+        flex-direction: column;
+    }
+    .survey-item-title{
+        flex:100%;
+    }
+    .survey-item-selection-wrap{
+        display: flex;
+        flex-direction: row;
+        flex: 2;
+    }
+    .survey-item-selection{
+        height: 40px;
+        display: flex;
+        justify-content: center;
+        align-content: center;
+    }
+
 }
 </style>

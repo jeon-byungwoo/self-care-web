@@ -12,7 +12,7 @@
               class="magazine-item"
             >
               <div class="magazine-item-image-group">
-                <img v-if="JSON.parse(item.image)[0]!=null"
+                <img v-if="item.image!=null"
                   class="magazine-item-image"
                   :src="`${hostUrl+JSON.parse(item.image)[0]}`"
                   draggable="false"
@@ -68,7 +68,7 @@ export default {
     },
     async selectItem(){
 
-        let conditions = [{ q: '=', f: '1', v: 1 },{ q: 'order', f: 'priority', o: 'ASC' }]
+        let conditions = [{ q: '=', f: 'alive', v: 1 },{ q: 'order', f: 'priority', o: 'ASC' }]
         let formBody = {
         table: 'test',
         conditions: conditions,

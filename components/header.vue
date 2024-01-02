@@ -104,7 +104,7 @@ export default {
       userInfo: '',
 
       topMenus: [
-        { text: '건강설문', routerName: 'healthConsulting' },
+        { text: 'AI건강설문', routerName: 'healthConsulting' },
         { text: '자가진단', routerName: 'selfCheck' },
         { text: '스토어', routerName: 'store' },
         { text: '펫 전용관', routerName: 'petPrivate' },
@@ -113,7 +113,7 @@ export default {
         { text: '소식', routerName: 'notification' },
       ],
         mobileMenus: [
-        { text: '건강설문', routerName: 'healthConsulting' },
+        { text: 'AI건강설문', routerName: 'healthConsulting' },
         { text: '자가진단', routerName: 'selfCheck' },
         { text: '스토어', routerName: 'store' },
         { text: '펫 전용관', routerName: 'petPrivate' },

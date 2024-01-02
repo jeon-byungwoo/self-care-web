@@ -129,7 +129,7 @@ export default {
             this.update()
         },
         validateVariableExist(value) {
-            return (value == null || value == undefined || value == '[]' || ( value != null && typeof value == "object" && !Object.keys(value).length ))
+             return (value == null || value == undefined || value == '[]')
         },
         profileImageUrl(url) {
             if(url.includes('http')) return url
